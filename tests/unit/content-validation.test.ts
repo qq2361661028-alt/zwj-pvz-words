@@ -12,6 +12,42 @@ describe('D21 启动门禁', () => {
     expect(() => assertContent(RAW)).not.toThrow()
   })
 
+  it('词表清洗：空格/连字符/撇号/数字/大写一律拒绝', () => {
+    const raw = clone()
+    const bad = ['ice cream', "don't", 'a.m.', 'TV', 'three3']
+    raw.words = [
+      ...raw.words,
+      ...bad.map((word, i) => ({
+        id: `w_bad_${i}`,
+        word,
+        zh: '坏词',
+        ipa: '/x/',
+        grade: 4,
+        unit: 'Unit 3',
+        letters: word.length
+      }))
+    ]
+    const text = errorsOf(raw)
+    bad.forEach((word) => expect(text).toContain(`只允许 a-z（实际 ${word}）`))
+  })
+
+  it('词表清洗：拼写去重按小写口径', () => {
+    const raw = clone()
+    raw.words[1] = { ...raw.words[1], word: 'Sunflower', letters: 9 }
+    const text = errorsOf(raw)
+    expect(text).toMatch(/只允许 a-z/)
+    expect(text).toMatch(/同一拼写/)
+  })
+
+  it('词表清洗：grade 必须为正整数，unit 不能为空', () => {
+    const raw = clone()
+    raw.words[0].grade = 0
+    raw.words[1].unit = '  '
+    const text = errorsOf(raw)
+    expect(text).toMatch(/grade 必须是正整数/)
+    expect(text).toMatch(/unit 不能为空/)
+  })
+
   it('id 重复会被拦下', () => {
     const raw = clone()
     raw.plants.push({ ...raw.plants[0] })

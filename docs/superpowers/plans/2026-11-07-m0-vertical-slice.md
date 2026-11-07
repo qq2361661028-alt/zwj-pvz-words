@@ -10,7 +10,7 @@
 
 > **实施偏差 G9（2026-11-07，已落地）：** T14–T17 原写的是 Phaser `Graphics` 渲染，实际实施改用参考工程 `pvz-ui` 的 React 18 + CSS 变量 + 内联 SVG 方案：`src/ui/**` 承接 `game/layout` 的坐标换算，`src/art/**` 用 SVG 形状语言（同一 `INK` 描边）。理由：参考 UI 已在手、DOM 测量与无障碍比 Canvas 更易验收，D1 的 "Phaser 3" 属实现选型而非玩法口径，故降级为 "渲染层自选"；`src/rules/**` 的纯函数边界与 ESLint 锁**不变**。
 
-**状态（2026-11-07）：已实施完成。** 14 个测试文件 / 99 个用例全绿；`lint` / `test` / `build` / `validate` 通过；浏览器首轮自测记录见 [scripts/smoke-checklist.md](../../../scripts/smoke-checklist.md)；实现偏差见文末「实施结果与偏差」。
+**状态（2026-11-07）：已实施完成。** 14 个测试文件 / 99 个用例全绿（M0 验收时点）；M1 落地后总数见 M1 计划与冒烟清单。`lint` / `test` / `build` / `validate` 通过；浏览器首轮自测记录见 [scripts/smoke-checklist.md](../../../scripts/smoke-checklist.md)；实现偏差见文末「实施结果与偏差」。
 
 **Spec:** [docs/superpowers/specs/2026-11-07-pvz-word-spelling-tower-defense-design.md](../specs/2026-11-07-pvz-word-spelling-tower-defense-design.md)（§15：首个计划只覆盖 M0）
 
@@ -27,7 +27,7 @@
 - 字母块按**多重集合**生成（D9）；`distractors = clamp(round(len*0.5), 2, 6)`，总块数 = `len + distractors`。
 - 种子：`seed = hash(wordId, deckId)`，**不含日期**（§6.2）。规则层禁用 `Math.random()`（D10）。
 - 填错三件事、**不毁卡、不倒退**：该块禁用 `penalty_disable_ms`（默认 2000 ms）、记 `wrong`、波次照常推进（§6.3 / O2）。
-- 阳光**只**由已激活的 `producer` 产出：起始 75、上限 9990、每 24 s 产 25；填词不产出阳光（D16 / §7）。
+- 阳光**只**由已激活的 `producer` 产出：起始 75、上限 9990、每 12 s 产 25（2026-11-07 由 24 s 提速 ×2）；填词不产出阳光（D16 / §7）。
 - 打开填词面板**不暂停**，期间僵尸速度 ×0.85（D17）。
 - `status` 转移只允许 `locked→filling→armed→placed`，`dormant` **只有 §6.5 降级一个来源**；表外转移一律断言失败（§4.5）。
 - 词表清洗为构建期**硬错误**：字符集只允许 `a-z`、长度 3–10、排除空格/连字符/撇号/数字、小写去重、`letters === word.length`（§4.4 / §11-4）。
@@ -50,7 +50,7 @@
 | D20 | 7 态里 `paused` 在 M0 没有对应玩法（无语音、无存档） | M0 实现 6 态（`boot/levelSelect/loading/playing/wordPanelOpen/result`），`paused` 与存档 `migrate` 一起进 M1 计划 |
 | G6 | **§15 的 M0 阵容数学上不可通关**：§4.1.1 只预留 2 株 generic（`sprout` 产阳光 / `bush` 防守），射手按规则只能走 `theme:"plant"`（词名=植物名），于是 M0 的 3 株里**只有 1 株射手、且只有 1 张卡能召唤它**；而 D7 又强制线性词序——5 条 lane 里任何 2 条同时来怪就必漏。僵尸数值在文档里也没有落处（G1） | M0 的 3 株全改为 generic，其中射手 `slinger` 承载非植物词（`theme:"unit"`），`theme:"plant"` 通路只保留在校验器里、M0 夹具不启用。**需回写 §4.1.1**：generic 苗木可以是 `shooter`（形象不带"这就是 X"的暗示即可），或把 M0 植物数从 3 提到 4 |
 | G7 | `BOARD.spawn_x` 文档没给值，但它受画幅约束：原型用 10.4，`xToPx(10.4) = 1288 > 1280` 会出怪在画幅外 | 定死 `spawn_x = 9.6`（网格右缘 x=9 之外、画幅之内，实测 1192px）。§5 需补一句出怪点口径 |
-| G8 | §4.2 示例里的 `cost: 100 / hp: 300` 与 §7 的 `25/24s` 经济在 8 张卡 / 3 lane 防御下不成立（T12 可达性测试红） | M0 数值按「可达性优先」重定（`sprout 40 / slinger 75·dps30 / bush 40·hp4000`，僵尸 `speed 0.09`）。§4.2 是示例而非口径，但落地后要把这组值回写进文档，避免 M2 配平时误以为是既有决定 |
+| G8 | §4.2 示例里的 `cost: 100 / hp: 300` 与 §7 的 `25/24s` 经济在 8 张卡 / 3 lane 防御下不成立（T12 可达性测试红） | M0 数值按「可达性优先」重定（`sprout 40 / slinger 75·dps30 / bush 40·hp4000`，僵尸 `speed 0.09`）。§4.2 是示例而非口径，但落地后要把这组值回写进文档，避免 M2 配平时误以为是既有决定。2026-11-07 产出周期再提速为 12 s |
 | G9 | D1 写死 Phaser 3，但用户指定复用参考工程 `pvz-ui`（React 18 + Vite 6 + CSS 变量 + 内联 SVG） | 渲染层改 React DOM（见 header 的 G9 偏差说明）；T14–T17 的 Phaser 代码由 `src/ui/**` + `src/art/**` 等价实现。D1 的 "Phaser" 视为实现选型，M1 如需 Canvas 特效再评估 Pixi/Canvas 覆盖层 |
 
 ## 文件结构（实况，2026-11-07）
@@ -666,7 +666,7 @@ describe('数值 token', () => {
     expect(RULES.penalty_disable_ms).toBe(2000)
     expect(RULES.hand_size).toBe(5)
   })
-  it('阳光经济：起始 75 / 上限 9990 / 每 24s 产 25（§7）', () => {
+  it('阳光经济：起始 75 / 上限 9990 / 每 12s 产 25（§7）', () => {
     expect(SUN).toEqual({ start: 75, cap: 9990, produce_amount: 25, produce_interval_s: 24 })
   })
   it('棋盘 5×9，出怪点在失败线右侧', () => {
@@ -1410,7 +1410,7 @@ export function sunEvents(gained: number): Event[] {
 }
 ```
 
-> `nextProduceAt` 用「上次产出 + interval」而不是「`floor(t/interval)` 对齐」：后者会让刚种下的 producer 在下一个整点秒立刻产出，节奏不稳定；前者保证每株独立 24 s 周期，和 §7 的文字一致。`Plant` 的 `nextProduceAt` 在种植时初始化为 `t + produce_interval_s`（T10）。
+> `nextProduceAt` 用「上次产出 + interval」而不是「`floor(t/interval)` 对齐」：后者会让刚种下的 producer 在下一个整点秒立刻产出，节奏不稳定；前者保证每株独立 12 s 周期，和 §7 的文字一致。`Plant` 的 `nextProduceAt` 在种植时初始化为 `t + produce_interval_s`（T10）。
 
 - [x] **Step 2: 写经济测试**
 
@@ -1427,7 +1427,7 @@ const plant = (uid: number, plantId: string, nextProduceAt: number): Plant =>
   ({ uid, plantId, lane: 0, col: 1, hp: 100, maxhp: 100, nextProduceAt })
 
 describe('D16 阳光唯一来源', () => {
-  it('producer 每 24s 产 25，且自己的下次产出时刻顺推', () => {
+  it('producer 每 12s 产 25，且自己的下次产出时刻顺推', () => {
     const r = tickProducers([plant(1, 'sprout', 24)], CTX.plants, 24, 0)
     expect(r.gained).toBe(SUN.produce_amount)
     expect(r.plants[0].nextProduceAt).toBe(48)
@@ -2062,7 +2062,7 @@ describe('种植后的手牌与抽屉', () => {
     expect(r.state.cards[0].wordId).toBe('w_coffee')
     expect(r.state.panelOpen).toBe(false)
   })
-  it('植物带上 24s 后首次产光的排期（producer 节奏起点 = 种植时刻）', () => {
+  it('植物带上一个产光周期后首次产光的排期（producer 节奏起点 = 种植时刻）', () => {
     const r = onCellClick(armed(newGame(M0_LEVEL_ID, ctx)), 1, 1, ctx).state
     expect(r.plants[0].nextProduceAt).toBe(SUN.produce_interval_s)
     expect(tick(r, RULES.tick_s, ctx).state.sun).toBe(r.sun)

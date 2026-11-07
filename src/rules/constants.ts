@@ -7,7 +7,9 @@ export const RULES = {
   distractor_ratio: 0.5,          // §6.2
   distractor_min: 2,
   distractor_max: 6,
-  distractor_per_row: 12          // §6.2；G3：1280 下实际每行 25 块，此值仅作防御
+  distractor_per_row: 12,         // §6.2；G3：1280 下实际每行 25 块，此值仅作防御
+  hint_ladder_1: 2,               // §6.4：连错 2 次强调音标并朗读
+  hint_ladder_2: 4                // §6.4：连错 4 次高亮正确块并记 assisted
 } as const
 
 export const BOARD = {
@@ -23,5 +25,5 @@ export const SUN = {
   start: 75,
   cap: 9990,                      // D16
   produce_amount: 25,
-  produce_interval_s: 24
+  produce_interval_s: 12
 } as const

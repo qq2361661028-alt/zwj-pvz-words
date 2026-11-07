@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CTX as ctx, M0_LEVEL_ID } from '../../src/content/index'
 import { focusCard } from '../../src/rules/cards'
-import { RULES } from '../../src/rules/constants'
+import { RULES, SUN } from '../../src/rules/constants'
 import { onCellClick, onExit, onTileClick, plantingReject, setPanelOpen } from '../../src/rules/play'
 import { newGame, tick } from '../../src/rules/sim'
 import type { GameState } from '../../src/rules/types'
@@ -73,9 +73,9 @@ describe('种植后的手牌与抽屉', () => {
     expect(r.state.panelOpen).toBe(false)
   })
 
-  it('植物带上 24s 后首次产光的排期', () => {
+  it('植物带上一个产光周期后首次产光的排期', () => {
     const r = onCellClick(ready(), 1, 1, ctx).state
-    expect(r.plants[0].nextProduceAt).toBe(24)
+    expect(r.plants[0].nextProduceAt).toBe(SUN.produce_interval_s)
     expect(tick(r, RULES.tick_s, ctx).state.sun).toBe(r.sun)
   })
 

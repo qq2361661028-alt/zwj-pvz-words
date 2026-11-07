@@ -49,14 +49,17 @@ export function validateContent(raw: RawContent): ValidationReport {
     if (w.word.length < 3 || w.word.length > 10) errors.push(`词 ${w.id}：长度必须 3–10（实际 ${w.word.length}）`)
     if (w.letters !== w.word.length) errors.push(`词 ${w.id}：letters(${w.letters}) 必须等于 word.length(${w.word.length})`)
     if (w.word !== w.word.toLowerCase()) errors.push(`词 ${w.id}：必须小写`)
+    if (!Number.isInteger(w.grade) || w.grade <= 0) errors.push(`词 ${w.id}：grade 必须是正整数（实际 ${w.grade}）`)
+    if (!w.unit.trim()) errors.push(`词 ${w.id}：unit 不能为空`)
     for (const over of w.distractor_overrides ?? []) {
       if (!/^[a-z]$/.test(over)) errors.push(`词 ${w.id}：干扰字母必须是单个 a-z → ${over}`)
     }
   })
   const wordSeen = new Set<string>()
   raw.words.forEach((w) => {
-    if (wordSeen.has(w.word)) errors.push(`词表：同一拼写出现多次「${w.word}」`)
-    wordSeen.add(w.word)
+    const key = w.word.toLowerCase()
+    if (wordSeen.has(key)) errors.push(`词表：同一拼写出现多次「${key}」`)
+    wordSeen.add(key)
   })
 
   raw.plants.forEach((p) => {
@@ -92,7 +95,7 @@ export function validateContent(raw: RawContent): ValidationReport {
         errors.push(`配对 ${d.id}：非 generic 植物 ${plant.id} 只能由 theme=plant 召唤`)
       }
       const rand = mulberry32(seedHash(word.id, d.id))
-      if (!multisetSelfCheck(buildTiles(word, rand), word.word)) {
+      if (!multisetSelfCheck(buildTiles(word, rand, 0, raw.words), word.word)) {
         errors.push(`配对 ${d.id}：牌面多重集合拼不出 ${word.word}（D9）`)
       }
     }

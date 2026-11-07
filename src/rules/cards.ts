@@ -33,7 +33,7 @@ export function makeCard(deck: DeckDef, ctx: Ctx, instanceId: number): Card {
     filled: 0,
     status: 'locked',
     assisted: false,
-    tiles: buildTiles(word, rand, instanceId * 32),   // tileId 跨卡唯一：D7 才能按 id 拒绝非焦点卡
+    tiles: buildTiles(word, rand, instanceId * 32, Object.values(ctx.words)),   // tileId 跨卡唯一：D7 才能按 id 拒绝非焦点卡
     wrongStreak: 0,
     wrongTotal: 0,
     ladderLevel: 0
@@ -77,6 +77,20 @@ export function submit(cards: readonly Card[], tileId: number, now: number): { c
     card.wrongTotal += 1
     card.wrongStreak += 1
     events.push({ type: 'wrong', tileId })
+    const ladder = card.wrongStreak >= RULES.hint_ladder_2
+      ? 2
+      : card.wrongStreak >= RULES.hint_ladder_1
+        ? 1
+        : 0
+    if (ladder > card.ladderLevel) {
+      card.ladderLevel = ladder
+      if (ladder === 2) {
+        card.assisted = true
+        events.push({ type: 'hint_ladder', level: 2 })
+      } else {
+        events.push({ type: 'hint_ladder', level: 1 })
+      }
+    }
   }
   return { cards: out, events }
 }
@@ -100,6 +114,15 @@ export function createHand(deckIds: readonly string[], ctx: Ctx, seqStart = 0): 
 
 export function focusCard(cards: readonly Card[]): Card | undefined {
   return cards.length ? cards[0] : undefined
+}
+
+/** §6.4 level 2：高亮当前待填字母的所有未用块 */
+export function hintedTileIds(card: Card): number[] {
+  if (card.status !== 'filling' || card.ladderLevel < 2) return []
+  const target = card.slots[card.filled]
+  return card.tiles
+    .filter((tile) => !tile.used && tile.letter === target)
+    .map((tile) => tile.tileId)
 }
 
 export function advanceHand(

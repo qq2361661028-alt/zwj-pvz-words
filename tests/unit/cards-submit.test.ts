@@ -54,7 +54,10 @@ describe('O2 错词惩罚', () => {
     const bad = card.tiles.find((t) => t.letter !== card.slots[0])!
     const first = submit(s.cards, bad.tileId, 0)
     expect(submit(first.cards, bad.tileId, 1.9).events).toEqual([])
-    expect(submit(first.cards, bad.tileId, 2).events).toHaveLength(1)
+    expect(submit(first.cards, bad.tileId, 2).events).toEqual([
+      { type: 'wrong', tileId: bad.tileId },
+      { type: 'hint_ladder', level: 1 }
+    ])
   })
 
   it('填对后 wrongStreak 清零，wrongTotal 保留', () => {

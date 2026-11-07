@@ -6,6 +6,9 @@ import { cellRect, laneToPx, xToPx } from './layout'
 import { createAccumulator, newGame, tick } from '../rules/sim'
 import { focusCard } from '../rules/cards'
 import { onCellClick, onExit, onTileClick, plantingReject, setPanelOpen } from '../rules/play'
+import { speakWord } from '../platform/speech'
+import { loadSave, persistSave, todayString } from '../platform/save'
+import { recordWordResult, type SaveData } from '../rules/stats'
 import type { Event, GameState } from '../rules/types'
 import { Button } from './Button'
 import { HandCard } from './HandCard'
@@ -37,6 +40,22 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const toastSeq = useRef(0)
   const deltaSeq = useRef(0)
   const autoOpened = useRef<number | null>(null)
+  const [initialSave] = useState(() => loadSave())
+  const saveRef = useRef<SaveData>(initialSave)
+  const assistedRef = useRef(0)
+
+  useEffect(() => {
+    const save = { ...saveRef.current, last_played: todayString() }
+    saveRef.current = save
+    persistSave(save)
+  }, [])
+
+  const record = useCallback((kind: 'correct' | 'wrong' | 'assisted', wordId: string) => {
+    const next = recordWordResult(saveRef.current, wordId, kind, stateRef.current.t)
+    saveRef.current = next
+    persistSave(next)
+    if (kind === 'assisted') assistedRef.current += 1
+  }, [])
 
   const pushToast = useCallback((text: string, bad = false) => {
     const id = ++toastSeq.current
@@ -49,12 +68,26 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const apply = useCallback((events: readonly Event[]) => {
     for (const e of events) {
       if (e.type === 'wrong') {
+        const wordId = focusCard(stateRef.current.cards)?.wordId
+        if (wordId) record('wrong', wordId)
         wrongRef.current += 1
         setShakeKey((k) => k + 1)
         pushToast('这个字母不对，换一个试试', true)
+      } else if (e.type === 'hint_ladder') {
+        const focus = focusCard(stateRef.current.cards)
+        const focusWord = focus ? CTX.words[focus.wordId] : undefined
+        if (e.level === 2 && focus) record('assisted', focus.wordId)
+        if (e.level === 1 && focusWord) {
+          if (saveRef.current.settings.speech_enabled) speakWord(focusWord.word)
+          pushToast(`听一听：${focusWord.ipa}`)
+        } else if (e.level === 2) {
+          pushToast('看，亮起来的字母就是下一个')
+        }
       } else if (e.type === 'sun_gained') {
         setSunDelta({ v: e.amount, k: ++deltaSeq.current })
       } else if (e.type === 'armed') {
+        const wordId = focusCard(stateRef.current.cards)?.wordId
+        if (wordId) record('correct', wordId)
         pushToast('拼好啦！点草坪种下去')
       } else if (e.type === 'plant_died') {
         pushToast('一株植物被啃掉了…', true)
@@ -62,7 +95,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
         pushToast('僵尸清空了！')
       }
     }
-  }, [pushToast])
+  }, [pushToast, record])
 
   // 定步长逻辑 + 帧率无关的渲染循环（D18）
   useEffect(() => {
@@ -296,6 +329,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
           time={state.t}
           placed={placedCount}
           wrong={wrongRef.current}
+          assisted={assistedRef.current}
           onRetry={onRetry}
           onHome={onHome}
         />

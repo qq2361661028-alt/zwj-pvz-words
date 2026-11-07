@@ -7,10 +7,12 @@ describe('数值 token', () => {
     expect(RULES.panel_slowdown).toBe(0.85)
     expect(RULES.penalty_disable_ms).toBe(2000)
     expect(RULES.hand_size).toBe(5)
+    expect(RULES.hint_ladder_1).toBe(2)
+    expect(RULES.hint_ladder_2).toBe(4)
   })
 
-  it('阳光经济：起始 75 / 上限 9990 / 每 24s 产 25（§7）', () => {
-    expect(SUN).toEqual({ start: 75, cap: 9990, produce_amount: 25, produce_interval_s: 24 })
+  it('阳光经济：起始 75 / 上限 9990 / 每 12s 产 25（§7，2026-11-07 提速 ×2）', () => {
+    expect(SUN).toEqual({ start: 75, cap: 9990, produce_amount: 25, produce_interval_s: 12 })
   })
 
   it('棋盘 5×9，出怪点在网格外右侧、失败线在左侧', () => {

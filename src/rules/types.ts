@@ -112,6 +112,7 @@ export type Event =
   | { type: 'filled'; slot: number }
   | { type: 'armed'; plantId: string }
   | { type: 'wrong'; tileId: number }
+  | { type: 'hint_ladder'; level: 1 | 2 }
   | { type: 'placed'; plantId: string; lane: number; col: number }
   | { type: 'focus_advanced' }
   | { type: 'sun_gained'; amount: number }

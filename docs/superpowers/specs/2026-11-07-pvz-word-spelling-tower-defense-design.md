@@ -230,7 +230,7 @@ submit(state, tileId, now) -> { state', events: Event[] }
 rules/
   cards.ts      手牌队列 + 焦点卡 + 激活→可放置→已种植（§4.5）
   wordgen.ts    字母块生成（§6.2），种子化 RNG 注入
-  economy.ts    阳光产出/消耗/上限：producer 每 24 s 产 25，起始 75，上限 9990
+  economy.ts    阳光产出/消耗/上限：producer 每 12 s 产 25，起始 75，上限 9990
   combat.ts     lane 内 x 递减、取同 lane 最近目标、啃食与碰撞
   waves.ts      时间轴调度 {t, zombie, count, lanes[], flag}，支持大波标记
   speechJudge.ts 语音文本匹配（§8）

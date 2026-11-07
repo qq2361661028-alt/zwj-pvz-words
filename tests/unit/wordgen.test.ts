@@ -41,4 +41,52 @@ describe('D9 干扰字母', () => {
     const idx = tiles.findIndex((t) => t.letter === 'm')
     expect(multisetSelfCheck(tiles.filter((_, i) => i !== idx), 'milk')).toBe(false)
   })
+
+  it('易混字母表优先：coffee 的干扰项先取 k 与 v', () => {
+    const word: WordDef = { ...of('w_coffee'), distractor_overrides: [] }
+    const picked = chooseDistractors(word, randOf(word.id), Object.values(CTX.words))
+    expect(picked.slice(0, 2)).toEqual(['k', 'v'])
+  })
+
+  it('自动干扰项不重复本题字母（手工 override 除外）', () => {
+    for (const word of Object.values(CTX.words)) {
+      const auto: WordDef = { ...word, distractor_overrides: [] }
+      const picked = chooseDistractors(auto, randOf(auto.id), Object.values(CTX.words))
+      for (const ch of picked) expect(auto.word).not.toContain(ch)
+    }
+  })
+
+  it('同 grade/unit 高频字母优先于英语频率兜底', () => {
+    const mk = (id: string, word: string): WordDef => ({
+      id,
+      word,
+      zh: '',
+      ipa: '',
+      grade: 4,
+      unit: 'Unit 3',
+      letters: word.length,
+      distractor_overrides: []
+    })
+    const word = mk('w_yyy', 'yyy')
+    const vocab = [mk('w_q1', 'qqq'), mk('w_q2', 'qqq'), mk('w_x1', 'xxx')]
+    const picked = chooseDistractors(word, randOf('w_yyy'), vocab)
+    expect(new Set(picked)).toEqual(new Set(['q', 'x']))
+  })
+
+  it('数量达标、互不重复，且带 vocab 时多重集合仍可拼出目标词', () => {
+    const vocab = Object.values(CTX.words)
+    for (const word of vocab) {
+      const picked = chooseDistractors(word, randOf(word.id), vocab)
+      expect(picked).toHaveLength(distractorCount(word.word.length))
+      expect(new Set(picked).size).toBe(picked.length)
+      expect(multisetSelfCheck(buildTiles(word, randOf(word.id), 0, vocab), word.word)).toBe(true)
+    }
+  })
+
+  it('同一配对 + 同一词库两次生成完全一致', () => {
+    const vocab = Object.values(CTX.words)
+    const a = buildTiles(of('w_broccoli'), randOf('w_broccoli'), 0, vocab)
+    const b = buildTiles(of('w_broccoli'), randOf('w_broccoli'), 0, vocab)
+    expect(a).toEqual(b)
+  })
 })

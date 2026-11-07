@@ -1,3 +1,4 @@
+import { hintedTileIds } from '../rules/cards'
 import type { Card, WordDef } from '../rules/types'
 
 type Props = {
@@ -31,6 +32,7 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
 
   const armed = card.status === 'armed'
   const target = card.slots[card.filled]
+  const hinted = new Set(hintedTileIds(card))
 
   return (
     <div key={shakeKey} className={`wordpanel ${shakeKey ? 'is-shaking' : ''}`}>
@@ -39,7 +41,7 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
           {armed ? '拼好啦！' : '拼出这个单词'}
         </span>
         <span className="wordpanel__zh">{word.zh}</span>
-        <span className="wordpanel__ipa">{word.ipa}</span>
+        <span className={`wordpanel__ipa ${card.ladderLevel >= 1 ? 'is-hint' : ''}`}>{word.ipa}</span>
         <button type="button" className="wordpanel__hint" onClick={onCollapse} style={{ cursor: 'pointer' }}>
           收起 ▾
         </button>
@@ -70,7 +72,8 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
               className={[
                 'wtile',
                 tile.used ? 'is-used' : '',
-                cooling ? 'is-disabled' : ''
+                cooling ? 'is-disabled' : '',
+                hinted.has(tile.tileId) ? 'is-hint' : ''
               ].join(' ')}
               disabled={tile.used || cooling || armed}
               onClick={() => onTile(tile.tileId)}
@@ -90,7 +93,11 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
             : `第 ${Math.min(card.filled + 1, card.slots.length)} / ${card.slots.length} 个字母`}
         </span>
         <span className={card.wrongStreak > 0 ? 'bad' : ''}>
-          {card.wrongStreak > 0 ? `连错 ${card.wrongStreak} 次，别急` : target ? '按顺序点字母块' : ''}
+          {card.assisted
+            ? '已用提示'
+            : card.wrongStreak > 0
+              ? `连错 ${card.wrongStreak} 次，别急`
+              : target ? '按顺序点字母块' : ''}
         </span>
       </div>
     </div>

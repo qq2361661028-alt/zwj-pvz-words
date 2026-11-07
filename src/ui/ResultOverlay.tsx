@@ -6,6 +6,7 @@ type Props = {
   time: number
   placed: number
   wrong: number
+  assisted: number
   onRetry: () => void
   onHome: () => void
 }
@@ -16,7 +17,7 @@ const COPY = {
   abandoned: { title: '先歇一会儿', sub: '已退出本关，成绩不计入错词', bad: false }
 } as const
 
-export function ResultOverlay({ outcome, time, placed, wrong, onRetry, onHome }: Props) {
+export function ResultOverlay({ outcome, time, placed, wrong, assisted, onRetry, onHome }: Props) {
   const copy = COPY[outcome]
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-label={copy.title}>
@@ -32,6 +33,10 @@ export function ResultOverlay({ outcome, time, placed, wrong, onRetry, onHome }:
           <span className="result__stat">
             <b>{placed}</b>
             <span>种下植物</span>
+          </span>
+          <span className="result__stat">
+            <b>{assisted}</b>
+            <span>用了提示</span>
           </span>
           <span className="result__stat">
             <b>{wrong}</b>

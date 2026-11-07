@@ -732,3 +732,20 @@
   0%, 100% { opacity: 0.35; }
   50% { opacity: 0.85; }
 }
+
+/* —— §6.4 求助阶梯 —— */
+.wordpanel__ipa.is-hint {
+  color: #ffe066;
+  text-shadow: 0 0 12px rgba(255, 224, 102, 0.55);
+  animation: ipa-pulse 1.2s ease-in-out infinite;
+}
+
+.wtile.is-hint {
+  outline: 3px solid #ffd34d;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(255, 211, 77, 0.28), 0 6px 0 #9a6b1a;
+}
+
+@keyframes ipa-pulse {
+  50% { opacity: 0.55; }
+}

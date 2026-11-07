@@ -35,27 +35,29 @@ describe('D16 阳光收支', () => {
       plant({ uid: 2, plantId: 'bush', nextProduceAt: 0 }),
       plant({ uid: 3, plantId: 'slinger', nextProduceAt: 0 })
     ]
-    const early = tickProducers(plants, CTX.plants, 23.9, 0)
+    const dueAt = SUN.produce_interval_s
+    const early = tickProducers(plants, CTX.plants, dueAt - 0.1, 0)
     expect(early.gained).toBe(0)
     expect(early.sun).toBe(0)
-    const due = tickProducers(plants, CTX.plants, 24, 0)
+    const due = tickProducers(plants, CTX.plants, dueAt, 0)
     expect(due.gained).toBe(SUN.produce_amount)
-    expect(due.plants[0].nextProduceAt).toBe(24 + SUN.produce_interval_s)
+    expect(due.plants[0].nextProduceAt).toBe(dueAt * 2)
     expect(due.plants[1]).toBe(plants[1])
     expect(due.plants[2]).toBe(plants[2])
   })
 
   it('多个 producer 同时到点各产一次；长步长也不会一 tick 补多次', () => {
-    const plants = [plant({ uid: 1 }), plant({ uid: 2, nextProduceAt: 24 })]
-    const due = tickProducers(plants, CTX.plants, 24, 0)
+    const dueAt = SUN.produce_interval_s
+    const plants = [plant({ uid: 1 }), plant({ uid: 2, nextProduceAt: dueAt })]
+    const due = tickProducers(plants, CTX.plants, dueAt, 0)
     expect(due.gained).toBe(50)
-    expect(due.plants.map((p) => p.nextProduceAt)).toEqual([48, 48])
+    expect(due.plants.map((p) => p.nextProduceAt)).toEqual([dueAt * 2, dueAt * 2])
     const jump = tickProducers([plant({ uid: 1 })], CTX.plants, 1000, 0)
     expect(jump.gained).toBe(25)
   })
 
   it('满仓时 gained 为 0，不溢出', () => {
-    const r = tickProducers([plant({ uid: 1 })], CTX.plants, 24, SUN.cap)
+    const r = tickProducers([plant({ uid: 1 })], CTX.plants, SUN.produce_interval_s, SUN.cap)
     expect(r.gained).toBe(0)
     expect(r.sun).toBe(SUN.cap)
   })

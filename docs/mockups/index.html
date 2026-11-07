@@ -61,7 +61,7 @@
     <tr><td>§6.4 / D13</td><td>连错 2 → L1 音标+朗读；连错 4 → L2 高亮正确块并置 assisted。02 默认关闭（属 M1），勾选 <b>M1 阶梯</b> 可看</td><td>03（02 可选）</td></tr>
     <tr><td>§6.5</td><td>peashooter（10 字母）走 dormant 降级；转移表里 dormant <b>只有这一个来源</b></td><td>03</td></tr>
     <tr><td>D14</td><td>1280×720 固定画幅 + <code>scale()</code> 模拟 Scale.FIT；窗口缩到 960×600 以下仍可等比看</td><td>全部</td></tr>
-    <tr><td>D16</td><td>HUD 里阳光只随 sprout 的 24s 周期增长，填对不加 1 点</td><td>02</td></tr>
+    <tr><td>D16</td><td>HUD 里阳光只随 sprout 的 12s 周期增长，填对不加 1 点</td><td>02</td></tr>
     <tr><td>D17</td><td>面板打开时 HUD 出现「×0.85」标记且僵尸<b>仍在走</b>；03 页可切全暂停对照</td><td>02 / 03</td></tr>
     <tr><td>D18</td><td>累加器固定 1/30s 步进，演示速度 1×/2×/4× 不改变逻辑步长；角标实时显示</td><td>02 / 03</td></tr>
     <tr><td>§4.5</td><td>转移表 + <code>console.assert</code>：打开 DevTools 若出现未列出的转移会直接报错</td><td>02</td></tr>
@@ -112,7 +112,7 @@
   <h2>原型跑出来的一个设计缺口（建议回写进文档）</h2>
   <div style="background:#fff;border-left:4px solid #c04a3f;border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:#23262b;line-height:1.8">
     <b>D16 + D7 叠加会起步死锁。</b>
-    D16 规定阳光<b>只</b>由已激活的 <code>producer</code> 产出（起始 75，producer 每 24s 产 25）；D7 又强制<b>只能填最左那张</b>。
+    D16 规定阳光<b>只</b>由已激活的 <code>producer</code> 产出（起始 75，producer 每 12s 产 25）；D7 又强制<b>只能填最左那张</b>。
     于是：若词序的第一张卡映射到 cost &gt; 75 的非 producer 植物（例如 peashooter 100），玩家既无法跳过它，也没有任何阳光来源——
     填得再对也种不下去，且这不是数值调平问题，是<b>可达性</b>问题。
     <br>原型里已把它固化成校验：<code>01</code> 页门禁表最后一行「反例：peashooter 打头 → 死锁」，<code>02</code> 的词序已改为 sunflower(→sprout 50) 打头。
