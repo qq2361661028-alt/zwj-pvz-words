@@ -19,6 +19,8 @@ import { Hud } from './Hud'
 import { PerfOverlay } from './PerfOverlay'
 import { ResultOverlay } from './ResultOverlay'
 import { sfxForEvent } from './sfx'
+import { gameTrack } from './bgm'
+import { useBgm } from './useBgm'
 import { WordPanel } from './WordPanel'
 import { House, Sky } from './scenery/Scenery'
 import './game.css'
@@ -48,6 +50,8 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const [provider] = useState(() => createSpeechProvider())
   const [availability, setAvailability] = useState<SpeechAvailability>(() => provider.available())
   const [listening, setListening] = useState(false)
+
+  useBgm(gameTrack(state.outcome))
 
   useEffect(() => {
     const save = { ...saveRef.current, last_played: todayString() }

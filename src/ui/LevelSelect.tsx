@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { CharacterArt } from '../art/CharacterArt'
 import { LockIcon, StarIcon } from '../art/Icons'
 import { CTX } from '../content'
+import { levelsTrack } from './bgm'
 import { CodexOverlay, type CodexTab } from './CodexOverlay'
 import { GrassTufts, House, Sky } from './scenery/Scenery'
 import { SettingsOverlay } from './SettingsOverlay'
+import { useBgm } from './useBgm'
 import './level.css'
 
 type Props = { onStart: (levelId: string) => void }
@@ -18,6 +20,7 @@ const SOON = [
 export function LevelSelect({ onStart }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [codexTab, setCodexTab] = useState<CodexTab | null>(null)
+  useBgm(levelsTrack(settingsOpen, codexTab !== null))
   const levels = Object.values(CTX.levels)
   const first = levels[0]
 

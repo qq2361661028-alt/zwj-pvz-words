@@ -8,6 +8,7 @@ describe('词统计与 assisted 记账', () => {
     expect(save.settings).toEqual({
       speech_enabled: true,
       sound_enabled: true,
+      music_enabled: true,
       penalty_disable_ms: 2000
     })
   })

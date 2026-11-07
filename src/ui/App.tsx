@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { music } from '../platform/music'
+import { loadSave } from '../platform/save'
 import { GameScreen } from './GameScreen'
 import { LevelSelect } from './LevelSelect'
 import { VIEW } from './layout'
@@ -29,7 +31,22 @@ function useStageScale(): number {
 
 export default function App() {
   const [route, setRoute] = useState<Route>({ screen: 'levels' })
+  useState(() => {
+    const save = loadSave()
+    music.setEnabled(save.settings.music_enabled)
+    return save
+  })
   const scale = useStageScale()
+
+  useEffect(() => {
+    const unlock = () => music.unlock()
+    window.addEventListener('pointerdown', unlock, { once: true })
+    window.addEventListener('keydown', unlock, { once: true })
+    return () => {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+    }
+  }, [])
 
   return (
     <div className="viewport">

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { SaveData } from '../rules/stats'
 import { loadSave, persistSave } from '../platform/save'
+import { music } from '../platform/music'
 import { Button } from './Button'
 
 type Props = { onClose: () => void }
@@ -16,6 +17,11 @@ export function SettingsOverlay({ onClose }: Props) {
 
   const toggleSpeech = () => patch({ speech_enabled: !save.settings.speech_enabled })
   const toggleSound = () => patch({ sound_enabled: !save.settings.sound_enabled })
+  const toggleMusic = () => {
+    const value = !save.settings.music_enabled
+    patch({ music_enabled: value })
+    music.setEnabled(value)
+  }
   const setPenalty = (ms: number) => patch({ penalty_disable_ms: ms })
 
   return (
@@ -50,6 +56,21 @@ export function SettingsOverlay({ onClose }: Props) {
             onClick={toggleSound}
           >
             {save.settings.sound_enabled ? '已开启' : '已关闭'}
+          </button>
+        </div>
+
+        <div className="settings__row">
+          <div>
+            <div className="settings__label">背景音乐</div>
+            <div className="settings__sub">关卡、战斗、图鉴和结算界面的循环配乐</div>
+          </div>
+          <button
+            type="button"
+            className={`settings__toggle ${save.settings.music_enabled ? 'is-on' : ''}`}
+            aria-pressed={save.settings.music_enabled}
+            onClick={toggleMusic}
+          >
+            {save.settings.music_enabled ? '已开启' : '已关闭'}
           </button>
         </div>
 

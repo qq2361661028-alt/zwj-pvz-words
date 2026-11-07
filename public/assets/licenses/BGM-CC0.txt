@@ -1,0 +1,58 @@
+背景音乐（BGM）来源与许可
+================================
+
+本项目 public/assets/audio/bgm/ 下的 6 首循环背景音乐全部来自 OpenGameArt.org 的
+CC0（公共领域贡献）曲目。CC0 允许复制、修改、分发和商业使用，无需署名；
+以下信息出于礼貌与可追溯性保留。
+
+曲目清单
+--------
+
+1. levels.mp3 —— 关卡选择界面
+   曲名：Stage Select
+   作者：Juhani Junkala（SubspaceAudio）
+   来源：https://opengameart.org/content/4-chiptunes-adventure
+   许可：CC0 1.0
+   处理：完整曲目 21.3s，转单声道 MP3 56kbps，均值约 -20 dB。
+
+2. game.mp3 —— 战斗界面
+   曲名：Level 1
+   作者：Juhani Junkala（SubspaceAudio）
+   来源：https://opengameart.org/content/5-chiptunes-action
+   许可：CC0 1.0
+   处理：截取 0–32s 循环段，转单声道 MP3 64kbps，均值约 -19 dB。
+
+3. codex.mp3 —— 图鉴界面
+   曲名：Town Theme
+   作者：cynicmusic
+   来源：https://opengameart.org/content/town-theme-rpg
+   许可：CC0 1.0
+   处理：截取 0–30s 循环段，转单声道 MP3 48kbps，均值约 -19 dB。
+
+4. settings.mp3 —— 设置界面
+   曲名：Title Screen
+   作者：Juhani Junkala（SubspaceAudio）
+   来源：https://opengameart.org/content/5-chiptunes-action
+   许可：CC0 1.0
+   处理：完整曲目 11.3s，转单声道 MP3 56kbps，均值约 -19 dB。
+
+5. win.mp3 —— 通关结算
+   曲名：Ending
+   作者：Juhani Junkala（SubspaceAudio）
+   来源：https://opengameart.org/content/5-chiptunes-action
+   许可：CC0 1.0
+   处理：截取 0–24s，转单声道 MP3 64kbps，均值约 -19 dB。
+
+6. lose.mp3 —— 失败结算
+   曲名：Tragic Ambient Main Menu
+   作者：brandon75689
+   来源：https://opengameart.org/content/tragic-ambient-main-menu
+   许可：CC0 1.0（原曲同时提供 OGA-BY 3.0，本项目按 CC0 使用）
+   处理：截取 12–42s 循环段，转单声道 MP3 48kbps，均值约 -19 dB。
+
+说明
+----
+
+- 所有曲目在运行时以 HTMLAudio 循环播放，音量 0.16，进入时 300ms 淡入。
+- 仅做了裁剪、单声道转换、MP3 编码与响度归一化，未改变旋律内容。
+- 这些曲目均为独立素材，不包含任何《植物大战僵尸》或 PopCap/EA 相关内容。

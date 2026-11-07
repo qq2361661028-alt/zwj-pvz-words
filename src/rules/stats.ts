@@ -21,7 +21,12 @@ export type SaveData = {
   last_played: string
   word_stats: Record<string, WordStat>
   levels: Record<string, LevelStat>
-  settings: { speech_enabled: boolean; sound_enabled: boolean; penalty_disable_ms: number }
+  settings: {
+    speech_enabled: boolean
+    sound_enabled: boolean
+    music_enabled: boolean
+    penalty_disable_ms: number
+  }
 }
 
 const emptyStat = (): WordStat => ({
@@ -42,6 +47,7 @@ export function emptySave(lastPlayed = ''): SaveData {
     settings: {
       speech_enabled: true,
       sound_enabled: true,
+      music_enabled: true,
       penalty_disable_ms: RULES.penalty_disable_ms
     }
   }
@@ -119,6 +125,8 @@ export function migrateSave(raw: unknown): SaveData {
         typeof raw.settings.speech_enabled === 'boolean' ? raw.settings.speech_enabled : true,
       sound_enabled:
         typeof raw.settings.sound_enabled === 'boolean' ? raw.settings.sound_enabled : true,
+      music_enabled:
+        typeof raw.settings.music_enabled === 'boolean' ? raw.settings.music_enabled : true,
       penalty_disable_ms: PENALTY_OPTIONS.includes(
         raw.settings.penalty_disable_ms as 0 | 1000 | 2000
       )

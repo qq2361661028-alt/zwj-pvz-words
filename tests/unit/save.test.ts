@@ -61,6 +61,7 @@ describe('D19 存档 v1', () => {
     expect(save.settings).toEqual({
       speech_enabled: false,
       sound_enabled: true,
+      music_enabled: true,
       penalty_disable_ms: 0
     })
     expect(save.word_stats.w_milk.correct).toBe(2)
@@ -70,14 +71,16 @@ describe('D19 存档 v1', () => {
   it('v2 保留 sound_enabled=false，非法值回落 true', () => {
     const off = migrateSave({
       v: 2,
-      settings: { speech_enabled: true, sound_enabled: false, penalty_disable_ms: 2000 }
+      settings: { speech_enabled: true, sound_enabled: false, music_enabled: false, penalty_disable_ms: 2000 }
     })
     expect(off.settings.sound_enabled).toBe(false)
+    expect(off.settings.music_enabled).toBe(false)
     const bad = migrateSave({
       v: 2,
-      settings: { speech_enabled: true, sound_enabled: 'no', penalty_disable_ms: 2000 }
+      settings: { speech_enabled: true, sound_enabled: 'no', music_enabled: 'no', penalty_disable_ms: 2000 }
     })
     expect(bad.settings.sound_enabled).toBe(true)
+    expect(bad.settings.music_enabled).toBe(true)
   })
 
   it('penalty_disable_ms 只接受 0 / 1000 / 2000，越界回落 2000', () => {
