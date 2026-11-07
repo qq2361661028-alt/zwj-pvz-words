@@ -60,6 +60,16 @@ describe('O2 错词惩罚', () => {
     ])
   })
 
+  it('O2 可配置：冻结时长来自调用方', () => {
+    const s = game()
+    const card = focusCard(s.cards)!
+    const bad = card.tiles.find((t) => t.letter !== card.slots[0])!
+    const oneSecond = submit(s.cards, bad.tileId, 10, 1000)
+    expect(oneSecond.cards[0].tiles.find((t) => t.tileId === bad.tileId)!.disabledUntil).toBe(11)
+    const zero = submit(s.cards, bad.tileId, 10, 0)
+    expect(zero.cards[0].tiles.find((t) => t.tileId === bad.tileId)!.disabledUntil).toBe(10)
+  })
+
   it('填对后 wrongStreak 清零，wrongTotal 保留', () => {
     const s = game()
     const card = focusCard(s.cards)!

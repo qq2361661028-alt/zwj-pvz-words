@@ -5,7 +5,7 @@ import { sunEvents, tickProducers } from './economy'
 import { createHand } from './cards'
 import type { Ctx, Event, GameState, StepResult, Zombie } from './types'
 
-export function newGame(levelId: string, ctx: Ctx): GameState {
+export function newGame(levelId: string, ctx: Ctx, penaltyMs: number = RULES.penalty_disable_ms): GameState {
   const level = ctx.levels[levelId]
   if (!level) throw new Error(`newGame: 关卡不存在 ${levelId}`)
   const hand = createHand(level.deckIds, ctx)
@@ -20,7 +20,8 @@ export function newGame(levelId: string, ctx: Ctx): GameState {
     zombies: [],
     spawned: 0,
     panelOpen: false,
-    outcome: null
+    outcome: null,
+    penaltyMs
   }
 }
 

@@ -22,7 +22,7 @@ export function plantingReject(state: GameState, lane: number, col: number, ctx:
 
 export function onTileClick(state: GameState, tileId: number, _ctx: Ctx): StepResult {
   if (state.outcome) return { state, events: [] }
-  const r = submit(state.cards, tileId, state.t)
+  const r = submit(state.cards, tileId, state.t, state.penaltyMs)
   if (!r.events.length) return { state, events: [] }
   return { state: { ...state, cards: r.cards }, events: r.events }
 }

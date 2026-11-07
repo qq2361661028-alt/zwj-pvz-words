@@ -145,6 +145,8 @@ export type GameState = {
   spawned: number
   panelOpen: boolean
   outcome: Outcome | null
+  /** 错字母块禁用时长（毫秒），来自存档设置（O2） */
+  penaltyMs: number
 }
 
 export type StepResult = {

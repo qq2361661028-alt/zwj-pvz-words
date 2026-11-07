@@ -33,7 +33,10 @@ const ZOMBIE_VARIANT: Record<string, ZombieVariant> = {
 
 export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const level = CTX.levels[levelId]
-  const [state, setState] = useState<GameState>(() => newGame(levelId, CTX))
+  const [initialSave] = useState(() => loadSave())
+  const [state, setState] = useState<GameState>(() =>
+    newGame(levelId, CTX, initialSave.settings.penalty_disable_ms)
+  )
   const stateRef = useRef(state)
   const accRef = useRef(createAccumulator())
   const [toasts, setToasts] = useState<Toast[]>([])
@@ -43,7 +46,6 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const toastSeq = useRef(0)
   const deltaSeq = useRef(0)
   const autoOpened = useRef<number | null>(null)
-  const [initialSave] = useState(() => loadSave())
   const saveRef = useRef<SaveData>(initialSave)
   const assistedRef = useRef(0)
   const voicedRef = useRef(0)

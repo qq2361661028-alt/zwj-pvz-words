@@ -49,7 +49,12 @@ export function findTile(cards: readonly Card[], tileId: number): { cardIndex: n
   return undefined
 }
 
-export function submit(cards: readonly Card[], tileId: number, now: number): { cards: Card[]; events: Event[] } {
+export function submit(
+  cards: readonly Card[],
+  tileId: number,
+  now: number,
+  penaltyMs: number = RULES.penalty_disable_ms
+): { cards: Card[]; events: Event[] } {
   const hit = findTile(cards, tileId)
   const out = cards.map((c) => ({ ...c, tiles: c.tiles.map((t) => ({ ...t })) }))
   if (!hit) return { cards: out, events: [] }
@@ -74,7 +79,7 @@ export function submit(cards: readonly Card[], tileId: number, now: number): { c
       events.push({ type: 'armed', plantId: card.plantId })
     }
   } else {
-    tile.disabledUntil = now + RULES.penalty_disable_ms / 1000   // O2
+    tile.disabledUntil = now + penaltyMs / 1000
     card.wrongTotal += 1
     card.wrongStreak += 1
     events.push({ type: 'wrong', tileId })

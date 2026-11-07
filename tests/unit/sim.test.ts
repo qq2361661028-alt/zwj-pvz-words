@@ -19,6 +19,11 @@ describe('开局', () => {
     expect(s.panelOpen).toBe(false)
   })
 
+  it('newGame 接受冻结时长并写入状态', () => {
+    expect(newGame(M0_LEVEL_ID, CTX).penaltyMs).toBe(2000)
+    expect(newGame(M0_LEVEL_ID, CTX, 0).penaltyMs).toBe(0)
+  })
+
   it('未知关卡抛错', () => {
     expect(() => newGame('nope', CTX)).toThrow(/关卡不存在/)
   })
