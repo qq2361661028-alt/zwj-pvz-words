@@ -37,6 +37,7 @@ Style: hand-painted gouache texture, clean thick dark-brown outlines, soft cel s
 
 - `bush.png`：第一、二版受参考图影响带金色花苞，改为纯文生图并强调“全绿叶、无金色花苞、无发光花、无果实”后通过。
 - `clover.png`：第一版头部为圆形、丢失三叶特征，重生成并强调“三片心形叶组成头部”后通过。
+- `slinger.png`：保留了暖金色花苞头作为植物家族的统一特征，脸部在花苞上而非初始提示词所说的“主藤上的脸”；喇叭果与盘藤仍构成明确的发射者轮廓，按已确认的家族风格保留。
 
 ## 僵尸锚图：z_basic
 
@@ -54,13 +55,23 @@ Style: hand-painted gouache texture, clean thick dark-brown outlines, soft cel s
 | `z_bucket.png` | The same wanderer wearing a dented silver metal bucket as a helmet. |
 | `z_flag.png` | The same wanderer holding a small tattered red pennant on a wooden stick. |
 
+## 抠图管线
+
+`scripts/matting.py` 的处理顺序：
+
+1. 从画布四边所有近白像素出发做连通域泛洪，去掉与边界相连的白色背景。
+2. 检测闭合轮廓内的细长纯白区域（例如 `slinger` 盘藤圈内孔），将其并回背景；圆形小块（眼睛高光）保持不透明。
+3. 对背景边缘 2px 内的浅色像素按“离白色的距离”计算软 alpha，避免硬切边。
+4. 从透明边界向内逐层清除低饱和亮色（奶白/白）光晕，只作用于深色描边外侧，不触碰角色内部高光。
+5. 对 alpha 做 3×3 最小值滤波与 0.6px 高斯羽化，再裁切、居中、留 6% 边距，生成 `s=96 / c=128 / l=256` 三档。
+
 ## 接触表复核结论
 
-复核对象：`art-source/plants-sheet.png`、`art-source/zombies-sheet.png`。
+复核对象：`art-source/plants-sheet.png`、`art-source/zombies-sheet.png`；另在草坪绿底上放大检查 `sprout_s`、`slinger_l`。
 
-- 白边：抠图后白色背景全部清除，边缘保留 1px 内缩与轻微羽化，未见明显白边。
-- 比例：12 个角色统一为正方形画布，角色占画面约 88%，底部留白一致。
+- 白边：白色背景已清除；`sprout` 锚图的暖光晕在绿底上曾出现奶白硬边，升级管线后已消除；`slinger` 盘藤闭环内的白底块已并入透明区域。
+- 比例：12 个角色统一为正方形画布，最长边约占 91–94%，短边 57–91%，底部留白逐档一致。
 - 朝向：均朝右或右侧三分之四视角，与子弹/前进方向一致。
-- 轮廓区分度：8 株植物在 96px 缩略下仍可凭轮廓区分（花苞、喇叭藤、三叶、盾状蕨、绒苔、蓟球、荆棘藤、灌木）。
-- 影射检查：未发现与任何既有游戏角色相似的形象；无血迹、伤口、文字或水印。
+- 轮廓区分度：8 株植物在 96px 缩略下仍可凭轮廓区分（花苞、喇叭藤、三叶、盾状蕨、绒苔、蓟球、荆棘藤、灌木）；4 个漫游者在 96px 下可凭帽子/旗帜区分。`bush` 的眼睛在 96px 下对比度偏低，属可接受损失。
+- 影射检查：未发现与任何既有游戏角色相似的形象；无血迹、伤口、文字或水印。锥帽/铁桶/旗帜仅为通用道具语义，形象、配色与构图均为原创。
 - 三档尺寸由同一母版 LANCZOS 缩放：`s=96`、`c=128`、`l=256`。
