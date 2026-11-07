@@ -102,6 +102,16 @@ describe('射手', () => {
     expect(r.events).toEqual([{ type: 'zombie_died' }])
   })
 
+  it('语音 buff 内 dps ×1.25，到期立刻恢复', () => {
+    const buffed = slinger({ buffUntil: 10 })
+    expect(fireShooters([buffed], [zombie({ x: 5 })], CTX.plants, 1, 5).zombies[0].hp)
+      .toBe(100 - 30 * 1.25)
+    expect(fireShooters([buffed], [zombie({ x: 5 })], CTX.plants, 1, 10).zombies[0].hp)
+      .toBe(100 - 30)
+    expect(fireShooters([slinger()], [zombie({ x: 5 })], CTX.plants, 1, 5).zombies[0].hp)
+      .toBe(100 - 30)
+  })
+
   it('nearestZombie 只认右侧', () => {
     expect(nearestZombie([zombie({ x: 0.5 })], 0, 1)).toBeUndefined()
     expect(nearestZombie([zombie({ uid: 1, x: 7 }), zombie({ uid: 2, x: 4 })], 0, 1)!.uid).toBe(2)

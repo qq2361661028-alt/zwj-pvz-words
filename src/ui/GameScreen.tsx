@@ -6,6 +6,9 @@ import { cellRect, laneToPx, xToPx } from './layout'
 import { createAccumulator, newGame, tick } from '../rules/sim'
 import { focusCard } from '../rules/cards'
 import { onCellClick, onExit, onTileClick, plantingReject, setPanelOpen } from '../rules/play'
+import { AVAILABILITY_REASON, type SpeechAvailability } from '../rules/speechJudge'
+import { grantVoicePass } from '../rules/voice'
+import { createSpeechProvider } from '../platform/speechRecognition'
 import { speakWord } from '../platform/speech'
 import { loadSave, persistSave, todayString } from '../platform/save'
 import { recordWordResult, type SaveData } from '../rules/stats'
@@ -43,12 +46,24 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const [initialSave] = useState(() => loadSave())
   const saveRef = useRef<SaveData>(initialSave)
   const assistedRef = useRef(0)
+  const voicedRef = useRef(0)
+  const [provider] = useState(() => createSpeechProvider())
+  const [availability, setAvailability] = useState<SpeechAvailability>(() => provider.available())
+  const [listening, setListening] = useState(false)
 
   useEffect(() => {
     const save = { ...saveRef.current, last_played: todayString() }
     saveRef.current = save
     persistSave(save)
   }, [])
+
+  useEffect(() => {
+    let alive = true
+    provider.refreshPermission?.().then((a) => {
+      if (alive) setAvailability(a)
+    }).catch(() => {})
+    return () => { alive = false }
+  }, [provider])
 
   const record = useCallback((kind: 'correct' | 'wrong' | 'assisted', wordId: string) => {
     const next = recordWordResult(saveRef.current, wordId, kind, stateRef.current.t)
@@ -91,6 +106,9 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
         pushToast('拼好啦！点草坪种下去')
       } else if (e.type === 'plant_died') {
         pushToast('一株植物被啃掉了…', true)
+      } else if (e.type === 'voice_buff') {
+        voicedRef.current += 1
+        pushToast('语音加成生效：攻击 ×1.25')
       } else if (e.type === 'outcome' && e.kind === 'cleared') {
         pushToast('僵尸清空了！')
       }
@@ -174,6 +192,38 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
     commit(r.state, r.events)
   }
 
+  const onVoice = async () => {
+    const card = focusCard(stateRef.current.cards)
+    if (!card || card.voiceBuffed || card.status === 'placed' || card.status === 'dormant') return
+    const word = CTX.words[card.wordId]
+    setListening(true)
+    const result = await provider.recognize(word.word, { timeoutMs: 8000 })
+    setListening(false)
+    const av = provider.available()
+    setAvailability(av)
+
+    const current = stateRef.current.cards.find((c) => c.instanceId === card.instanceId)
+    if (!current || current.status === 'placed' || current.status === 'dormant') return
+
+    if (result.verdict === 'pass') {
+      const next = grantVoicePass(stateRef.current, card.instanceId)
+      if (next !== stateRef.current) {
+        stateRef.current = next
+        setState(next)
+      }
+      pushToast('读得真好！这株植物的加成备好了')
+    } else if (result.verdict === 'no_speech') {
+      pushToast('没听清，再试一次')
+    } else if (result.verdict === 'fail') {
+      record('wrong', card.wordId)
+      pushToast('再读一遍试试', true)
+    } else if (av === 'denied') {
+      pushToast(AVAILABILITY_REASON.denied, true)
+    } else {
+      pushToast('语音没连上，再试一次', true)
+    }
+  }
+
   const exit = () => {
     const r = onExit(stateRef.current)
     commit(r.state, r.events)
@@ -220,10 +270,11 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
         {state.plants.map((p) => {
           const Art = PLANT_ART[p.plantId as keyof typeof PLANT_ART]
           const r = cellRect(p.lane, p.col)
+          const buffed = p.buffUntil !== undefined && p.buffUntil > state.t
           return (
             <span
               key={p.uid}
-              className="placed"
+              className={['placed', buffed ? 'is-buffed' : ''].join(' ')}
               style={{ left: r.x + (r.w - 78) / 2, top: r.y + (r.h - 78) / 2 }}
             >
               {Art ? <Art size={78} /> : null}
@@ -304,6 +355,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
               now={state.t}
               plantName={focusPlant.name}
               shakeKey={shakeKey}
+              voice={{ availability, listening, onVoice }}
               onTile={onTile}
               onCollapse={() => openPanel(false)}
               onReopen={() => openPanel(true)}
@@ -330,6 +382,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
           placed={placedCount}
           wrong={wrongRef.current}
           assisted={assistedRef.current}
+          voiced={voicedRef.current}
           onRetry={onRetry}
           onHome={onHome}
         />

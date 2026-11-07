@@ -160,12 +160,27 @@
 .levels__foot {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 18px;
   margin-top: 18px;
   font-size: 12px;
   font-weight: 800;
   color: #ffe9be;
   opacity: 0.8;
 }
+
+.levels__settings {
+  border: 2px solid rgba(255, 233, 190, 0.55);
+  border-radius: 999px;
+  background: rgba(40, 24, 8, 0.35);
+  color: #ffe9be;
+  font-size: 12px;
+  font-weight: 900;
+  padding: 4px 14px;
+  cursor: pointer;
+}
+
+.levels__settings:hover { background: rgba(40, 24, 8, 0.55); }
 
 /* —— 启动失败 —— */
 .boot-error {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { BOARD, RULES, SUN } from '../../src/rules/constants'
+import { BOARD, RULES, SPEECH_BUFF, SUN } from '../../src/rules/constants'
 
 describe('数值 token', () => {
   it('tick 与减速系数按文档原值，改动必须显式经过这里', () => {
@@ -13,6 +13,10 @@ describe('数值 token', () => {
 
   it('阳光经济：起始 75 / 上限 9990 / 每 12s 产 25（§7，2026-11-07 提速 ×2）', () => {
     expect(SUN).toEqual({ start: 75, cap: 9990, produce_amount: 25, produce_interval_s: 12 })
+  })
+
+  it('§8.4 语音加成数值固定', () => {
+    expect(SPEECH_BUFF).toEqual({ duration_s: 10, cooldown_s: 30, dps_multiplier: 1.25 })
   })
 
   it('棋盘 5×9，出怪点在网格外右侧、失败线在左侧', () => {

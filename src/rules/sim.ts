@@ -47,7 +47,7 @@ export function tick(state: GameState, dt: number, ctx: Ctx): StepResult {
   const adv = advanceZombies(zombies, state.plants, ctx.zombies, dt, slow)
   events.push(...adv.events)
 
-  const shot = fireShooters(adv.plants, adv.zombies, ctx.plants, dt)
+  const shot = fireShooters(adv.plants, adv.zombies, ctx.plants, dt, t)
   events.push(...shot.events)
 
   const eco = tickProducers(adv.plants, ctx.plants, t, state.sun)

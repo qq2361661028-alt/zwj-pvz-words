@@ -1,4 +1,5 @@
-import { BOARD } from './constants'
+import { BOARD, SPEECH_BUFF } from './constants'
+import { isVoiceBuffed } from './voice'
 import type { Event, Plant, PlantDef, Zombie, ZombieDef } from './types'
 
 export type AdvanceResult = {
@@ -59,7 +60,8 @@ export function fireShooters(
   plants: readonly Plant[],
   zombies: readonly Zombie[],
   pdefs: Record<string, PlantDef>,
-  dt: number
+  dt: number,
+  now = 0
 ): { zombies: Zombie[]; events: Event[] } {
   const hp: Record<number, number> = {}
   zombies.forEach((z) => { hp[z.uid] = z.hp })
@@ -67,7 +69,10 @@ export function fireShooters(
     const def = pdefs[p.plantId]
     if (def.slot !== 'shooter') continue
     const target = nearestZombie(zombies, p.lane, p.col)
-    if (target) hp[target.uid] -= def.dps * dt   // 持续伤害率，非单次（§4.2）
+    if (target) {
+      const multiplier = isVoiceBuffed(p, now) ? SPEECH_BUFF.dps_multiplier : 1
+      hp[target.uid] -= def.dps * dt * multiplier   // 持续伤害率，非单次（§4.2）
+    }
   }
   const events: Event[] = []
   const alive = zombies

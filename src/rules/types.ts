@@ -86,6 +86,8 @@ export type Card = {
   wrongStreak: number
   wrongTotal: number
   ladderLevel: number
+  /** 跟读通过：种下时挂 10 秒攻击加成 */
+  voiceBuffed: boolean
 }
 
 export type Plant = {
@@ -97,6 +99,10 @@ export type Plant = {
   maxhp: number
   /** 秒：下一次产阳光时刻；非 producer 无意义 */
   nextProduceAt: number
+  /** 秒：语音加成到期时刻；undefined = 从未加成 */
+  buffUntil?: number
+  /** 秒：同一株下次可加成的时刻（30s 冷却） */
+  voiceReadyAt?: number
 }
 
 export type Zombie = {
@@ -121,6 +127,7 @@ export type Event =
   | { type: 'zombie_spawned'; zombieId: string; lane: number }
   | { type: 'zombie_died' }
   | { type: 'plant_died'; plantId: string; lane: number; col: number }
+  | { type: 'voice_buff'; plantId: string; lane: number; col: number }
   | { type: 'outcome'; kind: Outcome }
 
 export type GameState = {

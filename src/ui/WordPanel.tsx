@@ -1,4 +1,5 @@
 import { hintedTileIds } from '../rules/cards'
+import { AVAILABILITY_REASON, type SpeechAvailability } from '../rules/speechJudge'
 import type { Card, WordDef } from '../rules/types'
 
 type Props = {
@@ -7,13 +8,29 @@ type Props = {
   now: number
   plantName: string
   shakeKey: number
+  voice: {
+    availability: SpeechAvailability
+    listening: boolean
+    onVoice: () => void
+  }
   onTile: (tileId: number) => void
   onCollapse: () => void
   onReopen: () => void
   open: boolean
 }
 
-export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onCollapse, onReopen, open }: Props) {
+export function WordPanel({
+  card,
+  word,
+  now,
+  plantName,
+  shakeKey,
+  voice,
+  onTile,
+  onCollapse,
+  onReopen,
+  open
+}: Props) {
   if (!open) {
     return (
       <div className="wordpanel wordpanel--closed">
@@ -33,6 +50,13 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
   const armed = card.status === 'armed'
   const target = card.slots[card.filled]
   const hinted = new Set(hintedTileIds(card))
+  const { availability, listening, onVoice } = voice
+  const voiceBlocked = availability !== 'ok'
+  const voiceNote = voiceBlocked
+    ? AVAILABILITY_REASON[availability]
+    : card.voiceBuffed
+      ? '语音加成已备好，种下就生效'
+      : ''
 
   return (
     <div key={shakeKey} className={`wordpanel ${shakeKey ? 'is-shaking' : ''}`}>
@@ -42,6 +66,27 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
         </span>
         <span className="wordpanel__zh">{word.zh}</span>
         <span className={`wordpanel__ipa ${card.ladderLevel >= 1 ? 'is-hint' : ''}`}>{word.ipa}</span>
+        <span className="wordpanel__voice">
+          <button
+            type="button"
+            className={[
+              'wordpanel__mic',
+              listening ? 'is-listening' : '',
+              card.voiceBuffed ? 'is-done' : ''
+            ].join(' ')}
+            disabled={voiceBlocked || listening || card.voiceBuffed || card.status === 'dormant'}
+            title={
+              voiceBlocked
+                ? AVAILABILITY_REASON[availability]
+                : card.voiceBuffed
+                  ? '这株植物的加成已经备好了'
+                  : '读出这个单词，种下后 10 秒攻击 ×1.25'
+            }
+            onClick={onVoice}
+          >
+            {listening ? '正在听…' : card.voiceBuffed ? '加成已备' : '跟读加成'}
+          </button>
+        </span>
         <button type="button" className="wordpanel__hint" onClick={onCollapse} style={{ cursor: 'pointer' }}>
           收起 ▾
         </button>
@@ -92,12 +137,13 @@ export function WordPanel({ card, word, now, plantName, shakeKey, onTile, onColl
             ? `点草坪种下一株${plantName}`
             : `第 ${Math.min(card.filled + 1, card.slots.length)} / ${card.slots.length} 个字母`}
         </span>
-        <span className={card.wrongStreak > 0 ? 'bad' : ''}>
-          {card.assisted
-            ? '已用提示'
-            : card.wrongStreak > 0
-              ? `连错 ${card.wrongStreak} 次，别急`
-              : target ? '按顺序点字母块' : ''}
+        <span className={voiceBlocked || card.wrongStreak > 0 ? 'bad' : ''}>
+          {voiceNote ||
+            (card.assisted
+              ? '已用提示'
+              : card.wrongStreak > 0
+                ? `连错 ${card.wrongStreak} 次，别急`
+                : target ? '按顺序点字母块' : '')}
         </span>
       </div>
     </div>

@@ -27,3 +27,9 @@ export const SUN = {
   produce_amount: 25,
   produce_interval_s: 12
 } as const
+
+export const SPEECH_BUFF = {
+  duration_s: 10,                 // §8.4：通过后 10 秒
+  cooldown_s: 30,                 // §8.4：同一株 30 秒冷却
+  dps_multiplier: 1.25            // §8.4：攻击加成
+} as const

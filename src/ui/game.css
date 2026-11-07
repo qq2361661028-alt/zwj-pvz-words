@@ -107,6 +107,22 @@
   50% { transform: rotate(1.8deg) translateY(-3px); }
 }
 
+.placed.is-buffed::after {
+  content: '';
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 216, 77, 0.95);
+  box-shadow: 0 0 16px 4px rgba(255, 216, 77, 0.55);
+  animation: buff-ring 0.9s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes buff-ring {
+  0%, 100% { opacity: 0.5; transform: scale(0.94); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
 .zombie {
   position: absolute;
   transform: translateX(-72%);
@@ -439,8 +455,40 @@
 .wordpanel__zh { font-size: 13px; font-weight: 900; color: #6b4a1e; }
 .wordpanel__ipa { font-size: 12px; color: #8a6a3a; font-weight: 700; }
 
+.wordpanel__voice { margin-left: auto; display: flex; align-items: center; }
+
+.wordpanel__mic {
+  border: 2px solid #6b4a1e;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffe9a8, #f3c24f);
+  box-shadow: 0 3px 0 rgba(90, 61, 34, 0.4);
+  padding: 3px 12px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 900;
+  color: #3a2410;
+  cursor: pointer;
+}
+
+.wordpanel__mic:hover:not(:disabled) { filter: brightness(1.06); }
+.wordpanel__mic:disabled {
+  filter: grayscale(0.9);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.wordpanel__mic.is-listening { animation: mic-pulse 0.9s ease-in-out infinite; }
+.wordpanel__mic.is-done {
+  background: linear-gradient(180deg, #c9f29a, #7fc94a);
+  filter: none;
+  opacity: 1;
+}
+
+@keyframes mic-pulse {
+  50% { box-shadow: 0 0 0 6px rgba(255, 211, 77, 0.45), 0 3px 0 rgba(90, 61, 34, 0.4); }
+}
+
 .wordpanel__hint {
-  margin-left: auto;
+  margin-left: 0;
   font-size: 11px;
   font-weight: 800;
   color: #8a6a3a;
@@ -683,6 +731,52 @@
   justify-content: center;
   gap: 14px;
 }
+
+/* —— 设置页 —— */
+.settings {
+  width: 560px;
+  padding: 26px 30px 24px;
+  border-radius: 18px;
+  border: 3px solid #5a3c17;
+  color: #ffe9be;
+}
+
+.settings__title { font-size: 30px; margin: 0 0 18px; color: #fff4d6; }
+.settings__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0;
+  border-top: 2px dashed rgba(255, 226, 176, 0.28);
+}
+.settings__label { font-weight: 900; font-size: 15px; }
+.settings__sub { font-size: 12px; color: #d9b98a; margin-top: 4px; }
+.settings__toggle {
+  border: 2px solid #6b4a1e;
+  border-radius: 999px;
+  background: #4a3013;
+  color: #d9b98a;
+  font-weight: 900;
+  padding: 6px 16px;
+  cursor: pointer;
+}
+.settings__toggle.is-on {
+  background: linear-gradient(180deg, #9ede5a, #6cbb3c);
+  color: #1f3d0b;
+}
+.settings__privacy {
+  margin-top: 12px;
+  padding-top: 14px;
+  border-top: 2px dashed rgba(255, 226, 176, 0.28);
+}
+.settings__privacy p {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #f0d9b5;
+  margin: 8px 0 0;
+}
+.settings__actions { display: flex; justify-content: center; margin-top: 20px; }
 
 /* —— 启动失败 —— */
 .boot-error {

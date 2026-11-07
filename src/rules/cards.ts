@@ -36,7 +36,8 @@ export function makeCard(deck: DeckDef, ctx: Ctx, instanceId: number): Card {
     tiles: buildTiles(word, rand, instanceId * 32, Object.values(ctx.words)),   // tileId 跨卡唯一：D7 才能按 id 拒绝非焦点卡
     wrongStreak: 0,
     wrongTotal: 0,
-    ladderLevel: 0
+    ladderLevel: 0,
+    voiceBuffed: false
   }
 }
 

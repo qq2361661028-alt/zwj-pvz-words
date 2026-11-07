@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "拼词塔防 M0 垂直切片：填词 → 激活 → 种植 → 一维推进 → 通关/失败",
+  "description": "拼词塔防 M0–M3：填词 → 种植 → 战斗 → 跟读加成",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

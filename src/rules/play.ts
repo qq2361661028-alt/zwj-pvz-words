@@ -1,6 +1,7 @@
 import { BOARD, SUN } from './constants'
 import { advanceHand, assertTransition, focusCard, submit } from './cards'
 import { canAfford, spend } from './economy'
+import { expireVoiceBuffs, voiceBuffFields } from './voice'
 import type { Ctx, Event, GameState, StepResult } from './types'
 
 export type PlantReject = 'not_armed' | 'occupied' | 'no_sun' | 'out_of_board' | null
@@ -33,20 +34,23 @@ export function onCellClick(state: GameState, lane: number, col: number, ctx: Ct
   const focus = focusCard(state.cards)!
   const def = ctx.plants[focus.plantId]
   const events: Event[] = []
+  const now = state.t
+  const basePlants = focus.voiceBuffed ? expireVoiceBuffs(state.plants, now) : state.plants
 
   const card = { ...focus }
   assertTransition(card.status, 'placed', card.wordId)
   card.status = 'placed'
   const cards = [card, ...state.cards.slice(1)]
 
-  const plants = [...state.plants, {
+  const plants = [...basePlants, {
     uid: state.seq,
     plantId: card.plantId,
     lane,
     col,
     hp: def.hp,
     maxhp: def.hp,
-    nextProduceAt: state.t + SUN.produce_interval_s
+    nextProduceAt: state.t + SUN.produce_interval_s,
+    ...(card.voiceBuffed ? voiceBuffFields(now) : {})
   }]
   const hand = advanceHand(
     { cards, deckCursor: state.deckCursor, seq: state.seq + 1 },
@@ -54,6 +58,9 @@ export function onCellClick(state: GameState, lane: number, col: number, ctx: Ct
     ctx
   )
   events.push({ type: 'placed', plantId: card.plantId, lane, col })
+  if (card.voiceBuffed) {
+    events.push({ type: 'voice_buff', plantId: card.plantId, lane, col })
+  }
   events.push(...hand.events)
 
   const sun = spend(state.sun, def.cost)     // 阳光不返还（§6.3）

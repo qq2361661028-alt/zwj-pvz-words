@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { PLANT_ART } from '../art/PlantArt'
 import { LockIcon, StarIcon } from '../art/Icons'
 import { CTX } from '../content'
 import { GrassTufts, House, Sky } from './scenery/Scenery'
+import { SettingsOverlay } from './SettingsOverlay'
 import './level.css'
 
 type Props = { onStart: (levelId: string) => void }
@@ -13,6 +15,7 @@ const SOON = [
 ]
 
 export function LevelSelect({ onStart }: Props) {
+  const [settingsOpen, setSettingsOpen] = useState(false)
   const levels = Object.values(CTX.levels)
   const first = levels[0]
   const Sprout = PLANT_ART.sprout
@@ -82,8 +85,14 @@ export function LevelSelect({ onStart }: Props) {
           ))}
         </div>
 
-        <div className="levels__foot">当前可玩 · 1 关 / 8 株 / 13 词</div>
+        <div className="levels__foot">
+          <span>当前可玩 · 1 关 / 8 株 / 13 词</span>
+          <button type="button" className="levels__settings" onClick={() => setSettingsOpen(true)}>
+            设置
+          </button>
+        </div>
       </div>
+      {settingsOpen && <SettingsOverlay onClose={() => setSettingsOpen(false)} />}
     </div>
   )
 }
