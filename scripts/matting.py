@@ -20,7 +20,7 @@ SOFT_RADIUS = 2
 SOFT_LOW = 16
 SOFT_HIGH = 40
 FRINGE_MIN_LIGHT = 205
-# 暖金光晕（浅黄、sat≈45-55）也要算作描边外的 fringe；纯黄装饰光点 sat≈85 保留。
+# 暖金光晕（浅黄、sat≈45-55）也要算作描边外的 fringe；纯黄装饰光点（sat>70）保留。
 FRINGE_MAX_SAT = 70
 
 
@@ -185,7 +185,8 @@ def _clean_resize_specks(out: Image.Image) -> None:
 
     只处理浅色（min 通道 >= 235）且低透明度的像素；若整块不与任何
     alpha >= 128 的像素相邻，则判为缩放伪影并清零。附着在角色边缘的
-    软 alpha 保持不变。
+    软 alpha 保持不变。当前素材不含白色半透明装饰；若后续加入雪花、
+    白闪点等漂浮装饰，需要放宽此规则。
     """
     w, h = out.size
     px = out.load()
