@@ -132,6 +132,8 @@
   transform-origin: bottom center;
 }
 
+.zombie .character-art { transform: scaleX(-1); }
+
 @keyframes zombie-walk {
   0%, 100% { rotate: -1.2deg; }
   50% { rotate: 1.4deg; }

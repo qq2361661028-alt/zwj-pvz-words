@@ -85,7 +85,14 @@
   color: #ffe9be;
 }
 
-.codex-table { width: 100%; border-collapse: collapse; color: #3a2410; }
+.codex-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #3a2410;
+  background: rgba(255, 249, 226, 0.94);
+  border: 3px solid #5a3c17;
+  border-radius: 14px;
+}
 .codex-table th {
   position: sticky;
   top: 0;
@@ -100,4 +107,5 @@
   font-weight: 800;
   border-top: 1px solid rgba(107, 74, 30, 0.25);
 }
+.codex-table tbody tr:nth-child(even) { background: rgba(232, 215, 171, 0.55); }
 .codex-table td span { margin-left: 8px; font-size: 11px; color: #8a6a3a; }

@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint'
 const RENDER_LAYER = ['phaser', 'react', 'react-dom', 'react/jsx-runtime']
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'docs'] },
+  { ignores: ['dist', 'node_modules', 'docs', '.superpowers', 'art-source'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
