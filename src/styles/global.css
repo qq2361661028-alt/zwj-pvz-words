@@ -44,15 +44,15 @@ button:disabled {
 .viewport {
   position: fixed;
   inset: 0;
-  display: grid;
-  place-items: center;
   overflow: hidden;
   background:
     radial-gradient(ellipse at 50% 0%, #3b2a14, #150d04 70%);
 }
 
 .stage {
-  position: relative;
+  position: absolute;
+  left: 50%;
+  top: 50%;
   width: 1280px;
   height: 720px;
   overflow: hidden;

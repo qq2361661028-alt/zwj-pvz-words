@@ -3,6 +3,15 @@ import { BOARD } from '../rules/constants'
 /** D14：逻辑画幅固定 1280×720，整体缩放适配；最小可玩 960×600 */
 export const VIEW = { w: 1280, h: 720, min_w: 960, min_h: 600 } as const
 
+export function fitScale(vw: number, vh: number): number {
+  return Math.min(vw / VIEW.w, vh / VIEW.h)
+}
+
+/** 先按自身尺寸回移半个身位，再缩放：容器小于舞台时也能保持居中 */
+export function stageTransform(scale: number): string {
+  return `translate(-50%, -50%) scale(${scale})`
+}
+
 export const HUD_H = 50
 export const CELL_W = 120
 export const CELL_H = 88            // G2：50 + 5×88 + 230 = 720（96 会溢出）

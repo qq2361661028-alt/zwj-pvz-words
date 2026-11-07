@@ -3,16 +3,14 @@ import { music } from '../platform/music'
 import { loadSave } from '../platform/save'
 import { GameScreen } from './GameScreen'
 import { LevelSelect } from './LevelSelect'
-import { VIEW } from './layout'
+import { fitScale, stageTransform } from './layout'
 
 type Route =
   | { screen: 'levels' }
   | { screen: 'game'; levelId: string; run: number }
 
 function calcScale(): number {
-  const w = window.innerWidth
-  const h = window.innerHeight
-  return Math.min(w / VIEW.w, h / VIEW.h)
+  return fitScale(window.innerWidth, window.innerHeight)
 }
 
 function useStageScale(): number {
@@ -50,7 +48,7 @@ export default function App() {
 
   return (
     <div className="viewport">
-      <div className="stage" style={{ transform: `scale(${scale})` }} data-scale={scale.toFixed(3)}>
+      <div className="stage" style={{ transform: stageTransform(scale) }} data-scale={scale.toFixed(3)}>
         {route.screen === 'levels' ? (
           <LevelSelect
             onStart={(levelId) => setRoute({ screen: 'game', levelId, run: 0 })}
