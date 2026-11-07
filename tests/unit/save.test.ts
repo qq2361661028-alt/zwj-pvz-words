@@ -47,6 +47,39 @@ describe('D19 存档 v1', () => {
     expect(save.levels.u3_w1).toEqual({ best_stars: 3 })
   })
 
+  it('v1 迁移到 v2：保留统计并补 sound_enabled', () => {
+    const save = migrateSave({
+      v: 1,
+      last_played: '2026-11-01',
+      word_stats: {
+        w_milk: { correct: 2, wrong: 1, assisted: 0, streak: 1, ease: 2.5, last_seen_ts: 42 }
+      },
+      levels: { u3_w1: { best_stars: 3 } },
+      settings: { speech_enabled: false, penalty_disable_ms: 0 }
+    })
+    expect(save.v).toBe(2)
+    expect(save.settings).toEqual({
+      speech_enabled: false,
+      sound_enabled: true,
+      penalty_disable_ms: 0
+    })
+    expect(save.word_stats.w_milk.correct).toBe(2)
+    expect(save.levels.u3_w1).toEqual({ best_stars: 3 })
+  })
+
+  it('v2 保留 sound_enabled=false，非法值回落 true', () => {
+    const off = migrateSave({
+      v: 2,
+      settings: { speech_enabled: true, sound_enabled: false, penalty_disable_ms: 2000 }
+    })
+    expect(off.settings.sound_enabled).toBe(false)
+    const bad = migrateSave({
+      v: 2,
+      settings: { speech_enabled: true, sound_enabled: 'no', penalty_disable_ms: 2000 }
+    })
+    expect(bad.settings.sound_enabled).toBe(true)
+  })
+
   it('localStorage 抛错时不影响游戏', () => {
     const storage = {
       getItem: () => {

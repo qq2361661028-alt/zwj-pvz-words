@@ -4,8 +4,12 @@ import { DEFAULT_EASE, MIN_EASE, emptySave, recordWordResult } from '../../src/r
 describe('词统计与 assisted 记账', () => {
   it('初始存档为空且包含默认设置', () => {
     const save = emptySave('2026-11-07')
-    expect(save).toMatchObject({ v: 1, last_played: '2026-11-07', word_stats: {}, levels: {} })
-    expect(save.settings).toEqual({ speech_enabled: true, penalty_disable_ms: 2000 })
+    expect(save).toMatchObject({ v: 2, last_played: '2026-11-07', word_stats: {}, levels: {} })
+    expect(save.settings).toEqual({
+      speech_enabled: true,
+      sound_enabled: true,
+      penalty_disable_ms: 2000
+    })
   })
 
   it('correct / wrong 累加，wrong 重置 streak，correct 增加 streak', () => {

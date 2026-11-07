@@ -1,6 +1,6 @@
 import { RULES } from './constants'
 
-export const SAVE_VERSION = 1
+export const SAVE_VERSION = 2
 export const SAVE_KEY = 'pvzwords.save.v1'
 export const DEFAULT_EASE = 2.5
 export const MIN_EASE = 1.3
@@ -21,7 +21,7 @@ export type SaveData = {
   last_played: string
   word_stats: Record<string, WordStat>
   levels: Record<string, LevelStat>
-  settings: { speech_enabled: boolean; penalty_disable_ms: number }
+  settings: { speech_enabled: boolean; sound_enabled: boolean; penalty_disable_ms: number }
 }
 
 const emptyStat = (): WordStat => ({
@@ -39,7 +39,11 @@ export function emptySave(lastPlayed = ''): SaveData {
     last_played: lastPlayed,
     word_stats: {},
     levels: {},
-    settings: { speech_enabled: true, penalty_disable_ms: RULES.penalty_disable_ms }
+    settings: {
+      speech_enabled: true,
+      sound_enabled: true,
+      penalty_disable_ms: RULES.penalty_disable_ms
+    }
   }
 }
 
@@ -73,9 +77,10 @@ const isObject = (v: unknown): v is Record<string, unknown> =>
 const nonNegInt = (v: unknown): number =>
   typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.floor(v) : 0
 
-/** 只认识 v1；损坏或未来版本回退空存档，绝不把异常向上抛 */
+/** 只认识 v1/v2；损坏或未来版本回退空存档，绝不把异常向上抛 */
 export function migrateSave(raw: unknown): SaveData {
-  if (!isObject(raw) || raw.v !== SAVE_VERSION) return emptySave()
+  if (!isObject(raw)) return emptySave()
+  if (raw.v !== 1 && raw.v !== SAVE_VERSION) return emptySave()
   const base = emptySave(typeof raw.last_played === 'string' ? raw.last_played : '')
 
   if (isObject(raw.word_stats)) {
@@ -106,6 +111,8 @@ export function migrateSave(raw: unknown): SaveData {
     base.settings = {
       speech_enabled:
         typeof raw.settings.speech_enabled === 'boolean' ? raw.settings.speech_enabled : true,
+      sound_enabled:
+        typeof raw.settings.sound_enabled === 'boolean' ? raw.settings.sound_enabled : true,
       penalty_disable_ms:
         typeof raw.settings.penalty_disable_ms === 'number' &&
         Number.isFinite(raw.settings.penalty_disable_ms) &&
