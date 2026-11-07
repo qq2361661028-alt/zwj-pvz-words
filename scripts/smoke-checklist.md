@@ -1,13 +1,14 @@
-# 拼词小院 人工冒烟清单（M0 基线 + M1 增量 + M2 战斗配平 + M3 语音）
+# 拼词小院 人工冒烟清单（M0 基线 + M1 增量 + M2 战斗配平 + M3 语音 + M4 素材与打磨）
 
-环境：Chrome 或 Edge 桌面版，`npm run dev` → `http://127.0.0.1:5173`，浏览器窗口 ≥ 1280×720（画幅固定 1280×720，CSS transform 等比缩放）。M0 基线无语音；M1 新增音标强调、TTS 朗读与提示阶梯；M2 扩到 8 株植物、四类僵尸与按植物覆盖的产光量；M3 新增跟读加成、四态降级与设置页隐私声明。§11-5 的识别质量五种环境作为 E11 列入本清单，只能人工验。
+环境：Chrome 或 Edge 桌面版，`npm run dev` → `http://127.0.0.1:5173`，浏览器窗口 ≥ 1280×720（画幅固定 1280×720，CSS transform 等比缩放）。M0 基线无语音；M1 新增音标强调、TTS 朗读与提示阶梯；M2 扩到 8 株植物、四类僵尸与按植物覆盖的产光量；M3 新增跟读加成、四态降级与设置页隐私声明；M4 加入 12 个原创角色三档 PNG、CC0 音效、自托管字体、图鉴/复习、可调冻结时长与性能预算。§11-5 的识别质量五种环境作为 E11 列入本清单，只能人工验。
 
 ## 自动化门禁（先跑，全绿才做人工冒烟）
 
 - [ ] `npm run lint` 无 error
 - [ ] `npm test` 全绿
 - [ ] `npm run build` 通过（tsc --noEmit + vite build）
-- [ ] `npm run validate` 全绿（D21 内容校验）
+- [ ] `npm run validate` 全绿（D21 内容校验 + 36 张角色图）
+- [ ] `npm run check:budget` 全绿（dist ≤ 3 MB，最大 JS ≤ 500 KB）
 - [ ] 浏览器控制台无 error / 无 React 警告
 
 ## A. 链路完整性（必须全过）
@@ -67,6 +68,21 @@
 - [ ] E10 结算页「语音加成」数量与实际加成植物数一致
 - [ ] E11 识别质量五种环境（安静 / 有人说话 / 离麦 30 cm / 孩子小声 / 家长代读）——只能人工验
 - [ ] E12 隐私声明明确写出「浏览器会把麦克风音频发到它自己的语音识别服务（Chrome 会发往 Google）」
+
+## F. M4 素材与打磨
+
+- [ ] F1 12 个角色在场上/手牌/图鉴分别为 96/128/256，无破图、无 404
+- [ ] F2 角色轮廓可区分 8 植物 + 4 僵尸，铁桶 vs 普通不只靠颜色
+- [ ] F3 填对/填错/拼好/种植/产光/僵尸倒下六种音效可辨
+- [ ] F4 设置关闭音效后立即无声，刷新后保持
+- [ ] F5 网络面板无 Google Fonts 请求，首屏字母块不跳动
+- [ ] F6 图鉴四页签内容与 JSON 一致，单词朗读可用
+- [ ] F7 复习表空态/有数据/旧档时间显示「—」
+- [ ] F8 冻结时长 0/1/2 秒生效并持久化
+- [ ] F9 `?perf=1` 面板出现，普通模式不出现
+- [ ] F10 系统开启「减少动态效果」后无脉冲/抖动
+- [ ] F11 iPad Safari / Android Chrome 横屏各一局，记录 FPS 与手感
+- [ ] F12 M3 的 E11 五环境语音复测仍通过
 
 ## 2026-11-07 首轮自测记录（自动化 + 浏览器）
 
@@ -130,3 +146,24 @@
 | 真实麦克风 | 待做 | 本轮用注入的假 `webkitSpeechRecognition` 验链路；E11 五种环境与真实识别质量必须人工验 |
 
 环境说明：假 ASR 在 `Page.addScriptToEvaluateOnNewDocument` 阶段注入，可控返回 transcript / confidence / error；`isSecureContext` 用属性桩模拟 insecure。测试脚本位于 `%TEMP%/accept-m3.mjs`，截图位于 `%TEMP%/pvz-m3-shots/`。
+
+## 2026-11-07 M4 自测记录（自动化 + headless Chrome CDP）
+
+| 项 | 结果 | 备注 |
+| --- | --- | --- |
+| lint / test / build / validate | 通过 | 28 个测试文件 / 173 个用例；76 modules，JS 203.89 kB（gzip 67.07 kB），CSS 28.21 kB（gzip 7.35 kB）；资产门禁 36 张角色图 |
+| 预算 | 通过 | `check:budget` 总计 1481.5 KB / 3.0 MB；最大 JS 199.1 KB / 500 KB；角色图 36 张 1044.9 KB，字体 9 个 188.7 KB，音效 6 个 20.2 KB |
+| 角色图三档 | 通过 | 36 档全部加载，尺寸 96/128/256；选关 c / 手牌 c / 场上 s / 图鉴 l，无 404 |
+| 字体 | 通过 | Fontsource 自托管；Luckiest Guy 与 Nunito 700/900 ready；Network 无 Google Fonts 请求 |
+| 音效 | 通过（调用层） | fill_wrong / fill_ok / arm / plant 事件均触发 play()；关闭音效后无播放且刷新保持；headless 无法确认实际可听 |
+| 图鉴/复习 | 通过 | 植物 8 / 僵尸 4 / 单词 13 与 JSON 一致；复习空态 → 1 行真实计数；旧档时间「—」 |
+| 冻结时长 | 通过 | 0 秒错块立即点；2 秒禁用约 2 秒；设置持久化 |
+| 性能与减动效 | 通过 | `?perf=1` 30 秒采样 60 FPS / p95 16.7ms，普通模式隐藏；reduced-motion 动画折叠到 1e-06s |
+| 控制台 | 通过 | console issues []、失败网络请求 0 |
+| iPad / Android 实机 | 待做 | F11 只能人工验 |
+| 孩子实测 D1–D4 | 待做 | 需真人执行，不能代填 |
+| E11 五环境语音 | 待做 | 沿用 M3 人工项 |
+
+验收脚本：`.superpowers/sdd/2026-11-07-m4-art-and-polish/acceptance.mjs`（git-ignored）；结果 JSON 同目录；截图位于 `%TEMP%/pvz-m4-shots/`（codex-plants / review-empty / review-data / settings / perf / gameplay-zombie）。
+
+本轮发现并修复：复习表深色文字叠深色木纹不可读（补浅色表底与偶数行条纹）；僵尸原图面朝右、与向左推进方向相反（场上镜像，血条与图鉴不镜像）；favicon 404（改用阳光苗 96px 图）。
