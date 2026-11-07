@@ -18,7 +18,7 @@
 - 固定画幅 1280×720（`VIEW.w/h`）；现有内容规模：8 植物 / 13 词 / 13 配对 / 4 僵尸 / 1 关。
 - 存档键 `pvzwords.save.v1` 不变，版本升到 2，必须兼容 v1 迁移。
 - 角色图三档严格为 96/128/256 正方形 PNG；单文件 ≤200KB，合计 ≤2MB。
-- 首屏资源预算 3MB；单个 JS chunk ≤500KB。
+- dist 总计预算 3MB（含首屏资源；js + css + 字体 + 全部图片 + 音效 + 其他）；单个 JS chunk ≤500KB。
 - 每次提交前跑：`npm run lint && npm test && npm run build`；素材相关任务再跑 `npm run validate`。
 - 提交信息用中文 `feat:` / `fix:` / `docs:`，与现有历史一致。
 
@@ -2141,7 +2141,7 @@ console.log(`total  ${kb(total)} / 3.0 MB`)
 console.log(`largest js  ${kb(largestJs)} / 500 KB`)
 
 if (total > LIMIT) {
-  console.error('首屏预算超限：dist 总计超过 3MB')
+  console.error('dist 总计预算超限：超过 3MB')
   process.exit(1)
 }
 if (largestJs > JS_LIMIT) {
