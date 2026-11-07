@@ -8,6 +8,7 @@ import { focusCard } from '../rules/cards'
 import { onCellClick, onExit, onTileClick, plantingReject, setPanelOpen } from '../rules/play'
 import { AVAILABILITY_REASON, type SpeechAvailability } from '../rules/speechJudge'
 import { grantVoicePass } from '../rules/voice'
+import { createAudio } from '../platform/audio'
 import { createSpeechProvider } from '../platform/speechRecognition'
 import { speakWord } from '../platform/speech'
 import { loadSave, persistSave, todayString } from '../platform/save'
@@ -17,6 +18,7 @@ import { Button } from './Button'
 import { HandCard } from './HandCard'
 import { Hud } from './Hud'
 import { ResultOverlay } from './ResultOverlay'
+import { sfxForEvent } from './sfx'
 import { WordPanel } from './WordPanel'
 import { House, Sky } from './scenery/Scenery'
 import './game.css'
@@ -34,6 +36,7 @@ const ZOMBIE_VARIANT: Record<string, ZombieVariant> = {
 export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const level = CTX.levels[levelId]
   const [initialSave] = useState(() => loadSave())
+  const [audio] = useState(() => createAudio())
   const [state, setState] = useState<GameState>(() =>
     newGame(levelId, CTX, initialSave.settings.penalty_disable_ms)
   )
@@ -60,6 +63,13 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   }, [])
 
   useEffect(() => {
+    audio.setEnabled(initialSave.settings.sound_enabled)
+    const unlock = () => audio.unlock()
+    window.addEventListener('pointerdown', unlock, { once: true })
+    return () => window.removeEventListener('pointerdown', unlock)
+  }, [audio, initialSave])
+
+  useEffect(() => {
     let alive = true
     provider.refreshPermission?.().then((a) => {
       if (alive) setAvailability(a)
@@ -84,6 +94,8 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
 
   const apply = useCallback((events: readonly Event[]) => {
     for (const e of events) {
+      const sfx = sfxForEvent(e)
+      if (sfx) audio.play(sfx)
       if (e.type === 'wrong') {
         const wordId = focusCard(stateRef.current.cards)?.wordId
         if (wordId) record('wrong', wordId)
@@ -115,7 +127,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
         pushToast('僵尸清空了！')
       }
     }
-  }, [pushToast, record])
+  }, [audio, pushToast, record])
 
   // 定步长逻辑 + 帧率无关的渲染循环（D18）
   useEffect(() => {
