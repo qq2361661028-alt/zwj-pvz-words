@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { SaveData } from '../rules/stats'
 import { loadSave, persistSave } from '../platform/save'
 import { Button } from './Button'
 
@@ -7,14 +8,15 @@ type Props = { onClose: () => void }
 export function SettingsOverlay({ onClose }: Props) {
   const [save, setSave] = useState(() => loadSave())
 
-  const toggleSpeech = () => {
-    const next = {
-      ...save,
-      settings: { ...save.settings, speech_enabled: !save.settings.speech_enabled }
-    }
+  const patch = (value: Partial<SaveData['settings']>) => {
+    const next = { ...save, settings: { ...save.settings, ...value } }
     setSave(next)
     persistSave(next)
   }
+
+  const toggleSpeech = () => patch({ speech_enabled: !save.settings.speech_enabled })
+  const toggleSound = () => patch({ sound_enabled: !save.settings.sound_enabled })
+  const setPenalty = (ms: number) => patch({ penalty_disable_ms: ms })
 
   return (
     <div className="overlay" role="dialog" aria-modal="true" aria-label="设置">
@@ -34,6 +36,41 @@ export function SettingsOverlay({ onClose }: Props) {
           >
             {save.settings.speech_enabled ? '已开启' : '已关闭'}
           </button>
+        </div>
+
+        <div className="settings__row">
+          <div>
+            <div className="settings__label">音效</div>
+            <div className="settings__sub">填对、种植、产阳光和僵尸倒下时的短音效</div>
+          </div>
+          <button
+            type="button"
+            className={`settings__toggle ${save.settings.sound_enabled ? 'is-on' : ''}`}
+            aria-pressed={save.settings.sound_enabled}
+            onClick={toggleSound}
+          >
+            {save.settings.sound_enabled ? '已开启' : '已关闭'}
+          </button>
+        </div>
+
+        <div className="settings__row">
+          <div>
+            <div className="settings__label">拼错字母冻结</div>
+            <div className="settings__sub">点错后该字母块暂时不能点；0 秒适合已经熟练的孩子</div>
+          </div>
+          <span className="settings__seg" role="group" aria-label="拼错字母冻结时长">
+            {[0, 1000, 2000].map((ms) => (
+              <button
+                key={ms}
+                type="button"
+                className={save.settings.penalty_disable_ms === ms ? 'is-on' : ''}
+                aria-pressed={save.settings.penalty_disable_ms === ms}
+                onClick={() => setPenalty(ms)}
+              >
+                {ms / 1000} 秒
+              </button>
+            ))}
+          </span>
         </div>
 
         <div className="settings__privacy">

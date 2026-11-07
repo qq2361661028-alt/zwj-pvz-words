@@ -765,6 +765,26 @@
   background: linear-gradient(180deg, #9ede5a, #6cbb3c);
   color: #1f3d0b;
 }
+.settings__seg {
+  display: flex;
+  gap: 6px;
+}
+
+.settings__seg button {
+  border: 2px solid #6b4a1e;
+  border-radius: 999px;
+  background: #2a1c0e;
+  color: #ffe9be;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.settings__seg button.is-on {
+  background: linear-gradient(180deg, #ffe9a8, #f3c24f);
+  color: #3a2410;
+}
 .settings__privacy {
   margin-top: 12px;
   padding-top: 14px;
