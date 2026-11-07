@@ -5,7 +5,9 @@ export type AudioLike = {
   currentTime: number
   volume: number
   preload: string
+  muted: boolean
   play(): Promise<void>
+  pause(): void
 }
 
 const FILES: Record<SfxName, string> = {
@@ -36,10 +38,34 @@ export function createAudio(makeEl: (src: string) => AudioLike = (src) => new Au
     }
   }
 
+  // iPad Safari 只把真实用户手势内成功发起的 play() 视为解锁；
+  // 因此逐个静音试播，成功或被拒绝后都暂停、归零进度并恢复非静音状态。
+  const trial = (el: AudioLike) => {
+    el.muted = true
+    const settle = () => {
+      try {
+        el.pause()
+        el.currentTime = 0
+      } catch {
+        // 元素尚未就绪时暂停/归零可能抛错：忽略
+      }
+      el.muted = false
+    }
+    try {
+      el.currentTime = 0
+      void Promise.resolve(el.play()).then(settle, settle)
+    } catch {
+      settle()
+    }
+  }
+
   const unlock = () => {
     if (unlocked) return
     unlocked = true
-    for (const name of Object.keys(FILES) as SfxName[]) ensure(name)
+    for (const name of Object.keys(FILES) as SfxName[]) {
+      const el = ensure(name)
+      if (el) trial(el)
+    }
   }
 
   const play = (name: SfxName) => {
@@ -56,6 +82,16 @@ export function createAudio(makeEl: (src: string) => AudioLike = (src) => new Au
 
   const setEnabled = (value: boolean) => {
     enabled = value
+    if (value) return
+    // 关闭音效立即静音：停掉在播元素并归零进度（不销毁实例）
+    for (const el of pool.values()) {
+      try {
+        el.pause()
+        el.currentTime = 0
+      } catch {
+        // 未就绪或被回收：忽略
+      }
+    }
   }
 
   return { unlock, play, setEnabled }

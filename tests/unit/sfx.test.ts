@@ -19,19 +19,29 @@ describe('事件 → 音效', () => {
 })
 
 function harness() {
-  const created: (AudioLike & { play: ReturnType<typeof vi.fn> })[] = []
+  const created: (AudioLike & {
+    play: ReturnType<typeof vi.fn>
+    pause: ReturnType<typeof vi.fn>
+  })[] = []
   const make = (src: string) => {
     const el = {
       src,
       currentTime: 0,
       volume: 1,
       preload: '',
-      play: vi.fn(() => Promise.resolve())
+      muted: false,
+      play: vi.fn(() => Promise.resolve()),
+      pause: vi.fn()
     }
     created.push(el)
     return el
   }
   return { created, make }
+}
+
+const flush = async () => {
+  await Promise.resolve()
+  await Promise.resolve()
 }
 
 describe('音效播放器', () => {
@@ -62,15 +72,52 @@ describe('音效播放器', () => {
     expect(created).toHaveLength(6)
   })
 
-  it('play 抛错被吞掉，不向上抛', () => {
-    const make = () => ({
-      src: '',
-      currentTime: 0,
-      volume: 1,
-      preload: '',
-      play: () => Promise.reject(new Error('blocked'))
-    })
+  it('解锁在手势内静音试播，完成后暂停、归零并解除静音', async () => {
+    const { created, make } = harness()
+    const audio = createAudio(make)
+    audio.unlock()
+    expect(created).toHaveLength(6)
+    for (const el of created) {
+      expect(el.play).toHaveBeenCalledTimes(1)
+      expect(el.muted).toBe(true)
+    }
+    await flush()
+    for (const el of created) {
+      expect(el.muted).toBe(false)
+      expect(el.pause).toHaveBeenCalledTimes(1)
+      expect(el.currentTime).toBe(0)
+    }
+  })
+
+  it('关闭时立即停止已创建的元素', () => {
+    const { created, make } = harness()
+    const audio = createAudio(make)
+    audio.play('fill_ok')
+    created[0].currentTime = 0.42
+    audio.setEnabled(false)
+    expect(created[0].pause).toHaveBeenCalledTimes(1)
+    expect(created[0].currentTime).toBe(0)
+  })
+
+  it('play 抛错被吞掉，不向上抛', async () => {
+    const created: (AudioLike & { pause: ReturnType<typeof vi.fn> })[] = []
+    const make = (src: string) => {
+      const el = {
+        src,
+        currentTime: 0,
+        volume: 1,
+        preload: '',
+        muted: false,
+        play: () => Promise.reject(new Error('blocked')),
+        pause: vi.fn()
+      }
+      created.push(el)
+      return el
+    }
     const audio = createAudio(make)
     expect(() => audio.play('arm')).not.toThrow()
+    expect(() => audio.unlock()).not.toThrow()
+    await flush()
+    for (const el of created) expect(el.muted).toBe(false)
   })
 })
