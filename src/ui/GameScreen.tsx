@@ -324,6 +324,11 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
         levelName={level.name}
         spawned={state.spawned}
         totalWaves={level.waves.length}
+        waves={level.waves.map((wave) => {
+          const zombie = CTX.zombies[wave.zombie]
+          return { art: zombie.art, name: zombie.name, t: wave.t }
+        })}
+        time={state.t}
         onExit={exit}
       />
 

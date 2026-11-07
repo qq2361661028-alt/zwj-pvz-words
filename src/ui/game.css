@@ -223,6 +223,28 @@
   text-shadow: 0 2px 0 rgba(40, 24, 8, 0.8);
 }
 
+.hud__timer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 2px solid #1a0e03;
+  background: linear-gradient(180deg, rgba(58, 34, 16, 0.94), rgba(32, 18, 6, 0.96));
+  box-shadow: inset 0 2px 0 rgba(255, 220, 170, 0.18);
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  color: #ffeec6;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+
 .hud__spacer { flex: 1 1 auto; }
 
 .progress {
@@ -255,6 +277,29 @@
   background: linear-gradient(180deg, #b6e86a, #7cc23a 55%, #5a9a22);
   box-shadow: inset 0 -2px 0 rgba(40, 80, 10, 0.5);
   transition: width 0.35s ease;
+}
+
+.progress__zombie {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+  transition: opacity 0.25s ease, filter 0.25s ease;
+  pointer-events: none;
+}
+
+.progress__zombie.is-passed {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.progress__zombie.is-next {
+  filter: drop-shadow(0 0 4px rgba(255, 224, 102, 0.9));
 }
 
 .progress__wave {
