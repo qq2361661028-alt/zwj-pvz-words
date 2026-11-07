@@ -70,7 +70,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   }, [provider])
 
   const record = useCallback((kind: 'correct' | 'wrong' | 'assisted', wordId: string) => {
-    const next = recordWordResult(saveRef.current, wordId, kind, stateRef.current.t)
+    const next = recordWordResult(saveRef.current, wordId, kind, Math.floor(Date.now() / 1000))
     saveRef.current = next
     persistSave(next)
     if (kind === 'assisted') assistedRef.current += 1

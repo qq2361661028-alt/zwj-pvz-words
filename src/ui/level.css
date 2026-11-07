@@ -182,6 +182,8 @@
 
 .levels__settings:hover { background: rgba(40, 24, 8, 0.55); }
 
+.levels__actions { display: flex; gap: 8px; }
+
 /* —— 启动失败 —— */
 .boot-error {
   position: absolute;

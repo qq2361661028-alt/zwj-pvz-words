@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { CharacterArt } from '../art/CharacterArt'
 import { LockIcon, StarIcon } from '../art/Icons'
 import { CTX } from '../content'
+import { CodexOverlay, type CodexTab } from './CodexOverlay'
 import { GrassTufts, House, Sky } from './scenery/Scenery'
 import { SettingsOverlay } from './SettingsOverlay'
 import './level.css'
@@ -16,6 +17,7 @@ const SOON = [
 
 export function LevelSelect({ onStart }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [codexTab, setCodexTab] = useState<CodexTab | null>(null)
   const levels = Object.values(CTX.levels)
   const first = levels[0]
 
@@ -84,12 +86,21 @@ export function LevelSelect({ onStart }: Props) {
 
         <div className="levels__foot">
           <span>当前可玩 · 1 关 / 8 株 / 13 词</span>
-          <button type="button" className="levels__settings" onClick={() => setSettingsOpen(true)}>
-            设置
-          </button>
+          <span className="levels__actions">
+            <button type="button" className="levels__settings" onClick={() => setCodexTab('plants')}>
+              图鉴
+            </button>
+            <button type="button" className="levels__settings" onClick={() => setCodexTab('review')}>
+              复习
+            </button>
+            <button type="button" className="levels__settings" onClick={() => setSettingsOpen(true)}>
+              设置
+            </button>
+          </span>
         </div>
       </div>
       {settingsOpen && <SettingsOverlay onClose={() => setSettingsOpen(false)} />}
+      {codexTab && <CodexOverlay initialTab={codexTab} onClose={() => setCodexTab(null)} />}
     </div>
   )
 }
