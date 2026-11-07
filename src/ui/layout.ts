@@ -12,6 +12,11 @@ export function stageTransform(scale: number): string {
   return `translate(-50%, -50%) scale(${scale})`
 }
 
+/** 高度受限（横屏手机）时，舞台左右两侧各需向外延伸的逻辑像素 */
+export function stageBleed(vw: number, scale: number): number {
+  return Math.max(0, (vw / scale - VIEW.w) / 2)
+}
+
 export const HUD_H = 50
 export const CELL_W = 120
 export const CELL_H = 88            // G2：50 + 5×88 + 230 = 720（96 会溢出）

@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { type CSSProperties, useEffect, useState } from 'react'
 import { music } from '../platform/music'
 import { loadSave } from '../platform/save'
 import { GameScreen } from './GameScreen'
 import { LevelSelect } from './LevelSelect'
-import { fitScale, stageTransform } from './layout'
+import { RotateHint } from './RotateHint'
+import { fitScale, stageBleed, stageTransform } from './layout'
 
 type Route =
   | { screen: 'levels' }
@@ -35,6 +36,8 @@ export default function App() {
     return save
   })
   const scale = useStageScale()
+  const bleed = stageBleed(window.innerWidth, scale)
+  const viewportStyle = { '--bleed': `${bleed}px` } as CSSProperties
 
   useEffect(() => {
     const unlock = () => music.unlock()
@@ -47,7 +50,7 @@ export default function App() {
   }, [])
 
   return (
-    <div className="viewport">
+    <div className={`viewport viewport--${route.screen}`} style={viewportStyle}>
       <div className="stage" style={{ transform: stageTransform(scale) }} data-scale={scale.toFixed(3)}>
         {route.screen === 'levels' ? (
           <LevelSelect
@@ -62,6 +65,7 @@ export default function App() {
           />
         )}
       </div>
+      <RotateHint />
     </div>
   )
 }

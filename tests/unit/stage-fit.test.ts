@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { VIEW, fitScale, stageTransform } from '../../src/ui/layout'
+import { VIEW, fitScale, stageBleed, stageTransform } from '../../src/ui/layout'
 
 describe('舞台缩放与居中（小视口回归）', () => {
   it('fitScale 取宽高缩放比的较小值', () => {
@@ -13,6 +13,13 @@ describe('舞台缩放与居中（小视口回归）', () => {
 
   it('stageTransform 以中心锚定缩放', () => {
     expect(stageTransform(0.5)).toBe('translate(-50%, -50%) scale(0.5)')
+  })
+
+  it('stageBleed 只在高度受限时向两侧延伸', () => {
+    expect(stageBleed(844, fitScale(844, 390))).toBeCloseTo(139.08, 1)
+    expect(stageBleed(1920, fitScale(1920, 1080))).toBe(0)
+    expect(stageBleed(1280, fitScale(1280, 720))).toBe(0)
+    expect(stageBleed(390, fitScale(390, 844))).toBe(0)
   })
 
   it('.stage 绝对定位到容器中心', () => {

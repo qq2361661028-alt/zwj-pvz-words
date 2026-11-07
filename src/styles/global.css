@@ -63,6 +63,87 @@ button:disabled {
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
 }
 
+/* —— 手机端：竖屏旋转引导 + 横屏场景延续 —— */
+.rotate-hint {
+  display: none;
+}
+
+@media (pointer: coarse) and (orientation: portrait) {
+  .rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+      radial-gradient(ellipse at 50% 0%, #3b2a14, #150d04 70%);
+  }
+
+  .rotate-hint__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: min(320px, 88vw);
+    padding: 30px 24px 26px;
+    text-align: center;
+  }
+
+  .rotate-hint__phone {
+    width: 108px;
+    height: 108px;
+    animation: rotate-hint-tilt 2.6s ease-in-out infinite;
+  }
+
+  .rotate-hint__title {
+    margin: 0;
+    font-size: 30px;
+    color: #ffe14d;
+    text-shadow:
+      0 3px 0 #3b2310,
+      0 6px 10px rgba(0, 0, 0, 0.45);
+  }
+
+  .rotate-hint__text {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffeec6;
+    opacity: 0.92;
+  }
+}
+
+@keyframes rotate-hint-tilt {
+  0%,
+  18% { transform: rotate(0deg); }
+  45%,
+  70% { transform: rotate(-90deg); }
+  92%,
+  100% { transform: rotate(0deg); }
+}
+
+/* 横屏铺满时，场景层（天空/草地）向两侧延伸到屏幕边缘，去掉舞台投影 */
+@media (pointer: coarse) and (orientation: landscape) {
+  .viewport--levels,
+  .viewport--game {
+    background: linear-gradient(180deg, #7fc4e8 0%, #a8dcf0 46%, #cfe9d0 100%);
+  }
+
+  .viewport--levels .stage,
+  .viewport--game .stage {
+    overflow: visible;
+    box-shadow: none;
+  }
+
+  .viewport--levels .sky,
+  .viewport--game .sky,
+  .viewport--levels .levels__ground {
+    left: calc(-1 * var(--bleed, 0px));
+    right: calc(-1 * var(--bleed, 0px));
+  }
+}
+
 /* —— 木质面板 —— */
 .wood {
   position: relative;
