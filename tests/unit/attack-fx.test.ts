@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { emptyFx, stepFx } from '../../src/ui/attackFx'
+import { emptyFx, SHOT_STYLES, stepFx } from '../../src/ui/attackFx'
 import { colToPx, xToPx } from '../../src/ui/layout'
 import type { Plant, Zombie } from '../../src/rules/types'
 
@@ -76,8 +76,18 @@ describe('攻击特效', () => {
     const plants = [plant()]
     const zombies = [zombie()]
     const t0 = stepFx(emptyFx(), plants, zombies, 0)
-    const life = t0.shots[0].flightMs + t0.shots[0].impactMs
-    expect(stepFx(t0, plants, zombies, life - 1).shots).toHaveLength(1)
-    expect(stepFx(t0, plants, zombies, life).shots).toHaveLength(0)
+    const first = t0.shots[0]
+    const life = first.flightMs + first.impactMs
+    expect(stepFx(t0, plants, zombies, life - 1).shots.some((s) => s.id === first.id)).toBe(true)
+    expect(stepFx(t0, plants, zombies, life).shots.some((s) => s.id === first.id)).toBe(false)
+  })
+
+  it('三种弹丸保持更慢的飞行：飞行时长再次翻倍，射速不变', () => {
+    expect(SHOT_STYLES.slinger.flightMs).toBe(1920)
+    expect(SHOT_STYLES.thorn.flightMs).toBe(1520)
+    expect(SHOT_STYLES.thistle.flightMs).toBe(3200)
+    expect(SHOT_STYLES.slinger.intervalMs).toBe(600)
+    expect(SHOT_STYLES.thorn.intervalMs).toBe(380)
+    expect(SHOT_STYLES.thistle.intervalMs).toBe(850)
   })
 })

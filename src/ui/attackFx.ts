@@ -15,9 +15,9 @@ type ShotStyle = {
 
 /** 纯装饰：射速与伤害无关，只负责让持续 DPS 看起来像在开火 */
 export const SHOT_STYLES: Record<string, ShotStyle> = {
-  slinger: { kind: 'pea', intervalMs: 600, flightMs: 240, impactMs: 180, yOffset: -16 },
-  thorn: { kind: 'spike', intervalMs: 380, flightMs: 190, impactMs: 150, yOffset: -8 },
-  thistle: { kind: 'seed', intervalMs: 850, flightMs: 400, impactMs: 220, yOffset: -22 }
+  slinger: { kind: 'pea', intervalMs: 600, flightMs: 1920, impactMs: 180, yOffset: -16 },
+  thorn: { kind: 'spike', intervalMs: 380, flightMs: 1520, impactMs: 150, yOffset: -8 },
+  thistle: { kind: 'seed', intervalMs: 850, flightMs: 3200, impactMs: 220, yOffset: -22 }
 }
 
 export type FxShot = {
