@@ -7,9 +7,9 @@ import './level.css'
 type Props = { onStart: (levelId: string) => void }
 
 const SOON = [
-  { name: '夜色前院', sub: 'M1 · 夜间关卡' },
-  { name: '泳池边', sub: 'M2 · 新地形' },
-  { name: '屋顶', sub: 'M3 · 语音判定' }
+  { name: '夜色前院', sub: '夜间关卡' },
+  { name: '泳池边', sub: '新地形' },
+  { name: '屋顶', sub: '语音判定' }
 ]
 
 export function LevelSelect({ onStart }: Props) {
@@ -43,7 +43,7 @@ export function LevelSelect({ onStart }: Props) {
                 </span>
               </span>
               <h3 className="level-card__name">Unit 3</h3>
-              <p className="level-card__sub">第 1 关 · 三株苗木</p>
+              <p className="level-card__sub">第 1 关 · 八株苗木</p>
               <span className="level-card__stars" aria-label="尚未获得星星">
                 <StarIcon filled={false} />
                 <StarIcon filled={false} />
@@ -82,7 +82,7 @@ export function LevelSelect({ onStart }: Props) {
           ))}
         </div>
 
-        <div className="levels__foot">M0 垂直切片 · 1 关 / 3 株 / 8 词</div>
+        <div className="levels__foot">当前可玩 · 1 关 / 8 株 / 13 词</div>
       </div>
     </div>
   )

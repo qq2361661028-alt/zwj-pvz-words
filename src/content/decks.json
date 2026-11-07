@@ -6,5 +6,10 @@
   { "id": "d_milk_bush", "wordId": "w_milk", "plantId": "bush", "theme": "unit" },
   { "id": "d_yellow_slinger", "wordId": "w_yellow", "plantId": "slinger", "theme": "review" },
   { "id": "d_bread_sprout", "wordId": "w_bread", "plantId": "sprout", "theme": "review" },
-  { "id": "d_broccoli_slinger", "wordId": "w_broccoli", "plantId": "slinger", "theme": "review" }
+  { "id": "d_broccoli_slinger", "wordId": "w_broccoli", "plantId": "slinger", "theme": "review" },
+  { "id": "d_clover_clover", "wordId": "w_clover", "plantId": "clover", "theme": "plant" },
+  { "id": "d_thorn_thorn", "wordId": "w_thorn", "plantId": "thorn", "theme": "plant" },
+  { "id": "d_fern_fern", "wordId": "w_fern", "plantId": "fern", "theme": "plant" },
+  { "id": "d_moss_moss", "wordId": "w_moss", "plantId": "moss", "theme": "plant" },
+  { "id": "d_thistle_thistle", "wordId": "w_thistle", "plantId": "thistle", "theme": "plant" }
 ]

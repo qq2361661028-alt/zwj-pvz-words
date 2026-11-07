@@ -10,6 +10,6 @@ if (report.errors.length) {
   process.exitCode = 1
 } else {
   console.log(
-    `内容校验通过：${RAW.words.length} 词 / ${RAW.decks.length} 配对 / ${RAW.levels.length} 关`
+    `内容校验通过：${RAW.plants.length} 植物 / ${RAW.words.length} 词 / ${RAW.decks.length} 配对 / ${RAW.zombies.length} 僵尸 / ${RAW.levels.length} 关`
   )
 }

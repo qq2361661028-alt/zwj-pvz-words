@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 1`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 1`] = `
 {
   "deck": "d_sunflower_sprout",
   "letters": [
@@ -38,7 +38,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 2`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 2`] = `
 {
   "deck": "d_coffee_bush",
   "letters": [
@@ -66,7 +66,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 3`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 3`] = `
 {
   "deck": "d_three_sprout",
   "letters": [
@@ -76,7 +76,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
     "e",
     "l",
     "s",
-    "a",
+    "d",
     "e",
   ],
   "tileIds": [
@@ -92,7 +92,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 4`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 4`] = `
 {
   "deck": "d_green_slinger",
   "letters": [
@@ -118,7 +118,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 5`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 5`] = `
 {
   "deck": "d_milk_bush",
   "letters": [
@@ -140,7 +140,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 6`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 6`] = `
 {
   "deck": "d_yellow_slinger",
   "letters": [
@@ -168,7 +168,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 7`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 7`] = `
 {
   "deck": "d_bread_sprout",
   "letters": [
@@ -194,7 +194,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
 }
 `;
 
-exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算法变更时必须显式更新快照 8`] = `
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 8`] = `
 {
   "deck": "d_broccoli_slinger",
   "letters": [
@@ -204,7 +204,7 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
     "r",
     "o",
     "d",
-    "e",
+    "t",
     "b",
     "k",
     "c",
@@ -224,6 +224,136 @@ exports[`D10 黄金：(word, deck) → 牌面布局 > 8 个配对的牌面在算
     9,
     10,
     11,
+  ],
+}
+`;
+
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 9`] = `
+{
+  "deck": "d_clover_clover",
+  "letters": [
+    "l",
+    "r",
+    "c",
+    "k",
+    "u",
+    "v",
+    "e",
+    "i",
+    "o",
+  ],
+  "tileIds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+  ],
+}
+`;
+
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 10`] = `
+{
+  "deck": "d_thorn_thorn",
+  "letters": [
+    "t",
+    "n",
+    "o",
+    "l",
+    "m",
+    "h",
+    "s",
+    "r",
+  ],
+  "tileIds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+  ],
+}
+`;
+
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 11`] = `
+{
+  "deck": "d_fern_fern",
+  "letters": [
+    "e",
+    "r",
+    "m",
+    "v",
+    "n",
+    "f",
+  ],
+  "tileIds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+  ],
+}
+`;
+
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 12`] = `
+{
+  "deck": "d_moss_moss",
+  "letters": [
+    "m",
+    "s",
+    "z",
+    "s",
+    "o",
+    "n",
+  ],
+  "tileIds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+  ],
+}
+`;
+
+exports[`D10 黄金：(word, deck) → 牌面布局 > 13 个配对的牌面在算法变更时必须显式更新快照 13`] = `
+{
+  "deck": "d_thistle_thistle",
+  "letters": [
+    "l",
+    "e",
+    "t",
+    "z",
+    "h",
+    "r",
+    "t",
+    "b",
+    "s",
+    "c",
+    "i",
+  ],
+  "tileIds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
   ],
 }
 `;

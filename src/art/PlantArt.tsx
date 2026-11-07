@@ -153,8 +153,223 @@ export function BushArt(props: ArtProps) {
   )
 }
 
+/* ------------------------------------------------------------------ */
+/*  三叶草：三片心形叶 + 顶部小黄花（producer，产光加倍）                */
+/* ------------------------------------------------------------------ */
+export function CloverArt(props: ArtProps) {
+  const u = useUid()
+  return (
+    <Art {...props}>
+      <defs>
+        <radialGradient id={`${u}leaf`} cx="45%" cy="30%" r="80%">
+          <stop offset="0%" stopColor="#b9ec72" />
+          <stop offset="65%" stopColor="#6fbe34" />
+          <stop offset="100%" stopColor="#3f7d1f" />
+        </radialGradient>
+      </defs>
+      <Shadow />
+      <g stroke={INK} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M60 112 C 58 96 58 82 60 68" fill="none" strokeWidth="8" stroke="#4f8a24" />
+        <path d="M60 112 C 58 96 58 82 60 68" fill="none" strokeWidth="4" stroke={INK} />
+        <path d="M60 40 C 58 60 58 58 60 66" fill="none" strokeWidth="3.4" stroke="#4f8a24" />
+      </g>
+      <g stroke={INK} strokeWidth="4" strokeLinejoin="round" fill={`url(#${u}leaf)`}>
+        {[0, 120, 240].map((deg) => (
+          <path
+            key={deg}
+            transform={`rotate(${deg} 60 64)`}
+            d="M60 64 C 54 56 46 50 38 52 C 30 54 28 64 34 72 C 40 80 52 88 60 96 C 68 88 80 80 86 72 C 92 64 90 54 82 52 C 74 50 66 56 60 64 Z"
+          />
+        ))}
+        <circle cx="60" cy="64" r="4.5" fill="#2f5c14" strokeWidth="3" />
+      </g>
+      <g stroke={INK} strokeWidth="3">
+        <circle cx="60" cy="22" r="7" fill="#ffd647" />
+        <circle cx="49" cy="28" r="5" fill="#ffe37a" />
+        <circle cx="71" cy="28" r="5" fill="#ffe37a" />
+      </g>
+      <circle cx="58" cy="20" r="2" fill="#fff8c4" stroke="none" />
+    </Art>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  荆棘藤：带刺藤鞭 + 红色花苞，朝右发射（shooter）                    */
+/* ------------------------------------------------------------------ */
+export function ThornArt(props: ArtProps) {
+  const u = useUid()
+  return (
+    <Art {...props}>
+      <defs>
+        <linearGradient id={`${u}vine`} x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stopColor="#3f6d1d" />
+          <stop offset="100%" stopColor="#8ec94a" />
+        </linearGradient>
+      </defs>
+      <Shadow />
+      <g stroke={INK} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+        <path
+          d="M34 112 C 28 92 38 74 56 64 C 74 54 86 44 92 30"
+          fill="none"
+          strokeWidth="10"
+          stroke={`url(#${u}vine)`}
+        />
+        <path
+          d="M34 112 C 28 92 38 74 56 64 C 74 54 86 44 92 30"
+          fill="none"
+          strokeWidth="4"
+          stroke={INK}
+        />
+        <path d="M40 100 l -16 -2 l 10 -10 Z" fill="#d8e8b0" />
+        <path d="M38 84 l 16 -6 l -4 12 Z" fill="#d8e8b0" />
+        <path d="M52 70 l -14 -4 l 10 -8 Z" fill="#d8e8b0" />
+        <path d="M66 60 l 14 -2 l -6 12 Z" fill="#d8e8b0" />
+        <path d="M80 48 l -12 -8 l 14 -2 Z" fill="#d8e8b0" />
+        <path d="M40 104 C 52 102 60 96 64 88 C 54 88 44 94 40 104 Z" fill="#6fbe34" />
+        <path d="M60 76 C 70 72 76 64 76 56 C 66 58 60 66 60 76 Z" fill="#8ec94a" />
+      </g>
+      <g stroke={INK} strokeWidth="3.5" strokeLinejoin="round">
+        <path d="M92 30 C 100 22 112 24 114 34 C 116 44 106 50 98 46 C 92 42 90 34 92 30 Z" fill="#e04a35" />
+        <path d="M94 38 C 98 32 106 30 110 34" fill="none" stroke="#8f2417" strokeWidth="2.6" />
+      </g>
+      <circle cx="103" cy="35" r="2.4" fill="#ffd1c4" stroke="none" />
+    </Art>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  蕨叶盾：层叠羽状叶组成的盾形（defense）                             */
+/* ------------------------------------------------------------------ */
+export function FernArt(props: ArtProps) {
+  const u = useUid()
+  return (
+    <Art {...props}>
+      <defs>
+        <linearGradient id={`${u}frond`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#a8dd6a" />
+          <stop offset="55%" stopColor="#63a92f" />
+          <stop offset="100%" stopColor="#35661a" />
+        </linearGradient>
+      </defs>
+      <Shadow />
+      <g stroke={INK} strokeWidth="4" strokeLinejoin="round">
+        <path
+          d="M60 112 C 38 98 24 72 30 40 C 46 50 58 74 60 112 Z"
+          fill={`url(#${u}frond)`}
+        />
+        <path
+          d="M60 112 C 82 98 96 72 90 40 C 74 50 62 74 60 112 Z"
+          fill={`url(#${u}frond)`}
+        />
+        <path
+          d="M60 112 C 50 84 50 52 60 24 C 70 52 70 84 60 112 Z"
+          fill="#7cc23c"
+        />
+        <path d="M60 104 C 44 92 36 76 36 58" fill="none" strokeWidth="2.8" stroke="#2f5c14" />
+        <path d="M60 104 C 76 92 84 76 84 58" fill="none" strokeWidth="2.8" stroke="#2f5c14" />
+        <path d="M60 100 L 60 40" fill="none" strokeWidth="2.8" stroke="#2f5c14" />
+      </g>
+      <g fill="#2f5c14" opacity="0.65">
+        {[48, 62, 76, 90].map((y) => (
+          <g key={y}>
+            <circle cx={60 - (y - 40) * 0.34} cy={y} r="2.2" />
+            <circle cx={60 + (y - 40) * 0.34} cy={y} r="2.2" />
+          </g>
+        ))}
+      </g>
+    </Art>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  苔藓毯：低矮苔藓团 + 小石子与孢蒴（defense）                        */
+/* ------------------------------------------------------------------ */
+export function MossArt(props: ArtProps) {
+  const u = useUid()
+  return (
+    <Art {...props}>
+      <defs>
+        <linearGradient id={`${u}moss`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#9ccf5a" />
+          <stop offset="60%" stopColor="#5f942e" />
+          <stop offset="100%" stopColor="#3c661c" />
+        </linearGradient>
+      </defs>
+      <Shadow />
+      <g stroke={INK} strokeWidth="4" strokeLinejoin="round">
+        <path
+          d="M16 106 C 10 96 16 86 28 82 C 32 72 46 68 56 74 C 66 66 82 70 86 80 C 98 82 106 92 100 104 C 104 108 100 112 94 112 L 24 112 C 18 112 14 110 16 106 Z"
+          fill={`url(#${u}moss)`}
+        />
+        <path d="M28 96 C 40 90 52 90 62 94" fill="none" strokeWidth="2.6" stroke="#2f5c14" opacity="0.6" />
+        <path d="M62 94 C 74 88 86 90 94 96" fill="none" strokeWidth="2.6" stroke="#2f5c14" opacity="0.6" />
+      </g>
+      <g stroke={INK} strokeWidth="3">
+        <ellipse cx="36" cy="98" rx="9" ry="6" fill="#a9b3a0" />
+        <ellipse cx="84" cy="100" rx="7" ry="5" fill="#bcc4b2" />
+        <circle cx="36" cy="96" r="1.8" fill="#e6ece0" stroke="none" />
+      </g>
+      <g stroke={INK} strokeWidth="2.6">
+        <path d="M52 74 L 52 58 M64 72 L 66 54 M76 76 L 80 62" fill="none" stroke="#4f7a24" />
+        <ellipse cx="52" cy="55" rx="4" ry="5" fill="#c9e08a" />
+        <ellipse cx="66" cy="51" rx="4" ry="5" fill="#c9e08a" />
+        <ellipse cx="80" cy="59" rx="3.6" ry="4.6" fill="#c9e08a" />
+      </g>
+    </Art>
+  )
+}
+
+/* ------------------------------------------------------------------ */
+/*  蓟刺花：紫色球状花冠 + 锯齿叶，朝右发射（shooter）                  */
+/* ------------------------------------------------------------------ */
+export function ThistleArt(props: ArtProps) {
+  const u = useUid()
+  return (
+    <Art {...props}>
+      <defs>
+        <radialGradient id={`${u}bloom`} cx="40%" cy="32%" r="78%">
+          <stop offset="0%" stopColor="#c9a4f2" />
+          <stop offset="60%" stopColor="#9a63d6" />
+          <stop offset="100%" stopColor="#6a34a8" />
+        </radialGradient>
+      </defs>
+      <Shadow />
+      <g stroke={INK} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M56 112 C 52 96 54 78 62 64" fill="none" strokeWidth="9" stroke="#4f8a24" />
+        <path d="M56 112 C 52 96 54 78 62 64" fill="none" strokeWidth="4" stroke={INK} />
+        <path d="M56 96 L 34 86 L 50 82 L 30 66 L 54 74 Z" fill="#6fbe34" />
+        <path d="M58 84 L 82 76 L 68 90 L 88 92 L 64 98 Z" fill="#5aa832" />
+      </g>
+      <g stroke={INK} strokeWidth="3.4" strokeLinejoin="round">
+        <circle cx="72" cy="42" r="19" fill={`url(#${u}bloom)`} />
+        {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+          <path
+            key={deg}
+            transform={`rotate(${deg} 72 42)`}
+            d="M72 23 L 77 12 L 67 12 Z"
+            fill="#8a55c4"
+            strokeWidth="2.6"
+          />
+        ))}
+        <path d="M54 56 C 58 66 86 66 90 56 C 86 60 58 60 54 56 Z" fill="#4f8a24" />
+      </g>
+      <g fill="#e6d4ff" opacity="0.8">
+        <circle cx="66" cy="35" r="2.4" />
+        <circle cx="78" cy="39" r="2" />
+        <circle cx="70" cy="47" r="2" />
+        <circle cx="80" cy="49" r="1.8" />
+      </g>
+    </Art>
+  )
+}
+
 export const PLANT_ART = {
   sprout: SproutArt,
   slinger: SlingerArt,
-  bush: BushArt
+  bush: BushArt,
+  clover: CloverArt,
+  thorn: ThornArt,
+  fern: FernArt,
+  moss: MossArt,
+  thistle: ThistleArt
 } as const

@@ -152,4 +152,26 @@ describe('D21 启动门禁', () => {
     raw.plants[0].cost = 0
     expect(() => assertContent(raw)).toThrow(/D21 内容校验失败（2 项）/)
   })
+
+  it('theme=plant 必须与植物同名', () => {
+    const raw = clone()
+    const deck = raw.decks.find((d) => d.theme === 'plant')!
+    deck.wordId = 'w_coffee'
+    expect(errorsOf(raw)).toMatch(/必须与植物 id/)
+  })
+
+  it('producer 的 produce_amount 必须为正，非 producer 不得配置', () => {
+    const raw = clone()
+    raw.plants.find((p) => p.id === 'clover')!.produce_amount = 0
+    raw.plants.find((p) => p.id === 'slinger')!.produce_amount = 10
+    const text = errorsOf(raw)
+    expect(text).toMatch(/produce_amount/)
+  })
+
+  it('僵尸在波次中缺席只算 warning', () => {
+    const raw = clone()
+    raw.levels[0].waves = raw.levels[0].waves.filter((w) => w.zombie !== 'z_bucket')
+    const report = validateContent(raw)
+    expect(report.warnings.join('\n')).toMatch(/孤立僵尸：z_bucket/)
+  })
 })

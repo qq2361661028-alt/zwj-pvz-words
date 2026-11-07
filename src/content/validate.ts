@@ -70,6 +70,10 @@ export function validateContent(raw: RawContent): ValidationReport {
     if (p.slot === 'shooter' && p.dps <= 0) errors.push(`植物 ${p.id}：shooter 的 dps 必须 > 0`)
     if (p.slot !== 'shooter' && p.dps !== 0) warnings.push(`植物 ${p.id}：非 shooter 的 dps 应为 0`)
     if (!ART_RE.test(p.art)) errors.push(`植物 ${p.id}：art 路径格式不合法 ${p.art}`)
+    if (p.produce_amount !== undefined) {
+      if (p.slot !== 'producer') errors.push(`植物 ${p.id}：只有 producer 能配置 produce_amount`)
+      if (!(p.produce_amount > 0)) errors.push(`植物 ${p.id}：produce_amount 必须 > 0`)
+    }
   })
 
   const ctx: Ctx = {
@@ -90,6 +94,9 @@ export function validateContent(raw: RawContent): ValidationReport {
       // §4.1.1：theme=plant 只召唤同名植物；generic 苗木可承载任意词
       if (d.theme === 'plant' && plant.generic) {
         errors.push(`配对 ${d.id}：theme=plant 不能指向 generic 植物 ${plant.id}`)
+      }
+      if (d.theme === 'plant' && !plant.generic && word.word !== plant.id) {
+        errors.push(`配对 ${d.id}：theme=plant 的拼写「${word.word}」必须与植物 id「${plant.id}」同名`)
       }
       if (d.theme !== 'plant' && !plant.generic) {
         errors.push(`配对 ${d.id}：非 generic 植物 ${plant.id} 只能由 theme=plant 召唤`)
@@ -115,6 +122,10 @@ export function validateContent(raw: RawContent): ValidationReport {
     if (!(z.speed > 0)) errors.push(`僵尸 ${z.id}：speed 必须 > 0`)
     if (z.dps <= 0) errors.push(`僵尸 ${z.id}：dps 必须 > 0`)
     if (z.speed > 1) warnings.push(`僵尸 ${z.id}：speed ${z.speed} 格/秒 快于 1 格/秒，检查单位`)
+  })
+  const usedZombies = new Set(raw.levels.flatMap((l) => l.waves.map((w) => w.zombie)))
+  raw.zombies.forEach((z) => {
+    if (!usedZombies.has(z.id)) warnings.push(`孤立僵尸：${z.id} 没有进入任何波次`)
   })
 
   const waveIssues = (waves: readonly WaveDef[], levelId: string) => {

@@ -73,5 +73,50 @@
     "unit": "Unit 3",
     "letters": 8,
     "distractor_overrides": ["b", "k"]
+  },
+  {
+    "id": "w_clover",
+    "word": "clover",
+    "zh": "三叶草",
+    "ipa": "/ˈkləʊvə/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 6
+  },
+  {
+    "id": "w_thorn",
+    "word": "thorn",
+    "zh": "荆棘",
+    "ipa": "/θɔːn/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 5
+  },
+  {
+    "id": "w_fern",
+    "word": "fern",
+    "zh": "蕨类",
+    "ipa": "/fɜːn/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 4
+  },
+  {
+    "id": "w_moss",
+    "word": "moss",
+    "zh": "苔藓",
+    "ipa": "/mɒs/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 4
+  },
+  {
+    "id": "w_thistle",
+    "word": "thistle",
+    "zh": "蓟",
+    "ipa": "/ˈθɪsl/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 7
   }
 ]

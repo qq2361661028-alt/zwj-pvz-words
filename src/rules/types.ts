@@ -13,6 +13,8 @@ export type PlantDef = {
   slot: PlantSlot
   generic: boolean
   unlocked_by_default: boolean
+  /** 覆盖 SUN.produce_amount；仅 producer 可用 */
+  produce_amount?: number
 }
 
 export type WordDef = {

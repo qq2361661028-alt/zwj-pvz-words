@@ -5,11 +5,11 @@ import { BOARD } from '../../src/rules/constants'
 import { startReachable } from '../../src/rules/reachability'
 import { multisetSelfCheck } from '../../src/rules/wordgen'
 
-describe('M0 内容夹具', () => {
-  it('规模：3 植物 / 8 词 / 8 配对 / 4 僵尸 / 1 关', () => {
-    expect(RAW.plants).toHaveLength(3)
-    expect(RAW.words).toHaveLength(8)
-    expect(RAW.decks).toHaveLength(8)
+describe('内容夹具', () => {
+  it('规模：8 植物 / 13 词 / 13 配对 / 4 僵尸 / 1 关', () => {
+    expect(RAW.plants).toHaveLength(8)
+    expect(RAW.words).toHaveLength(13)
+    expect(RAW.decks).toHaveLength(13)
     expect(RAW.zombies).toHaveLength(4)
     expect(RAW.levels).toHaveLength(1)
     expect(CTX.levels[M0_LEVEL_ID]).toBeDefined()
@@ -38,17 +38,17 @@ describe('M0 内容夹具', () => {
     }
   })
 
-  it('关卡牌序覆盖 3 类植物，且开局可达（G4）', () => {
+  it('关卡牌序覆盖全部 8 株植物，且开局可达（G4）', () => {
     const level = CTX.levels[M0_LEVEL_ID]
-    const slots = level.deckIds.map((id) => CTX.plants[CTX.decks[id].plantId].slot)
-    expect(new Set(slots)).toEqual(new Set(['producer', 'shooter', 'defense']))
+    const plantIds = level.deckIds.map((id) => CTX.decks[id].plantId)
+    expect(new Set(plantIds).size).toBe(8)
     expect(level.deckIds).toHaveLength(8)
     expect(startReachable(level.deckIds, CTX)).toEqual([])
   })
 
-  it('波次：6 波、t 递增、lane 合法、僵尸存在，总出怪 7', () => {
+  it('波次：9 波 / 10 只怪 / 4 种僵尸全部出场 / 末波 flag', () => {
     const level = CTX.levels[M0_LEVEL_ID]
-    expect(level.waves).toHaveLength(6)
+    expect(level.waves).toHaveLength(9)
     let prev = -1
     let total = 0
     for (const w of level.waves) {
@@ -62,8 +62,10 @@ describe('M0 内容夹具', () => {
       }
       total += w.lanes.length
     }
-    expect(total).toBe(7)
-    expect(level.waves[0].t).toBe(30)
+    expect(total).toBe(10)
+    const kinds = new Set(level.waves.map((w) => w.zombie))
+    expect(kinds).toEqual(new Set(['z_basic', 'z_cone', 'z_bucket', 'z_flag']))
+    expect(level.waves[0].t).toBe(40)
     expect(level.waves.at(-1)!.flag).toBe(true)
   })
 

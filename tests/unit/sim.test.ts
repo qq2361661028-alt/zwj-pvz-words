@@ -25,9 +25,9 @@ describe('开局', () => {
 })
 
 describe('出怪时间轴', () => {
-  it('首怪 t=30 才出现，数值由 fillStats 补上', () => {
-    expect(at(newGame(M0_LEVEL_ID, CTX), 29.9).zombies).toHaveLength(0)
-    const s = at(newGame(M0_LEVEL_ID, CTX), 30.1)
+  it('首怪 t=40 才出现，数值由 fillStats 补上', () => {
+    expect(at(newGame(M0_LEVEL_ID, CTX), 39.9).zombies).toHaveLength(0)
+    const s = at(newGame(M0_LEVEL_ID, CTX), 40.1)
     expect(s.zombies).toHaveLength(1)
     expect(s.zombies[0]).toMatchObject({ zombieId: 'z_basic', lane: 2 })
     expect(s.zombies[0].x).toBeGreaterThan(9.5)
@@ -59,8 +59,8 @@ describe('结局', () => {
   it('放任不管 → death，只发一次 outcome 事件', () => {
     const r = runUntil(newGame(M0_LEVEL_ID, CTX), CTX, (s) => s.outcome !== null, 300)
     expect(r.state.outcome).toBe('death')
-    expect(r.state.t).toBeGreaterThan(130)
-    expect(r.state.t).toBeLessThan(140)
+    expect(r.state.t).toBeGreaterThan(140)
+    expect(r.state.t).toBeLessThan(150)
     expect(r.events.filter((e) => e.type === 'outcome')).toEqual([{ type: 'outcome', kind: 'death' }])
   })
 

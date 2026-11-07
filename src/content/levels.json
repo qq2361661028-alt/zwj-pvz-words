@@ -5,20 +5,23 @@
     "deckIds": [
       "d_sunflower_sprout",
       "d_coffee_bush",
-      "d_three_sprout",
       "d_green_slinger",
-      "d_milk_bush",
-      "d_yellow_slinger",
-      "d_bread_sprout",
-      "d_broccoli_slinger"
+      "d_clover_clover",
+      "d_fern_fern",
+      "d_thorn_thorn",
+      "d_moss_moss",
+      "d_thistle_thistle"
     ],
     "waves": [
-      { "t": 30, "zombie": "z_basic", "lanes": [2] },
+      { "t": 40, "zombie": "z_basic", "lanes": [2] },
       { "t": 70, "zombie": "z_basic", "lanes": [0] },
-      { "t": 110, "zombie": "z_cone", "lanes": [4] },
-      { "t": 140, "zombie": "z_basic", "lanes": [2] },
-      { "t": 170, "zombie": "z_cone", "lanes": [0, 4] },
-      { "t": 200, "zombie": "z_flag", "lanes": [2], "flag": true }
+      { "t": 100, "zombie": "z_cone", "lanes": [4] },
+      { "t": 130, "zombie": "z_basic", "lanes": [2] },
+      { "t": 160, "zombie": "z_cone", "lanes": [0, 4] },
+      { "t": 190, "zombie": "z_bucket", "lanes": [2] },
+      { "t": 220, "zombie": "z_basic", "lanes": [0] },
+      { "t": 250, "zombie": "z_bucket", "lanes": [4] },
+      { "t": 280, "zombie": "z_flag", "lanes": [0], "flag": true }
     ]
   }
 ]

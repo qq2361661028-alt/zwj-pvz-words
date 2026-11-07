@@ -8,12 +8,12 @@ import type { Event, GameState } from '../../src/rules/types'
 
 /**
  * 剧本玩家的固定落点（按牌序）：
- * 1 阳光苗 → lane2 后排；2 矮树丛 → lane2 第 3 列；3 阳光苗 → lane0 后排；
- * 4 弹丸藤 → lane2 第 2 列；5 矮树丛 → lane0 第 3 列；6 弹丸藤 → lane0 第 2 列；
- * 7 阳光苗 → lane4 后排；8 弹丸藤 → lane4 第 2 列。
+ * 1 阳光苗 → lane2 后排；2 矮树丛 → lane2 第 5 列；3 弹丸藤 → lane2 第 1 列；
+ * 4 三叶草 → lane0 后排；5 蕨叶盾 → lane0 第 5 列；6 荆棘藤 → lane4 第 1 列；
+ * 7 苔藓毯 → lane4 第 5 列；8 蓟刺花 → lane0 第 1 列。
  */
 const PLAN: ReadonlyArray<readonly [number, number]> = [
-  [2, 0], [2, 2], [0, 0], [2, 1], [0, 2], [0, 1], [4, 0], [4, 1]
+  [2, 0], [2, 5], [2, 1], [0, 0], [0, 5], [4, 1], [4, 5], [0, 1]
 ]
 
 function fillAll(state: GameState): GameState {
@@ -69,12 +69,14 @@ function scriptedRun(): Run {
 }
 
 describe('G4 可达性：剧本玩家必须真的能通关', () => {
-  it('全部填对 + 按计划种植 → cleared，阳光始终在 0..9990', () => {
+  it('全部填对 + 按计划种植 → cleared，8 株全部下地，阳光始终在 0..9990', () => {
     const run = scriptedRun()
     expect(run.state.outcome).toBe('cleared')
-    expect(run.state.t).toBeGreaterThan(190)
+    expect(run.state.t).toBeGreaterThan(270)
     expect(run.state.t).toBeLessThan(420)
     expect(run.placed).toBe(8)
+    const planted = new Set(run.state.plants.map((p) => p.plantId))
+    expect(planted.size).toBe(8)
     expect(run.state.zombies).toHaveLength(0)
     expect(run.state.sun).toBeGreaterThanOrEqual(0)
     expect(run.state.sun).toBeLessThanOrEqual(SUN.cap)
@@ -83,6 +85,14 @@ describe('G4 可达性：剧本玩家必须真的能通关', () => {
     expect(run.events.filter((e) => e.type === 'outcome')).toEqual([
       { type: 'outcome', kind: 'cleared' }
     ])
+  })
+
+  it('剧本通关过程中四种僵尸都出场过', () => {
+    const run = scriptedRun()
+    const spawned = new Set(
+      run.events.filter((e) => e.type === 'zombie_spawned').map((e) => e.zombieId)
+    )
+    expect(spawned).toEqual(new Set(['z_basic', 'z_cone', 'z_bucket', 'z_flag']))
   })
 
   it('同一剧本两次运行结果一致（D10 可重放）', () => {
@@ -119,11 +129,11 @@ describe('G4 可达性：剧本玩家必须真的能通关', () => {
   })
 
   it('D17：面板打开只减速 15%，10 秒位移差 ≈ 0.135 格', () => {
-    const base = runUntil(newGame(M0_LEVEL_ID, CTX), CTX, (s) => s.t >= 40).state
+    const base = runUntil(newGame(M0_LEVEL_ID, CTX), CTX, (s) => s.t >= 50).state
     const slowed = runUntil(
       setPanelOpen(newGame(M0_LEVEL_ID, CTX), true),
       CTX,
-      (s) => s.t >= 40
+      (s) => s.t >= 50
     ).state
     const a = base.zombies[0]
     const b = slowed.zombies[0]

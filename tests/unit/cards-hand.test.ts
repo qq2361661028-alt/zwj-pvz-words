@@ -40,7 +40,7 @@ describe('补位', () => {
     expect(r.view.cards).toHaveLength(5)
     expect(r.view.cards[0].wordId).toBe('w_coffee')
     expect(r.view.cards[0].status).toBe('filling')
-    expect(r.view.cards[4].wordId).toBe('w_yellow')
+    expect(r.view.cards[4].wordId).toBe(CTX.decks[level.deckIds[5]].wordId)
     expect(r.view.deckCursor).toBe(6)
     expect(r.view.seq).toBe(6)
     expect(r.events).toEqual([{ type: 'focus_advanced' }])

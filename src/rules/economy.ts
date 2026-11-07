@@ -24,9 +24,10 @@ export function tickProducers(
 ): { plants: Plant[]; sun: number; gained: number } {
   let total = 0
   const next = plants.map((p) => {
-    if (defs[p.plantId].slot !== 'producer') return p
+    const def = defs[p.plantId]
+    if (def.slot !== 'producer') return p
     if (t < p.nextProduceAt) return p
-    total += SUN.produce_amount
+    total += def.produce_amount ?? SUN.produce_amount
     return { ...p, nextProduceAt: p.nextProduceAt + SUN.produce_interval_s }
   })
   const g = gainSun(sun, total)

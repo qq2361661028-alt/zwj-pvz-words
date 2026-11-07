@@ -31,5 +31,61 @@
     "slot": "defense",
     "generic": true,
     "unlocked_by_default": true
+  },
+  {
+    "id": "clover",
+    "name": "三叶草",
+    "art": "assets/plants/clover_s.png",
+    "cost": 75,
+    "hp": 120,
+    "dps": 0,
+    "slot": "producer",
+    "generic": false,
+    "unlocked_by_default": true,
+    "produce_amount": 50
+  },
+  {
+    "id": "thorn",
+    "name": "荆棘藤",
+    "art": "assets/plants/thorn_s.png",
+    "cost": 125,
+    "hp": 260,
+    "dps": 50,
+    "slot": "shooter",
+    "generic": false,
+    "unlocked_by_default": true
+  },
+  {
+    "id": "thistle",
+    "name": "蓟刺花",
+    "art": "assets/plants/thistle_s.png",
+    "cost": 150,
+    "hp": 300,
+    "dps": 55,
+    "slot": "shooter",
+    "generic": false,
+    "unlocked_by_default": true
+  },
+  {
+    "id": "fern",
+    "name": "蕨叶盾",
+    "art": "assets/plants/fern_s.png",
+    "cost": 75,
+    "hp": 6500,
+    "dps": 0,
+    "slot": "defense",
+    "generic": false,
+    "unlocked_by_default": true
+  },
+  {
+    "id": "moss",
+    "name": "苔藓毯",
+    "art": "assets/plants/moss_s.png",
+    "cost": 25,
+    "hp": 1200,
+    "dps": 0,
+    "slot": "defense",
+    "generic": false,
+    "unlocked_by_default": true
   }
 ]

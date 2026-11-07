@@ -56,6 +56,17 @@ describe('D16 阳光收支', () => {
     expect(jump.gained).toBe(25)
   })
 
+  it('三叶草每 12s 产 50，与阳光苗同 tick 合计 75', () => {
+    const dueAt = SUN.produce_interval_s
+    const plants = [
+      plant({ uid: 1 }),
+      plant({ uid: 2, plantId: 'clover', nextProduceAt: dueAt })
+    ]
+    const due = tickProducers(plants, CTX.plants, dueAt, 0)
+    expect(due.gained).toBe(75)
+    expect(due.plants.map((p) => p.nextProduceAt)).toEqual([dueAt * 2, dueAt * 2])
+  })
+
   it('满仓时 gained 为 0，不溢出', () => {
     const r = tickProducers([plant({ uid: 1 })], CTX.plants, SUN.produce_interval_s, SUN.cap)
     expect(r.gained).toBe(0)
