@@ -1,0 +1,35 @@
+[
+  {
+    "id": "sprout",
+    "name": "阳光苗",
+    "art": "assets/plants/sprout_s.png",
+    "cost": 40,
+    "hp": 150,
+    "dps": 0,
+    "slot": "producer",
+    "generic": true,
+    "unlocked_by_default": true
+  },
+  {
+    "id": "slinger",
+    "name": "弹丸藤",
+    "art": "assets/plants/slinger_s.png",
+    "cost": 75,
+    "hp": 300,
+    "dps": 30,
+    "slot": "shooter",
+    "generic": true,
+    "unlocked_by_default": true
+  },
+  {
+    "id": "bush",
+    "name": "矮树丛",
+    "art": "assets/plants/bush_s.png",
+    "cost": 40,
+    "hp": 4000,
+    "dps": 0,
+    "slot": "defense",
+    "generic": true,
+    "unlocked_by_default": true
+  }
+]

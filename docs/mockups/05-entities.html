@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>pvz-words · 05 实体剪影标本</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { overflow: auto; }
+  .stage { position: static; display: block; }
+  .frame { position: static; transform: none !important; width: 1280px; height: auto; margin: 0 auto; }
+  .overview { position: static; overflow: visible; padding: 22px 26px 70px; }
+  .spec { max-width: 1228px; }
+  .spec h2 { margin: 30px 0 8px; font-size: 15px; }
+  .spec h3 { margin: 18px 0 6px; font-size: var(--fs-sm); }
+  .redline {
+    background: #fff; border-left: 4px solid var(--danger); border-radius: 0 8px 8px 0;
+    padding: 10px 14px; font-size: var(--fs-sm); color: var(--ink); line-height: 1.75;
+  }
+  .acctbl { font-variant-numeric: tabular-nums; }
+  .shape-tbl td { vertical-align: middle; }
+  .shape-tbl .art { width: 130px; text-align: center; background: var(--lawn-a); }
+  .shape-tbl .art svg { width: 112px; height: 112px; display: block; margin: 0 auto; }
+  .shape-tbl .name { width: 120px; }
+  .shape-tbl .name b { display: block; font-size: var(--fs-md); }
+  .shape-tbl .why { color: var(--ink-soft); font-size: var(--fs-xs); line-height: 1.65; }
+  .specimen { display: flex; align-items: flex-end; gap: 26px; flex-wrap: wrap; background: #fff;
+    border: 1px solid var(--line); border-radius: var(--r-md); padding: 16px 18px; }
+  .tier { text-align: center; }
+  .tier .box { display: flex; align-items: flex-end; justify-content: center; background: var(--lawn-a);
+    outline: 1px solid var(--line-soft); outline-offset: -1px; border-radius: var(--r-sm); }
+  .tier .cap { font-size: var(--fs-xs); color: var(--ink-soft); margin-top: 6px; line-height: 1.5; }
+  .tier .box svg { display: block; }
+  .zrow { display: flex; gap: 18px; align-items: flex-end; background: #fff; border: 1px solid var(--line);
+    border-radius: var(--r-md); padding: 14px 18px; }
+  .zcell { text-align: center; }
+  .zcell .box { width: 64px; height: 88px; margin: 0 auto; background: var(--lawn-b);
+    border: 1px dashed var(--line); display: flex; align-items: flex-end; justify-content: center; }
+  .zcell .box svg { width: 64px; height: 88px; }
+  .zcell .cap { font-size: var(--fs-xs); color: var(--ink-soft); margin-top: 5px; }
+  .statecell { text-align: center; }
+  .statecell .box { position: relative; width: 88px; height: 88px; margin: 0 auto; background: var(--lawn-a);
+    border: 1px solid var(--line-soft); border-radius: var(--r-sm); }
+  .statecell .box svg.sil { width: 88px; height: 88px; position: absolute; left: 0; bottom: 0; }
+  .statecell .cap { font-size: var(--fs-xs); color: var(--ink-soft); margin-top: 5px; line-height: 1.5; }
+  .contrast { font-variant-numeric: tabular-nums; }
+  .sw { display: inline-block; width: 44px; height: 12px; border: 1px solid var(--line); vertical-align: -2px; }
+  .pass { color: var(--ok); font-weight: 600; }
+  .fail { color: var(--danger); font-weight: 600; }
+  pre.prompt {
+    margin: 0; background: #1f242b; color: #dbe3ec; border-radius: var(--r-md); padding: 12px 14px;
+    font: 12px/1.7 Consolas, "Courier New", monospace; white-space: pre-wrap; word-break: break-word;
+  }
+  .demo-lawn-wrap { position: relative; width: 1200px; height: 440px; }
+  .demo-lawn-wrap .lawn { left: 0; top: 0; }
+  .gap-note { background: #fdf8ec; border-left: 4px solid var(--sun); border-radius: 0 8px 8px 0;
+    padding: 10px 14px; font-size: var(--fs-sm); line-height: 1.75; }
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame"><div class="overview spec">
+
+  <div class="pagehead">
+    <a href="index.html">总览</a>
+    <a href="02-playing.html">02 · playing</a>
+    <a href="03-word-panel.html">03 · 填词</a>
+  </div>
+
+  <h1>05 · 实体剪影标本页（植物 / 僵尸）</h1>
+  <p>本页回答的是「植物和僵尸还没有 UI，怎么定」这件事。给出的不是美术，是<b>形状语言表 + 尺寸账 + 可直接复用的 M4 生图 prompt 骨架</b>。
+    原型 <code>02</code> / <code>03</code> 页场上的色块已经换成这里的 SVG 剪影（<code>entities.js</code>）。</p>
+
+  <div class="redline">
+    <b>红线（§2）</b>：这些轮廓是自写的，不参考、不描摹、不借用任何商业游戏形象；命名也不沿用原版角色名——
+    UI 上出现的「豌豆投手」「中性苗木」是本项目自己的名字。§9 音效用 Kenney CC0，但明确「不借植物形状」，
+    即音效包里的叶子/花朵素材同样不进本项目。
+  </div>
+
+  <h2>1. 形状语言表：功能写在轮廓里，不写在颜色里</h2>
+  <p class="note">规则：把图转成纯黑剪影，仍然能认出它干什么，才算形状过关。颜色只负责阵营（植物冷绿/黄绿，僵尸暖灰紫），
+    不负责「这是射手还是坚果」——因为色觉差异和低龄玩家不会靠颜色做战术判断。</p>
+  <table class="tbl shape-tbl" style="width:100%">
+    <tr><th style="width:130px">场上 112px 预览</th><th style="width:120px">slot</th><th>轮廓特征（形状语言）</th><th style="width:330px">孩子怎么读它 / M0 落点</th></tr>
+    <tbody id="shape-rows"></tbody>
+  </table>
+  <p class="note" style="margin-top:8px"><b>朝向约定（唯一的「方向即信息」例外）</b>：只有 <code>shooter</code> 带朝向，管口指向 = 攻击方向 = 面朝僵尸。
+    <code>producer</code> / <code>defense</code> 刻意做成旋转对称，避免「它朝哪边就打哪边」的误读——草坪是一维推进（§5），射手实际打整条 lane。</p>
+
+  <h2>2. 尺寸账：为什么是 88 而不是 §9 写的 96</h2>
+  <table class="tbl acctbl" style="width:100%">
+    <tr><th style="width:230px">竖向预算</th><th>高度</th><th>说明</th></tr>
+    <tr><td>HUD</td><td class="num">50</td><td>阳光 / 波次 / 时钟 / 自证角标</td></tr>
+    <tr><td>草坪 5 行 × 格高</td><td class="num">5 × H</td><td>§5 定 5×9 网格</td></tr>
+    <tr><td>底部填词抽屉（D7 / D8）</td><td class="num">230</td><td>40 手牌 + 40 焦点卡头 + 44 槽 + 76 字母块 + 18 间距 + 12 内边距</td></tr>
+    <tr><td><b>合计 ≤ 720（D14）</b></td><td class="num"><b>H ≤ 88</b></td><td><b>96 会让总高变成 50 + 480 + 230 = 760，超画幅 40px</b> → 要么砍掉一行草坪，要么把抽屉压到 190（字母块会掉到 30px 以下，低龄不可读）。所以 §9 的场上尺寸必须改成 88。</td></tr>
+  </table>
+  <p class="note">横向不是瓶颈：草坪 1200 宽 ÷ 9 列 = <b>120px 格宽</b>，88 素材横竖都放得下，左右各留 16px 呼吸。
+    最小可玩 960×600 时 <code>Scale.FIT</code> 等比缩到 0.75，场上素材实际约 66 CSS px——这是 88 的下限依据，不能再往下让。</p>
+
+  <h3>同一份轮廓在三档尺寸下的样子（§9：场上 / 卡牌 / 图鉴）</h3>
+  <div class="specimen" id="tier-row"></div>
+  <p class="note">§9 的三档命名 <code>plant_{id}_{s,c,l}.png</code> 保持不变，只把场上档从 96 改 88。
+    三档共用同一轮廓描述，缩放不重画——这也是「状态用叠加层不用独立素材」的前置条件。</p>
+
+  <h2>3. 深色描边是被测出来的，不是风格偏好</h2>
+  <p class="note">草坪底色是绿条纹（浅 <span class="sw" style="background:#dfe7dd"></span> <code>#dfe7dd</code> / 深 <span class="sw" style="background:#d3dcd1"></span> <code>#d3dcd1</code>）。
+    下面按 WCAG 相对亮度算法实测，不是估算——同一算法可以直接搬进构建期脚本。</p>
+  <table class="tbl contrast" style="width:100%">
+    <thead><tr>
+      <th style="width:120px">部位</th><th style="width:104px">fill</th><th style="width:74px">vs 浅草坪</th><th style="width:74px">vs 深草坪</th>
+      <th style="width:104px">描边</th><th style="width:74px">vs 浅草坪</th><th style="width:74px">vs 深草坪</th><th>判定（描边阈値 2.0）</th>
+    </tr></thead>
+    <tbody id="contrast-rows"></tbody>
+  </table>
+  <p class="note"><b>结论不是「描边更好看」，是「fill 单独放草坪上基本不存在」</b>：最差的一条（产阳光的果苞 <code>#f0d06a</code> vs 深草坪）只有 <b>1.07</b>——
+    也就是不描边的话，88px 下那块黄色会和草坪融成一片。加了描边后最差也到 <b>2.22</b>，全部达标。
+    因此规则定为：<b>每个部位色块必须配一个深色描边，且描边对深草坪的对比度 ≥ 2.0；fill 本身的对比度不作要求</b>（fill 只负责区分 slot 家族，不负责边缘）。
+    描边色由该 slot 自己的深色决定，不用统一黑：统一黑会和僵尸的暖灰抢注意力，也会让图鉴页白底上的图显得硬。
+    <br><b>建议回写文档</b>：把这条阈值并进 §11-4 构建期校验（素材色板 → 与草坪底色实测），换色批次立刻能被抓出来；果苞 <code>#b98a22</code> 是最接近临界的一条，M4 调色时先看它。</p>
+
+  <h2>4. 僵尸四档：差异只落在「体积出现在哪里」</h2>
+  <div class="zrow" id="zrow"></div>
+  <table class="tbl" style="width:100%;margin-top:10px">
+    <tr><th style="width:90px">僵尸</th><th style="width:80px">hp</th><th style="width:90px">speed</th><th>形状差异（剪影可辨）</th><th style="width:250px">为什么这样够</th></tr>
+    <tr><td>普通</td><td class="num">100</td><td class="num">0.16</td><td>基准：前倾 5°，双臂前伸</td><td>其余三档都以此为「差量」，减少 3/4 的描述量</td></tr>
+    <tr><td>路障</td><td class="num">200</td><td class="num">0.16</td><td>头顶锥形</td><td>血量高 = 头顶多一块，一眼可读「先敲头」</td></tr>
+    <tr><td>铁桶</td><td class="num">320</td><td class="num">0.14</td><td>方块头 <b>+ 宽肩横条</b></td><td>只加方块在 88px 下和路障难分，加宽肩才把「体积更大＝更耐打」写进轮廓（同时更慢，形状与数值一致）</td></tr>
+    <tr><td>旗帜</td><td class="num">100</td><td class="num">0.22</td><td>细长旗杆 + 前倾 11°</td><td>它是大波标记不是肉盾，所以「轻 + 快」必须由前倾角和细长杆表达，不能给它加体积</td></tr>
+  </table>
+  <p class="note">首批就是 §7 的 4 种，不带 Boss（§1 非目标）。四种共用同一具身体，只有头部/肩部附件不同——
+    M4 生图时可以先出一张基准，再用图生图加附件，批次一致性成本最低（D22）。</p>
+
+  <h2>5. 状态用叠加层，不新画素材</h2>
+  <div class="specimen" id="state-row"></div>
+  <p class="note"><b>素材量账</b>：8 株 × 3 档 = 24 张是基线。若「受击裂纹 3 档」「强化」「休眠」都各画一套，会膨胀到 24 × 4 = 96 张。
+    现在用叠加层：裂纹是 1 张可裁切的 SVG 路径（0/1/2/3 档只改 path 段数），强化是 CSS 光环，休眠是 <code>filter: grayscale(1)</code> + 虚线罩。
+    额外素材 = <b>0 张</b>。这也是 D22「三档尺寸」能够成立的原因。</p>
+
+  <h2>6. 在真实画幅里看：5×9 草坪 + 88px 素材</h2>
+  <p class="note">下面是 <code>02</code> 页同尺寸的静态快照，用来判断两件事：素材放进 120×88 格子里有没有被裁；以及同 lane 挤两个实体时可读不可读。</p>
+  <div class="demo-lawn-wrap"><div class="lawn" id="demo-lawn"><div class="spawn"></div></div></div>
+  <p class="note">右下 1200px 宽的草坪 + 底部 230px 抽屉 + 顶部 50px HUD 的合计正好 720。
+    注意第 3 lane 的射手和铁桶同屏时，<b>铁桶的宽肩横条仍能从射手管口下方分辨</b>——这是 88px 够用而不是必须 96px 的实测依据。</p>
+
+  <h2>7. 首批 8 株的形状位规划（§4.2）</h2>
+  <table class="tbl" style="width:100%">
+    <tr><th style="width:150px">植物</th><th style="width:100px">slot</th><th style="width:90px">generic</th><th style="width:110px">形状位</th><th>状态</th></tr>
+    <tr><td>peashooter 豌豆投手</td><td>shooter</td><td>—</td><td>shooter</td><td>M0 已定（本页）</td></tr>
+    <tr><td>sprout 中性苗木·产</td><td>producer</td><td>是</td><td>producer</td><td>M0 已定。<b>刻意抽象</b>：芽 + 果苞，不出现「这就是向日葵」的具象暗示，否则 §4.1.1 承载非植物词时语义又散了</td></tr>
+    <tr><td>bush 中性苗木·守</td><td>defense</td><td>是</td><td>defense</td><td>M0 已定，同上</td></tr>
+    <tr><td>sunflower 向日金</td><td>producer</td><td>否</td><td>producer</td><td>M2，复用 producer 轮廓 + 主题色，不新画形状</td></tr>
+    <tr><td>wallnut 硬壳果</td><td>defense</td><td>否</td><td>defense</td><td>M2，同上</td></tr>
+    <tr><td>iceberg 寒霜果</td><td>shooter</td><td>否</td><td>shooter + 顶部器官</td><td>M2，需要在 shooter 上加第二器官 → 这会是第一个「变体轮廓」，先记风险</td></tr>
+    <tr><td>chili 辣果</td><td>special</td><td>否</td><td>special</td><td>M2+，形状位已占（本页第 1 表第 4 行），细节未定</td></tr>
+    <tr><td>三叶风车</td><td>special</td><td>否</td><td>special</td><td>M2+，未定</td></tr>
+  </table>
+  <p class="note"><b>结论：8 株实际只需要 4 套轮廓 + 1 个变体（射手加顶部器官）。</b>这正是 D6「300 个词只要 8 套图」在美术侧对应的省法——
+    省钱的地方不是画得少，而是<b>形状按 slot 复用，不按植物名复用</b>。</p>
+
+  <h2>8. 这套轮廓同时是 M4 的生图 prompt 骨架</h2>
+  <p class="note">占位不是沉没成本：下面这段是本页 SVG 的同一份描述，M4 直接喂 ImageGen（D22：固定 style 后缀 + 图生图迭代保持批次一致）。</p>
+  <pre class="prompt" id="prompt-block"></pre>
+  <p class="note">生图后走 <code>scripts/matting.py</code> 纯色底抠透明，构建期校验存在性与尺寸（§9 / §11-4）——
+    「场上 88」这条会作为校验阈值写进脚本，超尺寸直接 FAIL，避免美术批次悄悄把画布放大。</p>
+
+  <h2>9. 本页需要你拍板的两处</h2>
+  <ol style="font-size:13px;color:#5b626d;line-height:1.85">
+    <li><b>§9 的场上尺寸 96px 改为 88px</b>（第 2 节的账已给死）。这不是偏好：96 在 D14 的 720 高度里放不下 5 行草坪 + 抽屉。
+      若你坚持 96，唯一出路是砍掉 40px 抽屉高度，字母块掉到 30px 以下——我不建议，但决定权在你。</li>
+    <li><b><code>special</code> 的形状位现在占位、细节留到 M2</b>：M0 只有 3 株，不含 special。本页已画出它的轮廓草案（非对称 + 第二器官），
+      如果你希望 M0 就把 4 个 slot 的形状一次定死，我把它升级为已定稿；否则它只是「预留位」，不进 M0 验收。</li>
+  </ol>
+
+  <p class="note" style="margin-top:26px">本页全部为 <code>entities.js</code> 里的内联 SVG，无外部素材、无图片文件，离线双击可看。
+    相关：<a href="index.html">总览</a> · <a href="02-playing.html">playing</a> · <a href="03-word-panel.html">wordPanelOpen</a></p>
+
+</div></div></div>
+<script src="shared.js"></script>
+<script src="entities.js"></script>
+<script>
+  Mock.mountFrame = function () { return document.querySelector(".frame"); };
+
+  // 表格行必须用真 tr/td（Mock.el 只会建 div，塞进 tbody 会塌掉表格布局）
+  function cell(tag, parent, cls) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+
+  // ---------- 1. 形状语言表 ----------
+  var SHAPES = [
+    { key: "producer", cn: "产阳光", feat: "圆头 + 短茎 + 顶部果苞；左右对称，无朝向，无任何指向性突出物。",
+      read: "读作「它在往外产东西」，不会误读成攻击。<br>M0 用到：sprout（generic）。", used: true },
+    { key: "shooter", cn: "输出伤害", feat: "圆头 + 向右伸出的<b>开口管</b>，管口画成深色实心圆；茎上单叶。",
+      read: "读作「它往右边打」——管口方向 = 攻击方向。<br>M0 用到：peashooter（theme:plant）。", used: true },
+    { key: "defense", cn: "挡路", feat: "三团低重心圆横向重叠，宽 &gt; 高，<b>无任何突出物</b>，重心压到格底。",
+      read: "读作「它挡在那儿」。去掉眼睛和武器暗示，专门承载非植物词（§4.1.1）。<br>M0 用到：bush（generic）。", used: true },
+    { key: "special", cn: "特殊", feat: "非对称 + 第二器官（细杆顶小球），主体偏色另给一档。",
+      read: "形状本身不解释功能 → 靠图鉴/悬停说明补。<b>M0 不实现</b>，只占形状位。", used: false }
+  ];
+  var rows = document.getElementById("shape-rows");
+  SHAPES.forEach(function (s) {
+    var tr = cell("tr", rows);
+    var c1 = cell("td", tr, "art"); c1.innerHTML = MockShapes.plants[s.key]();
+    var c2 = cell("td", tr, "name");
+    c2.innerHTML = "<b>" + s.key + "</b><span class='note'>" + s.cn + (s.used ? "" : " · 未用") + "</span>";
+    var c3 = cell("td", tr); c3.innerHTML = s.feat;
+    var c4 = cell("td", tr, "why"); c4.innerHTML = s.read;
+    if (!s.used) { c1.style.background = "#f4f6f9"; }
+  });
+
+  // ---------- 2. 三档尺寸 ----------
+  var TIERS = [
+    { px: 88, cap: "场上 88<br>（§9 原写 96，见第 2 节的账）" },
+    { px: 128, cap: "手牌/卡牌 128<br>§9 未变" },
+    { px: 256, cap: "图鉴 256<br>§9 未变，M4 才出现" }
+  ];
+  var tierHost = document.getElementById("tier-row");
+  TIERS.forEach(function (t) {
+    var d = cell("div", tierHost, "tier");
+    var box = cell("div", d, "box");
+    box.style.width = t.px + "px";
+    box.style.height = t.px + "px";
+    box.innerHTML = MockShapes.plants.shooter().replace('class="sil"',
+      'class="sil" style="width:' + t.px + "px;height:" + t.px + 'px"');
+    cell("div", d, "cap").innerHTML = "<b>" + t.px + "px</b><br>" + t.cap;
+  });
+
+  // ---------- 3. 对比度实测 ----------
+  function lum(hex) {
+    var v = [1, 3, 5].map(function (i) { return parseInt(hex.substr(i, 2), 16) / 255; });
+    var lin = v.map(function (c) { return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); });
+    return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+  }
+  function ratio(a, b) {
+    var la = lum(a), lb = lum(b);
+    return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+  }
+  var C = [
+    { part: "叶 fill", hex: "#7fae63", outline: "#4e7a45" },
+    { part: "射手管身 fill", hex: "#8dbd80", outline: "#4e7a45" },
+    { part: "产阳光果苞 fill", hex: "#f0d06a", outline: "#b98a22" },
+    { part: "防守体 fill", hex: "#b6c4d8", outline: "#6d7f96" },
+    { part: "特殊体 fill", hex: "#d6b8dc", outline: "#8f6a96" },
+    { part: "僵尸皮肤 fill", hex: "#9aa0a8", outline: "#6d737c" }
+  ];
+  var crow = document.getElementById("contrast-rows");
+  C.forEach(function (c) {
+    var tr = cell("tr", crow);
+    cell("td", tr).textContent = c.part;
+    cell("td", tr).innerHTML = "<span class='sw' style='background:" + c.hex + "'></span> <code>" + c.hex + "</code>";
+    var r1 = ratio(c.hex, "#dfe7dd"), r2 = ratio(c.hex, "#d3dcd1");
+    cell("td", tr).textContent = r1.toFixed(2);
+    cell("td", tr).textContent = r2.toFixed(2);
+    cell("td", tr).innerHTML = "<span class='sw' style='background:" + c.outline + "'></span> <code>" + c.outline + "</code>";
+    var o1 = ratio(c.outline, "#dfe7dd"), o2 = ratio(c.outline, "#d3dcd1");
+    cell("td", tr).innerHTML = "<b>" + o1.toFixed(2) + "</b>";
+    cell("td", tr).innerHTML = "<b>" + o2.toFixed(2) + "</b>";
+    cell("td", tr).innerHTML = "fill " + (Math.min(r1, r2) < 1.6 ? "<span class='fail'>糊</span>" : "尚可") +
+      " → 边缘全靠描边；描边取两者较小 = <b>" + Math.min(o1, o2).toFixed(2) + "</b> " +
+      (Math.min(o1, o2) >= 2.0 ? "<span class='pass'>达标</span>" : "<span class='fail'>不达标</span>") +
+      (Math.min(o1, o2) < 2.4 ? " · 接近临界" : "");
+  });
+
+  // ---------- 4. 僵尸四档 ----------
+  var ZH = [["basic", "普通"], ["cone", "路障"], ["bucket", "铁桶"], ["flag", "旗帜"]];
+  var zrow = document.getElementById("zrow");
+  ZH.forEach(function (z) {
+    var d = cell("div", zrow, "zcell");
+    cell("div", d, "box").innerHTML = MockShapes.zombies[z[0]]();
+    cell("div", d, "cap").innerHTML = "<b>" + z[1] + "</b><br>" + Mock.ZOMBIES[z[0]].hp + " hp · " +
+      Mock.ZOMBIES[z[0]].speed + " 格/s";
+  });
+
+  // ---------- 5. 状态叠加层 ----------
+  var STATE = [
+    { shape: "defense", cap: "<b>基线</b><br>无状态" },
+    { shape: "defense", crack: 1, cap: "<b>裂纹 1</b><br>HP &lt; 66%" },
+    { shape: "defense", crack: 2, cap: "<b>裂纹 2</b><br>HP &lt; 40%" },
+    { shape: "defense", crack: 3, cap: "<b>裂纹 3</b><br>HP &lt; 15%" },
+    { shape: "shooter", buff: true, cap: "<b>buff</b><br>§8.4 dps×1.25 / 10s<br>纯 CSS 光环，非素材" },
+    { shape: "producer", dormant: true, cap: "<b>dormant</b><br>§6.5 降级：灰化 + 虚线罩<br>M1 才可能触发" }
+  ];
+  var srow = document.getElementById("state-row");
+  STATE.forEach(function (st) {
+    var d = cell("div", srow, "statecell");
+    var box = cell("div", d, "box" + (st.dormant ? " ent--dormant" : ""));
+    var html = MockShapes.plants[st.shape]();
+    if (st.crack) html += MockShapes.states.cracks(st.crack);
+    if (st.buff) html += MockShapes.states.buff;
+    if (st.dormant) html += MockShapes.states.dormant;
+    box.innerHTML = html;
+    cell("div", d, "cap").innerHTML = st.cap;
+  });
+
+  // ---------- 6. 真实画幅快照 ----------
+  var lawn = document.getElementById("demo-lawn");
+  for (var lane = 0; lane < 5; lane++) {
+    for (var col = 0; col < 9; col++) {
+      var cell = Mock.el("div", null, lawn);
+      cell.className = "cell" + ((lane + col) % 2 ? " cell--alt" : "");
+      cell.style.left = col * 120 + "px";
+      cell.style.top = lane * 88 + "px";
+    }
+    var lb = Mock.el("div", "lane-label", lawn);
+    lb.textContent = "lane " + lane;
+    lb.style.left = "4px";
+    lb.style.top = lane * 88 + 2 + "px";
+    lb.style.opacity = "0.45";
+  }
+  function put(node, x, lane) {
+    node.style.left = x + "px";
+    node.style.top = Mock.laneToPx(lane) + "px";
+    lawn.appendChild(node);
+    return node;
+  }
+  put(Mock.plantEl("sprout"), 2 * 120 + 60, 0);
+  var ps = put(Mock.plantEl("peashooter"), 3 * 120 + 60, 1);
+  ps.insertAdjacentHTML("beforeend", MockShapes.states.buff);
+  var bu = put(Mock.plantEl("bush"), 4 * 120 + 60, 2);
+  bu.insertAdjacentHTML("beforeend", MockShapes.states.cracks(2));
+  Mock.setHp(bu, 0.45);
+  put(Mock.plantEl("peashooter"), 2 * 120 + 60, 3);
+  put(Mock.plantEl("sprout"), 1 * 120 + 60, 4);
+  var z1 = put(Mock.zombieEl("bucket"), 8 * 120 + 40, 2);
+  Mock.setHp(z1, 0.7);
+  put(Mock.zombieEl("cone"), 7 * 120 + 60, 3);
+  var z3 = put(Mock.zombieEl("basic"), 9 * 120 + 20, 4);
+  z3.classList.add("ent--off");
+  var z4 = put(Mock.zombieEl("flag"), 6 * 120 + 60, 0);
+  z4.classList.add("eating");
+
+  // ---------- 8. prompt 骨架 ----------
+  document.getElementById("prompt-block").textContent =
+    "[固定 style 后缀，每张都带]\n" +
+    "  flat 2D cartoon game sprite, thick clean dark outline, soft pastel fills,\n" +
+    "  chunked readable silhouettes for young kids, no background, transparent cutout,\n" +
+    "  side view, character standing on bottom edge, 1:1 square canvas, no text, no watermark,\n" +
+    "  original design, not derived from any existing commercial game art\n\n" +
+    "[producer]  a small round-headed plant, short stem, two symmetric leaves, a bud pod on top,\n" +
+    "            perfectly left-right symmetric, no facing direction, no weapon, palette cool green + yellow\n\n" +
+    "[shooter]   a round-headed plant with a wide open tube muzzle pointing RIGHT, dark solid circle inside the tube,\n" +
+    "            one leaf on the stem, facing right, palette cool green\n\n" +
+    "[defense]   a low wide lump of three overlapping round masses, wider than tall, low centre of gravity,\n" +
+    "            hugging the ground, no eyes, no weapon, no protrusions, palette desaturated blue-grey\n\n" +
+    "[special]   asymmetric plant body with a second small organ on a thin stalk, palette muted violet\n\n" +
+    "[zombie 基准]   hunched warm-grey walker, 5 degree forward lean, both arms reaching forward, no props\n" +
+    "[zombie 路障]   = 基准 + a traffic-cone shaped mass on the head\n" +
+    "[zombie 铁桶]   = 基准 + a square bucket head AND a wide shoulder bar, visibly bulkier\n" +
+    "[zombie 旗帜]   = 基准 + a thin tall pole with a small banner, lean increased to 11 degrees, NOT bulkier\n\n" +
+    "[批次一致性]  僵尸先出基准一张，其余三档用图生图只加附件（D22）；\n" +
+    "            植物同理：先定 producer / shooter / defense 三张母图，M2 新株换色不换轮廓。\n" +
+    "[交付校验]    matting.py 抠纯色底 → 构建期断言存在性与尺寸，场上档阈值 = 88px（超尺寸直接 FAIL）。";
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+[
+  { "id": "z_basic", "name": "慢步者", "hp": 100, "speed": 0.09, "dps": 20 },
+  { "id": "z_cone", "name": "路障者", "hp": 170, "speed": 0.09, "dps": 20 },
+  { "id": "z_bucket", "name": "铁桶者", "hp": 300, "speed": 0.08, "dps": 20 },
+  { "id": "z_flag", "name": "旗帜者", "hp": 100, "speed": 0.11, "dps": 20 }
+]

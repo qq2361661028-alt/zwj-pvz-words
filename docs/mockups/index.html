@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>pvz-words · M0 页面原型总览</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+  body { overflow: auto; background: #20242b; }
+  .frame { position: static; transform: none !important; width: 1280px; height: auto; margin: 0 auto; box-shadow: 0 0 60px rgba(0,0,0,.5); }
+  .stage { position: static; display: block; }
+</style>
+</head>
+<body>
+<div class="stage"><div class="frame"><div class="overview">
+
+  <h1>拼词塔防教学版 · M0 页面原型</h1>
+  <p>依据 <code>docs/superpowers/specs/2026-11-07-pvz-word-spelling-tower-defense-design.md</code> §15 的 M0 范围制作：
+    <b>1 关 · 3 株植物 · 8 个词 · 纯色块代替美术 · 无语音</b>。
+    双击任一页面即可离线打开，不需要 npm / Vite / 构建。</p>
+  <p class="note">对外名称与 UI 文案不出现原版字样（§2）。01–04 是 wireframe；05 给的是<b>形状语言</b>而非最终美术——
+    剪影定「能不能一眼读出功能」，ImageGen 定「好不好看」，两件事分开拍板。</p>
+
+  <h2>五个页面</h2>
+  <div class="ov-grid">
+    <a class="ov-item" href="01-level-select.html">
+      <div class="mini-frame"><i style="left:12px;top:12px;width:130px;height:70px;background:#fff;border:1px solid #c9cfd8"></i><i style="left:150px;top:12px;width:140px;height:70px;background:#f0f7ee"></i><i style="left:12px;top:88px;width:278px;height:14px"></i></div>
+      <h3>01 · levelSelect</h3>
+      <div class="meta">关卡卡 + 8 词池（带 theme）+ 3 株植物池 + <b>validate-content 门禁真跑一遍</b>（§4.4 清洗 / §4.1.1 配对 / §11-4 词长分布告警 / 起步可达性）</div>
+    </a>
+    <a class="ov-item" href="02-playing.html">
+      <div class="mini-frame"><i style="left:0;top:0;width:300px;height:16px;background:#fff;border-bottom:1px solid #c9cfd8"></i><i style="left:8px;top:20px;width:284px;height:60px;background:#dfe7dd"></i><i style="left:8px;top:82px;width:284px;height:26px;background:#fff;border-top:2px solid #2f6fb3"></i></div>
+      <h3>02 · playing <span class="badge">核心</span></h3>
+      <div class="meta">完整链路 <b>填词 → armed → 种植 → 一维推进 → 通关/失败</b>。手牌 5 张仅最左可填（D7）、定步长 tick（D18）、阳光只由 producer 产（D16）、场上为 SVG 剪影</div>
+    </a>
+    <a class="ov-item" href="03-word-panel.html">
+      <div class="mini-frame"><i style="left:6px;top:8px;width:288px;height:70px;background:#dfe7dd"></i><i style="left:6px;top:80px;width:288px;height:24px;background:#fff;border-top:2px solid #2f6fb3"></i><i style="left:150px;top:6px;width:144px;height:56px;background:#fff;border:1px solid #c9cfd8;border-radius:6px"></i></div>
+      <h3>03 · wordPanelOpen <span class="badge">评审重点</span></h3>
+      <div class="meta">6 个场景对照：多重集合 D9 / 错误惩罚 §6.3 / 求助阶梯 §6.4 / 短词口径 D12 / <b>dormant 降级 §6.5</b> / 种子一致性 §6.2。含「暂停 vs ×0.85」可视化对照</div>
+    </a>
+    <a class="ov-item" href="04-result.html">
+      <div class="mini-frame"><i style="left:60px;top:10px;width:180px;height:20px;background:#fff"></i><i style="left:16px;top:36px;width:268px;height:70px;background:#fff;border:1px solid #c9cfd8"></i></div>
+      <h3>04 · result</h3>
+      <div class="meta">cleared / death / <b>abandoned</b> 三态切换（D20）。演示 assisted 如何封掉三星、以及主动退出为何<b>不写 wrong</b></div>
+    </a>
+    <a class="ov-item" href="05-entities.html">
+      <div class="mini-frame" style="background:#fff"><i style="left:14px;top:26px;width:34px;height:54px;background:#8dbd80;border:2px solid #4e7a45;border-radius:16px 16px 4px 4px"></i><i style="left:60px;top:20px;width:38px;height:60px;background:#b6c4d8;border:2px solid #6d7f96;border-radius:18px"></i><i style="left:112px;top:18px;width:30px;height:62px;background:#9aa0a8;border:2px solid #6d737c;border-radius:12px"></i><i style="left:158px;top:12px;width:6px;height:66px;background:#7c666d"></i><i style="left:164px;top:12px;width:26px;height:14px;background:#a88f96"></i><i style="left:210px;top:22px;width:74px;height:52px;background:#f0f7ee;border:1px dashed #a7cf9e"></i></div>
+      <h3>05 · 实体剪影标本 <span class="badge">新增</span></h3>
+      <div class="meta">回答「植物/僵尸没有 UI 怎么办」：<b>4 条形状语言 + 88/128/256 三档尺寸账 + 对比度实测 + 状态叠加层 + 可直接复用的 M4 生图 prompt 骨架</b>。02/03 场上的色块已换成这里的 SVG</div>
+    </a>
+  </div>
+
+  <h2>每条设计决策在原型里的落点</h2>
+  <table class="tbl" style="width:100%">
+    <tr><th style="width:80px">决策</th><th>原型里的表现</th><th style="width:120px">所在页</th></tr>
+    <tr><td>D3 / D10</td><td><code>rules</code> 逻辑集中在 <code>shared.js</code> 且零 DOM 依赖；渲染层只订阅 submit 返回的 events</td><td>全部</td></tr>
+    <tr><td>D7</td><td>点第 2~5 张卡 → 提示「只能填最左那张」，手牌强制线性推进词表</td><td>02</td></tr>
+    <tr><td>D8</td><td>点字母块、当前槽高亮，无键盘、无拖拽</td><td>02 / 03</td></tr>
+    <tr><td>D9</td><td>coffee 出 2 个 e、2 个 f；01 页有<b>多重集合缺块断言</b>（缺块即 FAIL，因为会死局）</td><td>01 / 03</td></tr>
+    <tr><td>§6.2</td><td>seed = hash(wordId, deckId) 不含日期；刷新 03 页 F 场景布局不变；干扰数 clamp(round(len*0.5),2,6)。抽屉全宽后字母块区实测每行 25 块，「每行最多 12 块」不再是布局瓶颈</td><td>03</td></tr>
+    <tr><td>§6.3 / O2</td><td>填错 → 该块红置禁用 2000ms，<b>不毁卡不倒退</b>，波次继续；阳光不返还</td><td>02 / 03</td></tr>
+    <tr><td>§6.4 / D13</td><td>连错 2 → L1 音标+朗读；连错 4 → L2 高亮正确块并置 assisted。02 默认关闭（属 M1），勾选 <b>M1 阶梯</b> 可看</td><td>03（02 可选）</td></tr>
+    <tr><td>§6.5</td><td>peashooter（10 字母）走 dormant 降级；转移表里 dormant <b>只有这一个来源</b></td><td>03</td></tr>
+    <tr><td>D14</td><td>1280×720 固定画幅 + <code>scale()</code> 模拟 Scale.FIT；窗口缩到 960×600 以下仍可等比看</td><td>全部</td></tr>
+    <tr><td>D16</td><td>HUD 里阳光只随 sprout 的 24s 周期增长，填对不加 1 点</td><td>02</td></tr>
+    <tr><td>D17</td><td>面板打开时 HUD 出现「×0.85」标记且僵尸<b>仍在走</b>；03 页可切全暂停对照</td><td>02 / 03</td></tr>
+    <tr><td>D18</td><td>累加器固定 1/30s 步进，演示速度 1×/2×/4× 不改变逻辑步长；角标实时显示</td><td>02 / 03</td></tr>
+    <tr><td>§4.5</td><td>转移表 + <code>console.assert</code>：打开 DevTools 若出现未列出的转移会直接报错</td><td>02</td></tr>
+    <tr><td>§4.1.1</td><td>8 词里 6 个走 generic 苗木；<code>theme:"plant"</code> 只准指向同名植物，违反即门禁 FAIL</td><td>01</td></tr>
+    <tr><td>D21</td><td>01 页 validate-content 不过 → 「禁止启动」红标</td><td>01</td></tr>
+    <tr><td>D20</td><td>result 三态；abandoned 不写 wrong</td><td>04</td></tr>
+    <tr><td>D16 + D7 <span class="badge badge--m1">缺口</span></td><td>起步可达性校验：首卡 cost ≤ 起始阳光，且前 2 张内含一个买得起的 producer；反例「peashooter 打头 → 死锁」作灰色参考行</td><td>01</td></tr>
+    <tr><td>§4.2 / §9</td><td>实体形状按 <code>slot</code> 复用（4 类轮廓 + 1 个变体位），功能写在轮廓里、颜色只管阵营；88 / 128 / 256 三档；状态全是叠加层，额外素材 0 张</td><td>05（02/03 场上已用）</td></tr>
+    <tr><td>§5</td><td><code>boot</code> 需 await fonts.ready（原型用系统字体，仅注明）</td><td>01</td></tr>
+  </table>
+
+  <h2>原型能回答 / 不能回答的</h2>
+  <p>这批页面只为回答<b>三件事</b>，请带着这三条去看，不要当成验收：</p>
+  <table class="tbl" style="width:100%">
+    <tr><th style="width:250px">观察项</th><th>在哪里看</th><th>判据</th></tr>
+    <tr><td>5×9 网格 + 手牌 + 抽屉同屏是否可读</td><td>02 全屏，把窗口缩到 960×600</td><td>能否一眼分清「哪张是焦点卡」和「哪个槽待填」；实体在缩到 0.75 后还认不认得出 slot</td></tr>
+    <tr><td>焦点卡强制线性推进是否让人困惑</td><td>02 点第 3 张卡</td><td>孩子是否会反复点非焦点卡；若会，说明 D7 需要视觉再强化</td></tr>
+    <tr><td>×0.85 够不够思考时间</td><td>03 右上浮层切 ×0.85 / 全暂停</td><td>填一个 6 字母词期间僵尸推进多少格；若 &gt;1.5 格说明补偿不足</td></tr>
+  </table>
+  <p class="note"><b>原型验证不了的</b>（§11 已列为不可自动化）：真实手感、孩子是否觉得好玩、美术风格一致性、语音识别质量。
+     其中「孩子是否觉得好玩」只能按 §15 用 M0 垂直切片三天内见真手来判定。</p>
+
+  <h2>刻意没画的东西</h2>
+  <table class="tbl" style="width:100%">
+    <tr><th style="width:170px">项</th><th>原因</th></tr>
+    <tr><td>语音四态降级 / buff</td><td>M3。§8.5 的置灰+文案、§8.4 的 dps×1.25 与 30s 冷却需先有 Provider 抽象，纸面画了也验不了</td></tr>
+    <tr><td>图鉴 / 错词复习入口</td><td>M4。且 dynamic 复习词池明确不进 M0–M4（O3）</td></tr>
+    <tr><td>设置页</td><td>M4（含 §8.6 隐私声明文案，措辞须准确，不能写「完全离线」）</td></tr>
+    <tr><td>竖屏布局</td><td>D14 否决；5×9 + 字母块在 9:16 不可读</td></tr>
+    <tr><td>ImageGen 成品图</td><td>M4。<b>形状语言已在 05 定稿</b>，但成品图现在贴上来会诱导「美术已定稿」的误读；轮廓之外好不好看是另一件事，且 §2 禁止参考原版形象</td></tr>
+    <tr><td>Boss / 小游戏</td><td>§1 非目标明确排除</td></tr>
+  </table>
+
+  <h2>复核时请重点拍板的三处</h2>
+  <ol style="font-size:13px;color:#5b626d;line-height:1.8">
+    <li><b>面板显示音标是否会泄漏拼写</b>：/ˈsʌnflaʊə/ 对高年级孩子约等于给答案。文档未规定面板显示什么词形信息，原型按「只显示中文 + 音标 + 词长 + 已填字母」实现，需你确认。</li>
+    <li><b>10 字母词该不该进 M0</b>：peashooter 触发了 §11-4 词长分布告警（Unit 3 里 ≥8 字母占 67%），也是 dormant 降级的靶子。M0 只有 8 个词，一个长词就够把关卡拖成长度测试。</li>
+    <li><b>场上素材 96px 必须改 88px</b>（§9）：竖向账是死的——HUD 50 + 草坪 5×88 + 抽屉 230 = 720；用 96 就是 50 + 480 + 230 = 760，超画幅 40px（D14）。
+      三条出路：改 88 ／ 砍一行草坪（违反 §5）／把抽屉压到 190（字母块掉到 30px 以下，低龄不可读）。原型按 88 实现，推导与实测在 <a href="05-entities.html">05 第 2 节</a>。
+      <br><span class="note">同页还挂着两个素材侧待拍板项：special 的形状位要不要在 M0 定死、以及「8 株只需 4 套轮廓 + 1 个变体」这个复用口径你认不认。</span></li>
+  </ol>
+  <p class="note"><b>上一轮的第三项已闭环，不用再拍</b>：「§6.2 每行最多 12 块在 1280 画幅里放不下」的根因是填词 UI 挤在 480px 右侧面板里。
+    现在改为草坪全宽 + 底部 1220px 抽屉，字母块区<b>实测 1046px 宽 ÷ 块距 42px = 每行 25 块</b>（不是估算，03 页可复现）；
+    而 §4.4 词长 ≤10 + §6.2 干扰 ≤6 → 任何合法词最多 16 块。12 块的约束自动满足，§6.2 无需改动，只是布局 token 变了。
+    <br><b>顺带跑出来的第二条</b>：同一组数字让 §6.5 的「词过长致布局溢出」降级分支<b>在当前布局里永不可达</b>（03 页 E 场景已改为强制状态演示）——
+    这条要回写文档，标成「防御性分支，M0–M4 不测」，否则它会以「已实现的降级」留在代码里却从没被执行过。</p>
+
+  <h2>原型跑出来的一个设计缺口（建议回写进文档）</h2>
+  <div style="background:#fff;border-left:4px solid #c04a3f;border-radius:0 8px 8px 0;padding:12px 16px;font-size:13px;color:#23262b;line-height:1.8">
+    <b>D16 + D7 叠加会起步死锁。</b>
+    D16 规定阳光<b>只</b>由已激活的 <code>producer</code> 产出（起始 75，producer 每 24s 产 25）；D7 又强制<b>只能填最左那张</b>。
+    于是：若词序的第一张卡映射到 cost &gt; 75 的非 producer 植物（例如 peashooter 100），玩家既无法跳过它，也没有任何阳光来源——
+    填得再对也种不下去，且这不是数值调平问题，是<b>可达性</b>问题。
+    <br>原型里已把它固化成校验：<code>01</code> 页门禁表最后一行「反例：peashooter 打头 → 死锁」，<code>02</code> 的词序已改为 sunflower(→sprout 50) 打头。
+    <br><b>建议</b>：§11-4 构建期校验增加一条「<code>decks</code> 顺序必须满足：首卡 cost ≤ 起始阳光，且前 2 张内含一个 cost ≤ 起始阳光的 producer」；
+    §13 可加一条 O6（或直接把起始阳光提到 100 / 给 peashooter 定价 ≤ 75）。
+  </div>
+
+  <p class="note" style="margin-top:26px">文件清单：<code>shared.css</code>（token + 组件 + 尺寸账注释）· <code>shared.js</code>（夹具 + submit/干扰字母/校验，可单测的部分）·
+    <code>entities.js</code>（<code>MockShapes</code>：12 个 SVG 剪影 + 状态叠加层）· <code>panel.js</code>（抽屉渲染）· 5 个页面。
+    这些是原型不是实现代码——真实实现里 <code>shared.js</code> 对应 <code>src/rules/</code>，
+    且必须通过 ESLint <code>no-restricted-imports</code> 保证不含 phaser 与 DOM（D3）。</p>
+
+</div></div></div>
+<script src="shared.js"></script>
+<script>
+  // 总览页不需要缩放（内容长），保留 mountFrame 的空实现避免误调
+  Mock.mountFrame = function () { return document.querySelector(".frame"); };
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+[
+  { "id": "d_sunflower_sprout", "wordId": "w_sunflower", "plantId": "sprout", "theme": "unit" },
+  { "id": "d_coffee_bush", "wordId": "w_coffee", "plantId": "bush", "theme": "unit" },
+  { "id": "d_three_sprout", "wordId": "w_three", "plantId": "sprout", "theme": "unit" },
+  { "id": "d_green_slinger", "wordId": "w_green", "plantId": "slinger", "theme": "unit" },
+  { "id": "d_milk_bush", "wordId": "w_milk", "plantId": "bush", "theme": "unit" },
+  { "id": "d_yellow_slinger", "wordId": "w_yellow", "plantId": "slinger", "theme": "review" },
+  { "id": "d_bread_sprout", "wordId": "w_bread", "plantId": "sprout", "theme": "review" },
+  { "id": "d_broccoli_slinger", "wordId": "w_broccoli", "plantId": "slinger", "theme": "review" }
+]

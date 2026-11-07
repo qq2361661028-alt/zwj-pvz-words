@@ -1,0 +1,24 @@
+[
+  {
+    "id": "u3_w1",
+    "name": "Unit 3 · 第 1 关",
+    "deckIds": [
+      "d_sunflower_sprout",
+      "d_coffee_bush",
+      "d_three_sprout",
+      "d_green_slinger",
+      "d_milk_bush",
+      "d_yellow_slinger",
+      "d_bread_sprout",
+      "d_broccoli_slinger"
+    ],
+    "waves": [
+      { "t": 30, "zombie": "z_basic", "lanes": [2] },
+      { "t": 70, "zombie": "z_basic", "lanes": [0] },
+      { "t": 110, "zombie": "z_cone", "lanes": [4] },
+      { "t": 140, "zombie": "z_basic", "lanes": [2] },
+      { "t": 170, "zombie": "z_cone", "lanes": [0, 4] },
+      { "t": 200, "zombie": "z_flag", "lanes": [2], "flag": true }
+    ]
+  }
+]

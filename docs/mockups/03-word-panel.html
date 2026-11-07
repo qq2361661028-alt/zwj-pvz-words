@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>03 · wordPanelOpen — 填词抽屉状态对照</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="stage"><div class="frame">
+
+  <div class="hud">
+    <div class="sun-meter"><span class="orb"></span><span id="sun">75</span><span class="max">/ 9990</span></div>
+    <div class="wave-meter">抽屉打开中 · <b id="modetext">僵尸 ×0.85</b>（D17 不暂停）</div>
+    <div class="spacer"></div>
+    <div class="tick"><span id="tickinfo">—</span></div>
+    <div class="speed-ctl">
+      <label><input type="radio" name="m" value="slow" checked> ×0.85（本设计）</label>
+      <label><input type="radio" name="m" value="pause"> ×0 全停（对照，已否决）</label>
+      <button id="btn-home">总览</button>
+    </div>
+  </div>
+
+  <div class="lawn" id="lawn"><div class="spawn"></div></div>
+
+  <div id="scenes-box" style="position:absolute;right:80px;top:62px;width:460px;background:#fff;border:1px solid #c9cfd8;border-radius:10px;padding:12px 14px;z-index:34;box-shadow:0 8px 24px rgba(0,0,0,.14)">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">演示场景（点一个，底部抽屉切到该状态）</div>
+    <div id="scenes" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    <div id="why" class="note" style="margin-top:10px;min-height:60px"></div>
+  </div>
+
+  <div class="drawer" id="drawer"></div>
+
+</div></div>
+
+<script src="shared.js"></script>
+<script src="entities.js"></script>
+<script src="panel.js"></script>
+<script>
+(function () {
+  Mock.mountFrame();
+  document.getElementById("btn-home").onclick = function () { location.href = "index.html"; };
+  var lawn = document.getElementById("lawn");
+  var drawerEl = document.getElementById("drawer");
+  var whyEl = document.getElementById("why");
+  var card = null;
+
+  // 参照草坪：3 条 lane 的僵尸位移用来"看见"×0.85，而不是被告知
+  var zs = [];
+  [0, 2, 4].forEach(function (lane, i) {
+    var n = Mock.zombieEl(["basic", "cone", "bucket"][i]);
+    n.style.top = Mock.laneToPx(lane) + "px";
+    lawn.appendChild(n);
+    zs.push({ node: n, lane: lane, x: 4.4 + i * 1.6 });
+  });
+  var p1 = Mock.plantEl("peashooter");
+  p1.style.left = Mock.cellToPx(3) + "px"; p1.style.top = Mock.laneToPx(2) + "px";
+  lawn.appendChild(p1);
+  var p2 = Mock.plantEl("sprout");
+  p2.style.left = Mock.cellToPx(1) + "px"; p2.style.top = Mock.laneToPx(0) + "px";
+  lawn.appendChild(p2);
+  var p3 = Mock.plantEl("bush");
+  p3.style.left = Mock.cellToPx(6) + "px"; p3.style.top = Mock.laneToPx(4) + "px";
+  lawn.appendChild(p3);
+  // 状态叠加层演示：buff 外环 + 3 档裂纹
+  var ov = document.createElement("div");
+  ov.innerHTML = MockShapes.states.buff;
+  ov.firstChild.style.position = "absolute";
+  p1.appendChild(ov.firstChild);
+  var ck = document.createElement("div");
+  ck.innerHTML = MockShapes.states.cracks(2);
+  p3.appendChild(ck.firstChild);
+
+  var panel = MockPanel.create(drawerEl, {
+    ladder: true,
+    now: function () { return S.t; },
+    onSubmit: function (id) {
+      var res = Mock.submit(card, id, S.t);
+      card = res.card;
+      panel.setCard(card);
+      if (res.card.status === "armed") why("填完 → status=armed（§4.5 只允许 filling→armed）。真实游戏里此时抽屉收起、僵尸恢复全速，焦点卡变成「点草坪种植」。");
+    },
+    onClose: function () { why("本页抽屉保持展开，便于观察；真实游戏里收起 = 僵尸 ×1.0。"); }
+  });
+  panel.setVisible(true);
+
+  var S = { t: 0, mode: "slow", sun: Mock.ECON.start };
+  document.querySelectorAll("input[name=m]").forEach(function (r) {
+    r.onchange = function () {
+      S.mode = r.value;
+      document.getElementById("modetext").textContent = S.mode === "slow" ? "僵尸 ×0.85" : "僵尸全停";
+    };
+  });
+
+  var acc = 0, last = performance.now();
+  function loop(now) {
+    var dt = Math.min(0.2, (now - last) / 1000); last = now;
+    acc += dt * 2;
+    while (acc >= Mock.RULES.tick) { acc -= Mock.RULES.tick; step(Mock.RULES.tick); }
+    zs.forEach(function (z) { z.node.style.left = Mock.xToPx(z.x) + "px"; });
+    document.getElementById("tickinfo").textContent =
+      "T " + S.t.toFixed(1) + "s · 位移系数 " + (S.mode === "slow" ? "0.85" : "0.00") + " · 阳光 " + S.sun;
+    requestAnimationFrame(loop);
+  }
+  function step(dt) {
+    S.t += dt;
+    var mult = S.mode === "slow" ? Mock.RULES.panel_slowdown : 0;
+    zs.forEach(function (z) { z.x -= 0.16 * dt * mult; if (z.x < 0.2) z.x = 8.6; });
+    if (S.t % 6 < dt) S.sun = Math.min(Mock.ECON.cap, S.sun + Mock.ECON.producer_amount);
+    document.getElementById("sun").textContent = S.sun;
+    panel.render(); // 让禁用倒计时可见
+  }
+
+  function why(html) { whyEl.innerHTML = html; }
+
+  function mk(wordId) { var c = Mock.makeCard(wordId, "any"); c.status = "filling"; return c; }
+  function errTimes(c, n) {
+    var bad = c.tiles.filter(function (t) { return t.letter !== c.slots[0]; })[0];
+    for (var i = 0; i < n; i++) c = Mock.submit(c, bad.tileId, S.t - (n - i) * 0.01).card;
+    return c;
+  }
+
+  var SCENES = [
+    {
+      label: "A 正常填词（coffee）",
+      make: function () { return mk("w_coffee"); },
+      why: "coffee 需要 <b>2 个 e、2 个 f</b>：字母块按<b>多重集合</b>出块（D9）。按去重集合出块会填到中途无块可用 = 死局。<br>点一个<b>错块</b>试试：该块禁用 2000ms（§6.3），<b>不毁卡、不倒退</b>，左侧僵尸照常推进。"
+    },
+    {
+      label: "B 已连错 3 次",
+      make: function () { return errTimes(mk("w_coffee"), 3); },
+      why: "连错计数<b>在单词内累计</b>（§6.4）。这里 3 次，再错 1 次触发 L2；已错块处于禁用期所以呈红色。<br>L1 已在第 2 次连错时触发（发音 + 音标），<b>不消耗任何资源</b>。"
+    },
+    {
+      label: "C 连错 4 次 → assisted",
+      make: function () { return errTimes(mk("w_green"), 4); },
+      why: "阶梯终态是<b>直接高亮正确字母块</b>（黄圈），同时置 assisted=true：streak 归零、ease 下调、<b>本关三星不可达</b>（D13）。给答案可以，但「要答案」必须在数据里留痕。<br><b>green</b> 带 distractor_overrides [g, j]，干扰块被手工钉死在易混对上。"
+    },
+    {
+      label: "D 短词 milk（4 字母）",
+      make: function () { return mk("w_milk"); },
+      why: "干扰数 = clamp(round(4×0.5), 2, 6) = <b>2</b>，总块数 6。<br>语音判定对 ≤4 字母<b>要求完全一致</b>（D12）：短词放宽到编辑距离 1 会把 sun/fun 这类误读判成通过，等于奖励错误读音。语音属 M3，本页只标口径。"
+    },
+    {
+      label: "E dormant（强制状态演示）",
+      make: function () {
+        var c = mk("w_peashooter");
+        Mock.assertTransition(c.status, "dormant", "§6.5 唯一来源");
+        c.status = "dormant";
+        return c;
+      },
+      why: "<b>peashooter</b>（10 字母 + 5 干扰 = <b>15 块</b>）本来是 §6.5 降级链的靶子：生成失败重试 1 次 → 缩字号到下限 → 仍溢出 → 该卡 dormant 并跳过，<b>波次继续</b>；dormant <b>只有这一个来源</b>。<br>" +
+        "<span style='color:#c04a3f'><b>但实测：这条分支在当前布局里已经不可达。</b>字母块区宽 1046px ÷ 块距 42px = <b>每行 25 块</b>，15 块单行就放得下，连缩字号都不需要。" +
+        "而 §4.4 把词长钉在 ≤10 字母、§6.2 把干扰钉在 ≤6 块 → 任何合法词最多 16 块。Scale.FIT 是等比缩放，缩到 960×600 每行块数也不变。</span><br>" +
+        "所以这里是用 <code>assertTransition</code> 把状态<b>强制</b>置成 dormant，只验证两件事：转移表认这条边、视觉呈灰化跳过。<br>" +
+        "<b>建议回写文档</b>：§6.5 给这条分支标注「防御性，M0–M4 不可达」，并说明它的真实触发条件是将来放宽词长上限（>19 字母）——否则它会以「已实现的降级」的身份留在代码里，从没人测过。"
+    },
+    {
+      label: "F 种子一致性",
+      make: function () { return mk("w_sunflower"); },
+      why: "<b>sunflower</b> 的块布局由 seed = hash(wordId, deckId) 决定，<b>不含日期</b>：刷新本页再点 F，块序列始终相同。<br>孩子隔天重玩同一关若字母位置变了，会被感知成「题目偷偷改了」。要做每日变化需显式加 salt 另开决定。<br>本页还演示 <b>distractor_overrides = [v]</b>：f/v 听觉混淆钉死进干扰项。"
+    }
+  ];
+
+  var box = document.getElementById("scenes");
+  SCENES.forEach(function (s, i) {
+    var b = Mock.btn("chip", s.label, box, function () { pick(i); });
+    b.style.cssText = "font:inherit;font-size:12px;padding:5px 10px;border:1px solid #c9cfd8;border-radius:6px;background:#fff;cursor:pointer";
+  });
+  function pick(i) {
+    box.querySelectorAll("button").forEach(function (b, j) { b.style.borderColor = j === i ? "#2f6fb3" : "#c9cfd8"; });
+    card = SCENES[i].make();
+    panel.setCard(card);
+    why(SCENES[i].why);
+  }
+  pick(0);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

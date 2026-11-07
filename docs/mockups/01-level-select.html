@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>01 · levelSelect — 关卡选择与内容校验门禁</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="stage"><div class="frame">
+
+  <div class="hud">
+    <div class="sun-meter" style="font-size:19px">拼词塔防 · 教学版</div>
+    <div class="wave-meter">内部代号 <b>pvz-words</b>（对外名称与 UI 文案不得出现原版字样，§2）</div>
+    <div class="spacer"></div>
+    <div class="speed-ctl"><button id="btn-home">总览</button></div>
+  </div>
+
+  <div class="center-col" style="flex-direction:row;align-items:flex-start;gap:22px;padding-top:22px">
+
+    <div class="level-card">
+      <div class="level-card__head">
+        <h3>Unit 3 · 第 1 关</h3>
+        <span class="badge">u3_w1</span>
+        <span class="badge badge--ref">5×9 草坪</span>
+        <span class="stars" style="margin-left:auto">★ ★ ☆</span>
+      </div>
+      <div class="note">M0 夹具：1 关 · 3 株植物 · 8 个词 · 纯色块代替美术 · <b>无语音</b>（§15）</div>
+
+      <div class="level-card__grid">
+        <div class="col" style="flex:1.35">
+          <h5>词池（8 词 · decks.theme 见 §4.1.1）</h5>
+          <div class="chips" id="wordchips"></div>
+        </div>
+        <div class="col">
+          <h5>植物池（3 株 · slot 决定行为）</h5>
+          <div id="plantpool"></div>
+        </div>
+      </div>
+
+      <div class="note">存档：<code>pvzwords.save.v1</code> · best_stars=3 · ease/streak 记账见 §4.6</div>
+      <a class="bigbtn" href="02-playing.html" style="text-align:center;text-decoration:none">开始 · 进入 playing</a>
+      <div class="note" style="text-align:center">boot → levelSelect →[loading]→ playing（§5）· boot 需 await fonts.ready</div>
+    </div>
+
+    <div class="level-card" style="width:560px">
+      <div class="level-card__head">
+        <h3>validate-content 门禁</h3>
+        <span class="badge badge--ref">D21</span>
+        <span class="spacer"></span>
+        <span class="badge" id="gate">…</span>
+      </div>
+      <div class="note">打开填词主玩法<b>之前</b>必须通过：不过则禁止启动游戏。这里把 §4.4 / §4.1.1 / §11-4 的规则跑成真实断言，
+        让你看到"词表错误在开局前暴露"长什么样。</div>
+      <div id="checks" style="max-height:300px;overflow:auto"></div>
+      <div style="border-top:1px dashed var(--line);padding-top:8px">
+        <div class="note"><b>词表清洗硬拒绝</b>（§4.4，一律排除含空格/连字符/撇号/数字的词。理由：低年级会把两段空格误认为两个词，困惑大于收益）</div>
+        <div class="chips" id="rejects" style="margin-top:6px"></div>
+      </div>
+      <div class="note" id="lenreport"></div>
+    </div>
+  </div>
+
+  <div class="tick"><span class="note">本页可复核项：8 词里 6 个走 generic 苗木——若你想给重点词配专属形象，需按 §4.1.1 新增一株 plant 主题植物</span></div>
+
+</div></div>
+
+<script src="shared.js"></script>
+<script src="entities.js"></script>
+<script>
+(function () {
+  Mock.mountFrame();
+  document.getElementById("btn-home").onclick = function () { location.href = "index.html"; };
+
+  var chips = document.getElementById("wordchips");
+  Object.keys(Mock.WORDS).forEach(function (k) {
+    var w = Mock.WORDS[k], d = Mock.DECKS.filter(function (x) { return x.wordId === k; })[0];
+    var c = Mock.el("chip chip--theme-" + d.theme, w.word + " · " + w.zh + " · " + w.letters + "字母 · " + d.theme, chips);
+    if (w.distractor_overrides) c.title = "distractor_overrides: " + w.distractor_overrides.join("/");
+  });
+
+  var pp = document.getElementById("plantpool");
+  Object.keys(Mock.PLANTS).forEach(function (k) {
+    var p = Mock.PLANTS[k];
+    var e = Mock.el("chip", null, pp);
+    e.style.cssText = "display:flex;align-items:center;gap:7px;width:100%";
+    if (window.MockShapes) {
+      // 用剪影代替色点：这一栏是「这株会干什么」的第一处露出，形状比颜色更该承担它（形状语言见 05）
+      var holder = Mock.el("i", null, e);
+      holder.style.cssText = "width:26px;height:26px;flex:none;background:var(--lawn-a);border-radius:3px";
+      holder.innerHTML = MockShapes.plantSvg(k).replace('class="sil"', 'class="sil" style="width:26px;height:26px"');
+    }
+    e.append(document.createTextNode(p.name + " · " + p.slot + (p.generic ? " · generic" : "") + " · " + p.cost + "☀"));
+  });
+
+  // ---------- 真实校验 ----------
+  var rows = [];
+  Mock.DECKS.forEach(function (d) {
+    var err = Mock.validateDeck(d);
+    rows.push({
+      name: Mock.WORDS[d.wordId].word + " → " + d.plantId,
+      ok: !err, msg: err || "theme=" + d.theme + " 与 slot/generic 自洽"
+    });
+  });
+  Object.keys(Mock.WORDS).forEach(function (k) {
+    var w = Mock.WORDS[k];
+    var tiles = Mock.buildTiles(w, "any");
+    var bag = {};
+    tiles.forEach(function (t) { bag[t.letter] = (bag[t.letter] || 0) + 1; });
+    var ok = w.word.split("").every(function (c) { return bag[c] >= count(w.word, c); });
+    rows.push({
+      name: "多重集合 " + w.word,
+      ok: ok,
+      msg: ok ? "块数 " + tiles.length + "（干扰 " + Mock.distractorCount(w.word.length) + "）" : "缺块 → 中途无块可用（死局）"
+    });
+  });
+  function count(s, c) { return s.split("").filter(function (x) { return x === c; }).length; }
+
+  // 起步可达性：D16（阳光只来自 producer）+ D7（强制最左）叠加出来的死锁，必须开局前查
+  Mock.startReachable().forEach(function (msg) {
+    rows.push({ name: "起步可达性（当前词序）", ok: false, msg: msg });
+  });
+  var naive = ["w_peashooter"].concat(Mock.M0_HAND.slice(0, 7));
+  Mock.startReachable(naive).forEach(function (msg) {
+    rows.push({ name: "反例：peashooter 打头", ok: false, info: true, msg: "若这样排 → " + msg + "（词序是内容的一部分，不能随手排）" });
+  });
+
+  var box = document.getElementById("checks");
+  var fails = rows.filter(function (r) { return !r.ok && !r.info; }).length;
+  var t = Mock.el("tbl", null, box);
+  t.innerHTML = "<table class='tbl' style='width:100%'><tr><th>校验项</th><th>结果</th></tr>" +
+    rows.map(function (r) {
+      var color = r.info ? "#9aa3ae" : r.ok ? "#3f8b52" : "#c04a3f";
+      var mark = r.info ? "参考 " : r.ok ? "PASS " : "FAIL ";
+      return "<tr><td>" + r.name + "</td><td style='color:" + color + "'>" + mark + r.msg + "</td></tr>";
+    }).join("") +
+    "</table>";
+  var g = document.getElementById("gate");
+  g.textContent = fails ? "FAIL → 禁止启动" : "PASS · 允许启动";
+  g.style.borderColor = fails ? "#c04a3f" : "#3f8b52";
+  g.style.color = fails ? "#c04a3f" : "#3f8b52";
+
+  var rej = document.getElementById("rejects");
+  Mock.REJECTED_SAMPLES.forEach(function (s) {
+    var c = Mock.el("chip", "✕ " + s.word + " — " + s.reason, rej);
+    c.style.borderColor = "#c04a3f"; c.style.color = "#c04a3f";
+  });
+
+  // §11-4 词长分布告警：某 unit 中 8 字母以上占比 > 40% 则告警
+  var byUnit = {};
+  Object.keys(Mock.WORDS).forEach(function (k) {
+    var w = Mock.WORDS[k];
+    (byUnit[w.unit] = byUnit[w.unit] || []).push(w.letters);
+  });
+  document.getElementById("lenreport").innerHTML = "<b>词长分布报告</b>（§11-4）：" +
+    Object.keys(byUnit).map(function (u) {
+      var arr = byUnit[u], long = arr.filter(function (n) { return n >= 8; }).length;
+      var pct = long / arr.length;
+      return u + " " + arr.length + "词/≥8字母 " + long + " (" + Math.round(pct * 100) + "%)" +
+        (pct > 0.4 ? " <span style='color:#c04a3f'>⚠ 难度曲线告警，需手工调序</span>" : " <span style='color:#3f8b52'>ok</span>");
+    }).join(" · ") +
+    "<br>注：M0 夹具把 10 字母的 peashooter 放进了 Unit 3，因此该 unit 触发告警——这正是要人工调序的信号。";
+})();
+</script>
+</body>
+</html>

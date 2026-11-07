@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>04 · result — 三态结算</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="stage"><div class="frame">
+
+  <div class="hud">
+    <div class="sun-meter" style="font-size:19px">结果页 result</div>
+    <div class="wave-meter">§5 状态机：<b>result(death | cleared | abandoned)</b> · D20 区分 death 与 abandoned</div>
+    <div class="spacer"></div>
+    <div class="speed-ctl">
+      <button data-k="cleared">cleared</button>
+      <button data-k="death">death</button>
+      <button data-k="abandoned">abandoned</button>
+      <button id="btn-home">总览</button>
+    </div>
+  </div>
+
+  <div class="center-col" style="gap:10px;padding:14px 20px;overflow:hidden">
+    <div class="result-head" id="head" style="font-size:28px">—</div>
+    <div class="note" id="subhead" style="font-size:13px;max-width:900px;text-align:center"></div>
+    <div class="stars" id="stars" style="font-size:26px">★ ★ ★</div>
+    <div id="starwhy" class="note" style="max-width:900px;text-align:center"></div>
+
+    <div style="display:flex;gap:18px;align-items:flex-start">
+      <div style="max-height:210px;overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px">
+        <table class="tbl" id="tbl"></table>
+      </div>
+      <div style="width:430px">
+        <div class="note" style="margin-bottom:6px"><b>写入 <code>pvzwords.save.v1</code> 的差异</b>（§4.6 / D20）</div>
+        <pre id="save" style="background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:11px;line-height:1.5;margin:0;white-space:pre-wrap;max-height:210px;overflow:auto"></pre>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="bigbtn" id="retry">再来一次</button>
+      <a class="bigbtn bigbtn--ghost" href="01-level-select.html" style="text-decoration:none;text-align:center">选关</a>
+    </div>
+    <div class="note" id="foot" style="max-width:860px;text-align:center"></div>
+  </div>
+
+  <div class="tick"><span class="note">从 02 打完会自动带真实数据进来；直接打开则用夹具</span></div>
+
+</div></div>
+
+<script src="shared.js"></script>
+<script>
+(function () {
+  Mock.mountFrame();
+  document.getElementById("btn-home").onclick = function () { location.href = "index.html"; };
+  document.getElementById("retry").onclick = function () { location.href = "02-playing.html"; };
+  document.querySelectorAll(".hud [data-k]").forEach(function (b) {
+    b.style.cssText = "font:inherit;font-size:11px;padding:2px 8px;border:1px solid #c9cfd8;border-radius:4px;background:#fff;cursor:pointer";
+    b.onclick = function () { show(b.dataset.k, null); };
+  });
+
+  var FIX = {
+    cleared: [
+      { word: "sunflower", status: "placed", correct: 1, wrong: 0, assisted: false },
+      { word: "peashooter", status: "placed", correct: 1, wrong: 2, assisted: false },
+      { word: "coffee", status: "placed", correct: 1, wrong: 5, assisted: true },
+      { word: "yellow", status: "armed", correct: 1, wrong: 0, assisted: false },
+      { word: "three", status: "filling", correct: 0, wrong: 1, assisted: false }
+    ],
+    death: [
+      { word: "sunflower", status: "placed", correct: 1, wrong: 1, assisted: false },
+      { word: "coffee", status: "armed", correct: 1, wrong: 0, assisted: false },
+      { word: "green", status: "filling", correct: 0, wrong: 6, assisted: true },
+      { word: "milk", status: "locked", correct: 0, wrong: 0, assisted: false },
+      { word: "apple", status: "locked", correct: 0, wrong: 0, assisted: false }
+    ],
+    abandoned: [
+      { word: "sunflower", status: "placed", correct: 1, wrong: 0, assisted: false },
+      { word: "coffee", status: "filling", correct: 0, wrong: 3, assisted: false },
+      { word: "yellow", status: "locked", correct: 0, wrong: 0, assisted: false },
+      { word: "three", status: "locked", correct: 0, wrong: 0, assisted: false },
+      { word: "milk", status: "locked", correct: 0, wrong: 0, assisted: false }
+    ]
+  };
+
+  var COPY = {
+    cleared: { head: "本关通关", cls: "result-head--cleared", sub: "全部波次清完。填词练了 <b>5</b> 个词（目标区间 8–20，M2 配平时要重新看这条）。" },
+    death: { head: "家被啃穿了", cls: "result-head--death", sub: "<b>death</b>：僵尸越过失败线。本局错词<b>计入</b> word_stats.wrong，并下调 ease。" },
+    abandoned: { head: "已放弃", cls: "result-head--abandoned", sub: "<b>abandoned</b>（主动退出）：整批词<b>不进错词权重</b>。D20 若把两者混成一态，中途退出会被误标成一堆错词，错词本被污染。" }
+  };
+
+  function show(kind, live) {
+    var rows = live ? live.stats : FIX[kind];
+    var c = COPY[kind];
+    var headEl = document.getElementById("head");
+    headEl.textContent = c.head;
+    headEl.className = "result-head " + c.cls;
+    document.getElementById("subhead").innerHTML = c.sub;
+    var assisted = rows.some(function (r) { return r.assisted; });
+    var stars = kind === "cleared" ? (assisted ? 2 : 3) : kind === "death" ? 1 : 0;
+    document.getElementById("stars").textContent = "★".repeat(stars) + "☆".repeat(3 - stars);
+    document.getElementById("starwhy").innerHTML = kind !== "cleared"
+      ? "失败/放弃不发星星图鉴进度。"
+      : (assisted
+        ? '<span class="assisted-flag">assisted=true</span> 用过阶梯 L2 → <b>本关三星不可达</b>（D13）。给答案可以，但「要答案」必须在数据里留痕。'
+        : "全自助通关 → 三星。");
+
+    document.getElementById("tbl").innerHTML =
+      "<tr><th>词</th><th>status</th><th>correct</th><th>wrong</th><th>assisted</th><th>写库</th></tr>" +
+      rows.map(function (r) {
+        var write = kind === "abandoned" ? "不记 wrong" : (r.wrong ? "记 wrong " + r.wrong : "只记 correct");
+        return "<tr><td>" + r.word + "</td><td>" + r.status + "</td><td class=num>" + r.correct +
+          "</td><td class=num>" + r.wrong + "</td><td>" + (r.assisted ? "是" : "—") + "</td><td>" + write + "</td></tr>";
+      }).join("");
+
+    var shown = rows.slice(0, 3);
+    var statsObj = {};
+    shown.forEach(function (r) {
+      statsObj["w_" + r.word] = {
+        correct: r.correct,
+        wrong: kind === "abandoned" ? 0 : r.wrong,
+        assisted: r.assisted ? 1 : 0,
+        streak: kind === "abandoned" ? null : r.assisted ? 0 : 4,
+        ease: kind === "abandoned" ? 0.62 : r.assisted ? 0.44 : 0.62,
+        last_seen_ts: 1730000000
+      };
+    });
+    document.getElementById("save").textContent = JSON.stringify({
+      v: 1, last_played: "2026-11-07",
+      word_stats: statsObj,
+      levels: { u3_w1: { best_stars: Math.max(0, stars) } },
+      settings: { speech_enabled: true, penalty_disable_ms: 2000 }
+    }, null, 1) + (rows.length > 3 ? "\n// 其余 " + (rows.length - 3) + " 条同构，省略" : "");
+
+    document.getElementById("foot").innerHTML =
+      "未在本页实现（属 M1–M4）：错词复习入口、" +
+      "dynamic 复习词池（O3，按「错得多 + 好久没见」抽词，ease/last_seen_ts 数据结构已预留）、" +
+      "语音 buff 结算行（M3）。" +
+      (live ? "<br><b>本页数据来自 02 的真实一局</b>：T " + live.t.toFixed(1) + "s · 剩余阳光 " + live.sun : "");
+  }
+
+  var stored = null;
+  try {
+    var raw = localStorage.getItem("pvzwords.mock.lastResult");
+    if (raw) stored = JSON.parse(raw);
+  } catch (e) {}
+  // 无 query 时回落到"上一局的真实结果"，而不是硬写 cleared
+  var kind = new URLSearchParams(location.search).get("kind") || (stored && stored.kind) || "cleared";
+  show(kind, stored && stored.kind === kind ? stored : null);
+})();
+</script>
+</body>
+</html>

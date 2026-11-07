@@ -1,0 +1,61 @@
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #7fc4e8 0%, #a8dcf0 46%, #cfe9d0 100%);
+  overflow: hidden;
+}
+
+.sky--night {
+  background: linear-gradient(180deg, #101a3a 0%, #26306b 48%, #4a4a86 78%, #6b5a90 100%);
+}
+
+.sky__glow {
+  position: absolute;
+  width: 340px;
+  height: 340px;
+  right: 8%;
+  top: -70px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 246, 200, 0.9) 0%, rgba(255, 236, 150, 0.45) 34%, transparent 68%);
+  filter: blur(2px);
+}
+
+.cloud {
+  position: absolute;
+  filter: drop-shadow(0 8px 10px rgba(60, 110, 150, 0.18));
+}
+
+.sky__cloud--a { width: 280px; top: 8%; left: 6%; animation: drift 74s linear infinite; }
+.sky__cloud--b { width: 200px; top: 26%; left: 44%; opacity: 0.85; animation: drift 96s linear infinite reverse; }
+.sky__cloud--c { width: 340px; top: 4%; left: 62%; opacity: 0.7; animation: drift 120s linear infinite; }
+.sky__cloud--d { width: 150px; top: 38%; left: 22%; opacity: 0.6; animation: drift 88s linear infinite reverse; }
+
+@keyframes drift {
+  from { transform: translateX(-14%); }
+  to { transform: translateX(114%); }
+}
+
+.house {
+  position: absolute;
+  filter: drop-shadow(0 18px 26px rgba(40, 60, 30, 0.3));
+}
+
+.tufts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.tuft {
+  position: absolute;
+  width: 34px;
+  opacity: 0.55;
+  transform-origin: bottom center;
+  animation: sway 4.6s ease-in-out infinite;
+}
+
+@keyframes sway {
+  0%, 100% { rotate: -3deg; }
+  50% { rotate: 4deg; }
+}

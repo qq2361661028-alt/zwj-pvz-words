@@ -1,0 +1,77 @@
+[
+  {
+    "id": "w_sunflower",
+    "word": "sunflower",
+    "zh": "向日葵",
+    "ipa": "/ˈsʌnflaʊə/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 9,
+    "distractor_overrides": ["f", "v"]
+  },
+  {
+    "id": "w_coffee",
+    "word": "coffee",
+    "zh": "咖啡",
+    "ipa": "/ˈkɒfi/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 6
+  },
+  {
+    "id": "w_three",
+    "word": "three",
+    "zh": "三",
+    "ipa": "/θriː/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 5
+  },
+  {
+    "id": "w_green",
+    "word": "green",
+    "zh": "绿色",
+    "ipa": "/ɡriːn/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 5,
+    "distractor_overrides": ["g", "j"]
+  },
+  {
+    "id": "w_milk",
+    "word": "milk",
+    "zh": "牛奶",
+    "ipa": "/mɪlk/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 4
+  },
+  {
+    "id": "w_yellow",
+    "word": "yellow",
+    "zh": "黄色",
+    "ipa": "/ˈjeləʊ/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 6
+  },
+  {
+    "id": "w_bread",
+    "word": "bread",
+    "zh": "面包",
+    "ipa": "/bred/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 5
+  },
+  {
+    "id": "w_broccoli",
+    "word": "broccoli",
+    "zh": "西兰花",
+    "ipa": "/ˈbrɒkəli/",
+    "grade": 4,
+    "unit": "Unit 3",
+    "letters": 8,
+    "distractor_overrides": ["b", "k"]
+  }
+]

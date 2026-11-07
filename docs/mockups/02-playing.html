@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>02 · playing — 拼词塔防 M0 原型</title>
+<link rel="stylesheet" href="shared.css">
+</head>
+<body>
+<div class="stage"><div class="frame">
+
+  <div class="hud">
+    <div class="sun-meter"><span class="orb"></span><span id="sun">75</span><span class="max">/ 9990</span></div>
+    <div class="wave-meter">波次 <b id="waveno">1</b>/<span id="wavetotal">6</span> <span class="flag" id="flagmark"></span></div>
+    <div class="wave-meter">T <b id="clock">0.0</b>s</div>
+    <span id="slowmark" class="badge badge--m3" style="display:none">填词中 · 僵尸 ×0.85（D17）</span>
+    <div class="spacer"></div>
+    <div class="tick"><span id="tickinfo">—</span></div>
+    <div class="speed-ctl">
+      <label>演示速度</label>
+      <select id="speed"><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select>
+      <label><input type="checkbox" id="ladderToggle"> M1 阶梯</label>
+      <button id="btn-auto">自动填当前卡</button>
+      <button id="btn-home">总览</button>
+    </div>
+  </div>
+
+  <div class="house">家 · 失败线</div>
+
+  <div class="lawn" id="lawn">
+    <div class="spawn"></div>
+  </div>
+
+  <div class="drawer" id="drawer">
+    <div class="drawer__hand">
+      <span class="cap">手牌 5 张（D7）</span>
+      <div id="hand" style="display:flex;gap:6px"></div>
+    </div>
+  </div>
+
+</div></div>
+
+<script src="shared.js"></script>
+<script src="entities.js"></script>
+<script src="panel.js"></script>
+<script>
+(function () {
+  var frame = document.querySelector(".frame");
+  var lawn = document.getElementById("lawn");
+  var handEl = document.getElementById("hand");
+  var drawerEl = document.getElementById("drawer");
+  var sunEl = document.getElementById("sun");
+  var clockEl = document.getElementById("clock");
+  var waveEl = document.getElementById("waveno");
+  var flagEl = document.getElementById("flagmark");
+  var slowEl = document.getElementById("slowmark");
+  var tickEl = document.getElementById("tickinfo");
+  document.getElementById("wavetotal").textContent = Mock.WAVES.length;
+
+  Mock.mountFrame();
+  document.getElementById("btn-home").onclick = function () { location.href = "index.html"; };
+
+  // ---------- 草坪格子 ----------
+  var cells = {};
+  for (var r = 0; r < Mock.LAN.rows; r++) {
+    for (var c = 0; c < 9; c++) {
+      var d = Mock.el("cell", null, lawn);
+      if ((r + c) % 2) d.classList.add("cell--alt");
+      d.style.left = c * Mock.CELL_W + "px";
+      d.style.top = r * Mock.CELL_H + "px";
+      d.style.width = Mock.CELL_W + "px";
+      d.style.height = Mock.CELL_H + "px";
+      d.dataset.lane = r; d.dataset.col = c;
+      d.addEventListener("click", onCellClick);
+      cells[r + ":" + c] = d;
+    }
+    // lane 标签画在草坪内左上角：抽屉 + 草坪已占满 720，横向没有留白给外侧坐标轴
+    var lbl = Mock.el("lane-label", "L" + r, frame);
+    lbl.style.left = (Mock.LAN.left + 4) + "px";
+    lbl.style.top = (Mock.LAN.top + r * Mock.CELL_H + 2) + "px";
+    lbl.style.cssText += "opacity:.45;pointer-events:none;text-align:left;width:40px";
+  }
+
+  // ---------- 状态 ----------
+  // 词序按 M0_HAND：保证首卡是 cost ≤ 起始阳光的 producer（否则 D16 + D7 会起步死锁）
+  var pool = Mock.M0_HAND;
+  var startIssues = Mock.startReachable();
+  if (startIssues.length) console.warn("[起步可达性] " + startIssues.join(" / "));
+  var S = {
+    t: 0, sun: Mock.ECON.start, cards: [], focus: 0, spawned: 0, drawIndex: Mock.RULES.hand_size,
+    plants: [], zombies: [], zid: 1, rand: Mock.rng(Mock.seedHash("u3_w1", "any")),
+    panelOpen: false, over: null, waveIdx: 0
+  };
+  for (var i = 0; i < Mock.RULES.hand_size; i++) S.cards.push(Mock.makeCard(pool[i], "any"));
+  S.cards[0].status = "filling";
+
+  var panel = MockPanel.create(drawerEl, {
+    ladder: false,
+    now: function () { return S.t; },
+    onSubmit: function (tileId) { applyTile(tileId); },
+    onClose: closePanel
+  });
+
+  // ---------- 填词（§6.1） ----------
+  function focusCard() { return S.cards[S.focus]; }
+  function applyTile(tileId) {
+    var card = focusCard();
+    if (!card || card.status !== "filling") return;
+    var res = Mock.submit(card, tileId, S.t);
+    S.cards[S.focus] = res.card;
+    if (res.card.status === "armed") closePanel();
+    renderHand(); panel.setCard(S.cards[S.focus]);
+  }
+  function openPanel() {
+    var card = focusCard();
+    if (!card) return;
+    if (card.status === "armed") { flash("已激活，点草坪空格种植（阳光需 ≥ " + Mock.PLANTS[card.plantId].cost + "）"); return; }
+    if (card.status !== "filling") { flash("只能填最左那张未种植的卡（D7）"); return; }
+    S.panelOpen = true;
+    panel.setVisible(true);
+    slowEl.style.display = "";
+    panel.setCard(card);
+  }
+  function closePanel() {
+    S.panelOpen = false;
+    panel.setVisible(false);
+    slowEl.style.display = "none";
+  }
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePanel(); });
+
+  // ---------- 种植 ----------
+  function onCellClick(e) {
+    var card = focusCard();
+    if (!card || card.status !== "armed") return;
+    var lane = +e.currentTarget.dataset.lane, col = +e.currentTarget.dataset.col;
+    if (S.plants.some(function (p) { return p.lane === lane && p.col === col; })) { flash("该格已有植物"); return; }
+    var p = Mock.PLANTS[card.plantId];
+    if (S.sun < p.cost) { flash("阳光不足：需 " + p.cost + "，现有 " + S.sun + "（D16 填词不产出阳光）"); return; }
+    S.sun -= p.cost;
+    Mock.assertTransition(card.status, "placed", card.wordId);
+    card.status = "placed";
+    var node = Mock.plantEl(card.plantId);
+    node.style.left = Mock.cellToPx(col) + "px";
+    node.style.top = Mock.laneToPx(lane) + "px";
+    lawn.appendChild(node);
+    S.plants.push({ lane: lane, col: col, id: card.plantId, hp: p.hp, maxhp: p.hp, node: node, next: S.t + Mock.ECON.producer_interval_s });
+    // 手牌补位（§4.5 filling ──手牌补位──▶ locked 之后焦点右移）
+    advance();
+    renderHand();
+  }
+
+  function advance() {
+    S.cards.shift();                                  // placed 卡离开手牌
+    var wordId = pool[S.drawIndex % pool.length];
+    S.drawIndex++;
+    if (S.cards.length < Mock.RULES.hand_size) S.cards.push(Mock.makeCard(wordId, "any"));
+    if (S.cards.length && S.cards[0].status === "locked") {
+      Mock.assertTransition("locked", "filling", "手牌补位后新焦点卡");
+      S.cards[0].status = "filling";
+    }
+    panel.setCard(S.cards[0] || null);
+  }
+
+  // ---------- 模拟（D18 定步长） ----------
+  var acc = 0, last = performance.now(), speed = 4;
+  function loop(now) {
+    var dt = Math.min(0.25, (now - last) / 1000);
+    last = now;
+    acc += dt * speed;
+    var steps = 0;
+    while (acc >= Mock.RULES.tick && steps < 240) { acc -= Mock.RULES.tick; step(Mock.RULES.tick); steps++; }
+    tickEl.textContent = "累计器 " + acc.toFixed(3) + "s · 渲染 " + (dt > 0 ? Math.round(1 / dt) : "--") + " fps（逻辑 30Hz，D18）";
+    render();
+    if (!S.over) requestAnimationFrame(loop);
+  }
+
+  function step(dt) {
+    S.t += dt;
+    var mult = S.panelOpen ? Mock.RULES.panel_slowdown : 1; // D17 不暂停，只减速
+
+    // 出怪
+    while (S.spawned < Mock.WAVES.length && S.t >= Mock.WAVES[S.spawned].t) {
+      var wv = Mock.WAVES[S.spawned];
+      wv.lanes.forEach(function (lane) {
+        var z = Mock.ZOMBIES[wv.zombie];
+        var node = Mock.zombieEl(wv.zombie);
+        lawn.appendChild(node);
+        S.zombies.push({ id: S.zid++, z: wv.zombie, lane: lane, x: 10.4 + S.rand() * 0.2, hp: z.hp, maxhp: z.hp, node: node, flag: wv.flag });
+      });
+      S.waveIdx = S.spawned + 1;
+      S.spawned++;
+    }
+
+    // 僵尸推进 / 啃食
+    S.zombies.forEach(function (zb) {
+      var prey = S.plants.filter(function (p) { return p.lane === zb.lane && p.col >= zb.x - 0.62 && p.col <= zb.x + 0.12; })[0];
+      if (prey) {
+        prey.hp -= Mock.ZOMBIES[zb.z].dps * dt;
+        zb.node.classList.add("eating");
+        Mock.setHp(prey.node, prey.hp / prey.maxhp);
+        if (prey.hp <= 0) { prey.node.remove(); S.plants = S.plants.filter(function (p) { return p !== prey; }); }
+      } else {
+        zb.node.classList.remove("eating");
+        zb.x -= Mock.ZOMBIES[zb.z].speed * dt * mult;
+      }
+      if (zb.x < 0.15) finish("death");
+    });
+
+    // 植物攻击（combat：取同 lane 最近目标，§7）
+    S.plants.forEach(function (p) {
+      var pl = Mock.PLANTS[p.id];
+      if (pl.slot === "shooter") {
+        var target = S.zombies.filter(function (z) { return z.lane === p.lane && z.x > p.col; })
+          .sort(function (a, b) { return a.x - b.x; })[0];
+        if (target) {
+          target.hp -= pl.dps * dt;
+          Mock.setHp(target.node, target.hp / target.maxhp);
+          if (target.hp <= 0) { target.node.remove(); S.zombies = S.zombies.filter(function (z) { return z !== target; }); }
+        }
+      } else if (pl.slot === "producer" && S.t >= p.next) {
+        p.next = S.t + Mock.ECON.producer_interval_s;
+        S.sun = Math.min(Mock.ECON.cap, S.sun + Mock.ECON.producer_amount); // D16 阳光唯一来源
+      }
+    });
+
+    // 通关
+    if (S.spawned >= Mock.WAVES.length && !S.zombies.length && S.t > 20) finish("cleared");
+  }
+
+  // ---------- 渲染 ----------
+  function render() {
+    sunEl.textContent = S.sun;
+    clockEl.textContent = S.t.toFixed(1);
+    waveEl.textContent = Math.min(S.spawned, Mock.WAVES.length);
+    flagEl.textContent = S.zombies.some(function (z) { return z.flag; }) ? "⚑ 大波" : "";
+    S.zombies.forEach(function (z) {
+      z.node.style.left = Mock.xToPx(z.x) + "px";
+      z.node.style.top = Mock.laneToPx(z.lane) + "px";
+    });
+    var armed = focusCard() && focusCard().status === "armed";
+    Object.keys(cells).forEach(function (k) {
+      cells[k].classList.toggle("cell--hover", !!armed);
+    });
+  }
+
+  function renderHand() {
+    handEl.innerHTML = "";
+    S.cards.forEach(function (card, i) {
+      var w = Mock.WORDS[card.wordId], p = Mock.PLANTS[card.plantId];
+      var e = Mock.el("mcard", null, handEl);
+      e.classList.add("mcard--" + card.status);
+      if (i === 0) e.classList.add("mcard--focus");
+      var sw = Mock.el("msw msw--sil", null, e);
+      if (window.MockShapes) sw.innerHTML = MockShapes.plantSvg(card.plantId).replace('class="sil"', 'class="sil" style="width:24px;height:24px"');
+      else sw.style.background = p.slot === "producer" ? "#f0d06a" : p.slot === "shooter" ? "#8dbd80" : "#b6c4d8";
+      Mock.el("mzh", w.zh, e);
+      Mock.el("mmask", mask(card), e);
+      Mock.el("mcost", p.cost + "☀", e);
+      var st = Mock.el("st", card.status, e);
+      if (card.assisted) st.textContent = "assisted";
+      e.addEventListener("click", function () {
+        if (i !== 0) { flash("非焦点卡不可填：手牌强制线性推进词表（D7）"); return; }
+        if (card.status === "armed") { flash("已激活 → 点草坪空格种植"); return; }
+        openPanel();
+      });
+    });
+  }
+  function mask(card) {
+    var o = "";
+    card.slots.forEach(function (ch, i) { o += i < card.filled ? ch : "_"; });
+    return o;
+  }
+
+  var flashEl;
+  function flash(msg) {
+    if (!flashEl) { flashEl = Mock.el("note", "", document.querySelector(".frame")); flashEl.style.cssText = "position:absolute;left:50%;top:64px;transform:translateX(-50%);background:#fff;border:1px solid #c9cfd8;border-radius:8px;padding:6px 14px;z-index:50;box-shadow:0 6px 18px rgba(0,0,0,.15)"; }
+    flashEl.textContent = msg;
+    clearTimeout(flashEl._t);
+    flashEl._t = setTimeout(function () { flashEl.textContent = ""; }, 2600);
+  }
+
+  // ---------- 演示辅助 ----------
+  document.getElementById("btn-auto").onclick = function () {
+    var card = focusCard();
+    if (!card) return;
+    if (card.status !== "filling") { flash("当前卡不是 filling"); return; }
+    if (!S.panelOpen) openPanel();
+    var guard = 0;
+    while (card.status === "filling" && guard++ < 30) {
+      var need = card.slots[card.filled];
+      var tile = card.tiles.filter(function (t) { return !t.used && t.letter === need; })[0];
+      if (!tile) { flash("多重集合缺块（D9 断言失败）"); return; }
+      var res = Mock.submit(card, tile.tileId, S.t);
+      card = res.card;
+      S.cards[S.focus] = card;
+    }
+    panel.setCard(card);
+    renderHand();
+    flash("填对 → armed，点草坪空格种植");
+  };
+  document.getElementById("ladderToggle").onchange = function (e) {
+    panel = MockPanel.create(drawerEl, {
+      ladder: e.target.checked, now: function () { return S.t; },
+      onSubmit: applyTile, onClose: closePanel
+    });
+    panel.setVisible(S.panelOpen);
+    if (S.panelOpen) panel.setCard(focusCard());
+  };
+  document.getElementById("speed").onchange = function (e) { speed = +e.target.value; };
+
+  function finish(kind) {
+    if (S.over) return;
+    S.over = kind;
+    var stats = S.cards.map(function (c) { return { word: Mock.WORDS[c.wordId].word, status: c.status, wrong: c.wrongTotal, assisted: c.assisted }; });
+    try { localStorage.setItem("pvzwords.mock.lastResult", JSON.stringify({ kind: kind, t: S.t, sun: S.sun, stats: stats })); } catch (e) {}
+    setTimeout(function () { location.href = "04-result.html?kind=" + kind; }, 400);
+  }
+
+  renderHand();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

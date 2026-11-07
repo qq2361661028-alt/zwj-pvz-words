@@ -1,0 +1,56 @@
+:root {
+  color-scheme: light;
+
+  /* —— 草坪 —— */
+  --lawn-a: #8fc93a;
+  --lawn-b: #79b02c;
+  --lawn-edge: #5c8a1f;
+  --lawn-deep: #3f6b14;
+
+  /* —— 木质 UI —— */
+  --wood-950: #241405;
+  --wood-900: #3b2310;
+  --wood-800: #54331a;
+  --wood-700: #6f4523;
+  --wood-600: #8b5a2b;
+  --wood-500: #a97142;
+  --wood-400: #c08a54;
+  --wood-300: #d9ab74;
+  --wood-200: #ebc99a;
+
+  /* —— 卡片纸 —— */
+  --card: #e8d7ab;
+  --card-hi: #f7eecb;
+  --card-lo: #c9b384;
+
+  /* —— 强调色 —— */
+  --sun-core: #ffe14d;
+  --sun-mid: #ffc21a;
+  --sun-deep: #d98200;
+  --leaf: #6cbb3c;
+  --leaf-hi: #9ede5a;
+  --leaf-deep: #2f6b1a;
+  --berry: #e03b2f;
+  --danger: #b32218;
+  --sky-blue: #6fb6dd;
+
+  /* —— 文字 —— */
+  --ink: #2a1a0c;
+  --ink-2: #5b3a1e;
+  --cream: #fff8e1;
+
+  /* —— 字体 —— */
+  --font-display: 'Luckiest Guy', 'Nunito', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-body: 'Nunito', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+
+  /* —— 尺寸 —— */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+  --r-pill: 999px;
+  --stroke-ink: #2a1a0c;
+
+  --shadow-panel: 0 12px 0 rgba(36, 20, 5, 0.35), 0 22px 44px rgba(0, 0, 0, 0.42);
+  --shadow-card: 0 4px 0 rgba(90, 61, 34, 0.45);
+  --shadow-text: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
