@@ -22,7 +22,7 @@ export const BOARD = {
 } as const
 
 export const SUN = {
-  start: 75,
+  start: 100,
   cap: 9990,                      // D16
   produce_amount: 25,
   produce_interval_s: 12

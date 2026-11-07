@@ -29,7 +29,7 @@ describe('D7/D8 填词', () => {
 
   it('填对不产生阳光、不改动时间', () => {
     const s = fillWord(game())
-    expect(s.sun).toBe(75)
+    expect(s.sun).toBe(100)
     expect(s.t).toBe(0)
   })
 })

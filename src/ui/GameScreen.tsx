@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { CharacterArt } from '../art/CharacterArt'
 import { CTX } from '../content'
 import { cellRect, laneToPx, xToPx } from './layout'
@@ -19,6 +19,7 @@ import { Hud } from './Hud'
 import { PerfOverlay } from './PerfOverlay'
 import { ResultOverlay } from './ResultOverlay'
 import { sfxForEvent } from './sfx'
+import { emptyFx, stepFx, type FxState } from './attackFx'
 import { gameTrack } from './bgm'
 import { useBgm } from './useBgm'
 import { WordPanel } from './WordPanel'
@@ -37,6 +38,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   )
   const stateRef = useRef(state)
   const accRef = useRef(createAccumulator())
+  const fxRef = useRef<FxState>(emptyFx())
   const [toasts, setToasts] = useState<Toast[]>([])
   const [sunDelta, setSunDelta] = useState<{ v: number; k: number } | null>(null)
   const [shakeKey, setShakeKey] = useState(0)
@@ -149,6 +151,7 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
         })
         if (s !== prev) {
           stateRef.current = s
+          fxRef.current = stepFx(fxRef.current, s.plants, s.zombies, s.t * 1000)
           setState(s)
         }
         if (events.length) apply(events)
@@ -318,6 +321,35 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
                 </span>
               )}
             </span>
+          )
+        })}
+      </div>
+
+      <div className="game__fx" aria-hidden="true">
+        {fxRef.current.shots.map((shot) => {
+          const elapsed = state.t * 1000 - shot.bornAt
+          const flying = elapsed < shot.flightMs
+          const progress = flying ? Math.min(1, Math.max(0, elapsed / shot.flightMs)) : 1
+          return (
+            <Fragment key={shot.id}>
+              {elapsed < 140 && (
+                <span
+                  className={`fx-muzzle fx-muzzle--${shot.kind}`}
+                  style={{ left: shot.fromX, top: shot.y }}
+                />
+              )}
+              {flying ? (
+                <span
+                  className={`fx-shot fx-shot--${shot.kind}`}
+                  style={{ left: shot.fromX + (shot.toX - shot.fromX) * progress, top: shot.y }}
+                />
+              ) : (
+                <span
+                  className={`fx-burst fx-burst--${shot.kind}`}
+                  style={{ left: shot.toX, top: shot.y }}
+                />
+              )}
+            </Fragment>
           )
         })}
       </div>

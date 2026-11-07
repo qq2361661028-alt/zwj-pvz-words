@@ -136,7 +136,7 @@ export type GameState = {
   t: number
   sun: number
   cards: Card[]
-  /** 下一张待发牌在 deckIds 里的下标 */
+  /** 已发出的牌数；对 deckIds 取模得到下一张 */
   deckCursor: number
   /** uid 发号器：植物与僵尸共用，保证实例唯一 */
   seq: number

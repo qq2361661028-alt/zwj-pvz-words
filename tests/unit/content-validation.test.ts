@@ -105,7 +105,7 @@ describe('D21 启动门禁', () => {
       id: 'lux',
       name: '试验苗',
       art: 'assets/plants/lux_s.png',
-      cost: 80,
+      cost: 120,
       hp: 100,
       dps: 0,
       slot: 'producer',

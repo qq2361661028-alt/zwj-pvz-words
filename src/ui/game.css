@@ -157,6 +157,135 @@
   transition: width 0.15s linear;
 }
 
+/* —— 攻击特效（纯装饰，不参与伤害判定） —— */
+.game__fx {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.fx-shot,
+.fx-burst,
+.fx-muzzle {
+  position: absolute;
+}
+
+/* 弹丸藤：豌豆弹 + 叶绿拖尾 */
+.fx-shot--pea {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #e6ff9e, #84d92e 48%, #3f8f13);
+  box-shadow: 0 0 9px 2px rgba(150, 240, 80, 0.55);
+}
+
+.fx-shot--pea::after {
+  content: '';
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  width: 18px;
+  height: 5px;
+  translate: 0 -50%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(168, 240, 96, 0.6));
+}
+
+/* 荆棘藤：旋转尖刺镖 */
+.fx-shot--spike {
+  width: 22px;
+  height: 7px;
+  margin: -3.5px 0 0 -11px;
+  background: linear-gradient(90deg, #fff2c0, #d8a13c 55%, #7c5318);
+  clip-path: polygon(0 50%, 100% 0, 86% 50%, 100% 100%);
+  filter: drop-shadow(0 0 4px rgba(255, 216, 120, 0.75));
+  animation: fx-spin 0.34s linear infinite;
+}
+
+@keyframes fx-spin {
+  to { rotate: 360deg; }
+}
+
+/* 蓟刺花：漂浮的紫色绒球 */
+.fx-shot--seed {
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #f6e2ff, #b571dc 55%, #6a2f91);
+  box-shadow:
+    6px 4px 0 -4px rgba(198, 137, 234, 0.85),
+    -7px 5px 0 -5px rgba(228, 186, 248, 0.75),
+    0 0 10px 2px rgba(170, 100, 220, 0.4);
+  animation: fx-bob 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fx-bob {
+  to { translate: 0 -4px; }
+}
+
+.fx-muzzle {
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  animation: fx-muzzle 0.16s ease-out forwards;
+}
+
+.fx-muzzle--pea { border-color: rgba(190, 255, 120, 0.95); }
+.fx-muzzle--spike { border-color: rgba(255, 226, 150, 0.95); }
+.fx-muzzle--seed { border-color: rgba(222, 172, 255, 0.95); }
+
+@keyframes fx-muzzle {
+  from { opacity: 0.95; scale: 0.5; }
+  to { opacity: 0; scale: 2.2; }
+}
+
+.fx-burst--pea {
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  border: 3px solid #a6ea4a;
+  animation: fx-ring 0.22s ease-out forwards;
+}
+
+@keyframes fx-ring {
+  from { opacity: 0.95; scale: 0.5; }
+  to { opacity: 0; scale: 2.8; }
+}
+
+.fx-burst--spike {
+  width: 8px;
+  height: 24px;
+  margin: -12px 0 0 -4px;
+  background: linear-gradient(180deg, #fff4c8, #d59b36 70%, #8a5c1a);
+  clip-path: polygon(50% 0, 100% 46%, 62% 46%, 62% 100%, 38% 100%, 38% 46%, 0 46%);
+  animation: fx-spike-burst 0.24s ease-out forwards;
+}
+
+@keyframes fx-spike-burst {
+  from { opacity: 1; scale: 0.5; rotate: 0deg; }
+  to { opacity: 0; scale: 1.5; rotate: 35deg; }
+}
+
+.fx-burst--seed {
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(216, 163, 242, 0.9), rgba(140, 70, 180, 0));
+  animation: fx-puff 0.3s ease-out forwards;
+}
+
+@keyframes fx-puff {
+  from { opacity: 1; scale: 0.5; }
+  to { opacity: 0; scale: 2.6; }
+}
+
 /* —— HUD —— */
 .hud {
   position: absolute;

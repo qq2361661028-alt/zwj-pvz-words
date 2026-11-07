@@ -11,7 +11,7 @@ const waves = [
 function render(spawned: number, time: number) {
   return renderToStaticMarkup(
     <Hud
-      sun={75}
+      sun={100}
       sunDelta={null}
       levelName="Unit 3 · 第 1 关"
       spawned={spawned}

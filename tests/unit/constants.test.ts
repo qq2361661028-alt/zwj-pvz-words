@@ -11,8 +11,8 @@ describe('数值 token', () => {
     expect(RULES.hint_ladder_2).toBe(4)
   })
 
-  it('阳光经济：起始 75 / 上限 9990 / 每 12s 产 25（§7，2026-11-07 提速 ×2）', () => {
-    expect(SUN).toEqual({ start: 75, cap: 9990, produce_amount: 25, produce_interval_s: 12 })
+  it('阳光经济：起始 100 / 上限 9990 / 每 12s 产 25（§7，2026-11-07 提速 ×2）', () => {
+    expect(SUN).toEqual({ start: 100, cap: 9990, produce_amount: 25, produce_interval_s: 12 })
   })
 
   it('§8.4 语音加成数值固定', () => {

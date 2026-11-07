@@ -7,7 +7,7 @@ import type { GameState } from '../../src/rules/types'
 const at = (s: GameState, t: number, ctx = CTX) => runUntil(s, ctx, (x) => x.t >= t).state
 
 describe('开局', () => {
-  it('75 阳光、5 张手牌、空场、无结局', () => {
+  it('100 阳光、5 张手牌、空场、无结局', () => {
     const s = newGame(M0_LEVEL_ID, CTX)
     expect(s.sun).toBe(SUN.start)
     expect(s.cards).toHaveLength(5)

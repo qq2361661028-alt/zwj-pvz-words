@@ -24,7 +24,7 @@ describe('D7/D8：字母块只能填最左卡', () => {
     const s = ready()
     expect(focusCard(s.cards)!.status).toBe('armed')
     expect(focusCard(s.cards)!.filled).toBe(9)
-    expect(s.sun).toBe(75)
+    expect(s.sun).toBe(100)
   })
 
   it('点错块只禁用、不扣阳光、不收抽屉', () => {
@@ -50,9 +50,9 @@ describe('D16：种不下就是种不下', () => {
 
   it('填对一整张卡不产生任何阳光，种植才扣费', () => {
     const s1 = ready()
-    expect(s1.sun).toBe(75)
+    expect(s1.sun).toBe(100)
     const placed = onCellClick(s1, 2, 1, ctx).state
-    expect(placed.sun).toBe(75 - ctx.plants.sprout.cost)
+    expect(placed.sun).toBe(100 - ctx.plants.sprout.cost)
   })
 
   it('同格重复点击 → occupied；越界 → out_of_board', () => {
@@ -79,10 +79,12 @@ describe('种植后的手牌与抽屉', () => {
     expect(tick(r, RULES.tick_s, ctx).state.sun).toBe(r.sun)
   })
 
-  it('8 张卡全部种完后手牌为空，不再补位', () => {
+  it('超过 8 张后牌库循环，手牌始终 5 张，整局都能拼词', () => {
     let s: GameState = { ...newGame(M0_LEVEL_ID, ctx), sun: 9990 }
     const cells: Array<[number, number]> = [
-      [0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [0, 1], [1, 1], [2, 1]
+      [0, 0], [1, 0], [2, 0], [3, 0], [4, 0],
+      [0, 1], [1, 1], [2, 1], [3, 1], [4, 1],
+      [0, 2], [1, 2]
     ]
     const eventTypes: string[][] = []
     for (const [lane, col] of cells) {
@@ -91,11 +93,13 @@ describe('种植后的手牌与抽屉', () => {
       eventTypes.push(r.events.map((e) => e.type))
       s = r.state
     }
-    expect(s.plants).toHaveLength(8)
-    expect(s.cards).toEqual([])
-    expect(s.deckCursor).toBe(8)
-    expect(eventTypes.slice(0, 7).every((types) => types.includes('focus_advanced'))).toBe(true)
-    expect(eventTypes[7]).not.toContain('focus_advanced')
+    const deckIds = ctx.levels[M0_LEVEL_ID].deckIds
+    expect(s.plants).toHaveLength(12)
+    expect(s.cards).toHaveLength(5)
+    expect(s.deckCursor).toBe(5 + 12)
+    expect(eventTypes.every((types) => types.includes('focus_advanced'))).toBe(true)
+    expect(focusCard(s.cards)!.status).toBe('filling')
+    expect(s.cards[4].wordId).toBe(ctx.decks[deckIds[16 % deckIds.length]].wordId)
   })
 })
 

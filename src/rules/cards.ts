@@ -106,9 +106,10 @@ export type HandView = { cards: Card[]; deckCursor: number; seq: number }
 export function createHand(deckIds: readonly string[], ctx: Ctx, seqStart = 0): HandView {
   let seq = seqStart
   const cards: Card[] = []
-  for (let i = 0; i < RULES.hand_size && i < deckIds.length; i++) {
-    const deck = ctx.decks[deckIds[i]]
-    if (!deck) throw new Error(`createHand: 配对不存在 ${deckIds[i]}`)
+  for (let i = 0; i < RULES.hand_size && deckIds.length; i++) {
+    const deckId = deckIds[i % deckIds.length]
+    const deck = ctx.decks[deckId]
+    if (!deck) throw new Error(`createHand: 配对不存在 ${deckId}`)
     cards.push(makeCard(deck, ctx, seq++))
   }
   if (cards.length && cards[0].status === 'locked') {
@@ -139,9 +140,10 @@ export function advanceHand(
   const cards = view.cards.slice(1)          // 已种植的焦点卡离开手牌（§4.5）
   let { deckCursor, seq } = view
   const events: Event[] = []
-  if (deckCursor < deckIds.length) {
-    const deck = ctx.decks[deckIds[deckCursor]]
-    if (!deck) throw new Error(`advanceHand: 配对不存在 ${deckIds[deckCursor]}`)
+  if (deckIds.length) {
+    const deckId = deckIds[deckCursor % deckIds.length]   // 牌库循环：整局都留有可拼的卡
+    const deck = ctx.decks[deckId]
+    if (!deck) throw new Error(`advanceHand: 配对不存在 ${deckId}`)
     cards.push(makeCard(deck, ctx, seq))
     deckCursor += 1
     seq += 1

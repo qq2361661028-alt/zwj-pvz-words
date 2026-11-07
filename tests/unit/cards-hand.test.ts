@@ -19,6 +19,16 @@ describe('发手牌', () => {
     expect(hand.seq).toBe(5)
   })
 
+  it('牌库不足 5 张时循环发满手牌', () => {
+    const short = level.deckIds.slice(0, 3)
+    const hand = createHand(short, CTX)
+    expect(hand.cards.map((c) => c.wordId)).toEqual(
+      [0, 1, 2, 0, 1].map((i) => CTX.decks[short[i]].wordId)
+    )
+    expect(hand.cards.map((c) => c.instanceId)).toEqual([0, 1, 2, 3, 4])
+    expect(hand.deckCursor).toBe(5)
+  })
+
   it('词序为空 → 空手牌', () => {
     expect(createHand([], CTX)).toEqual({ cards: [], deckCursor: 0, seq: 0 })
   })
@@ -47,15 +57,19 @@ describe('补位', () => {
     expect(focusCard(r.view.cards)!.status).toBe('filling')
   })
 
-  it('牌库抽空后不再补牌，手牌缩短', () => {
+  it('牌库抽完后回到开头循环，手牌保持 5 张', () => {
+    const hand = createHand(level.deckIds, CTX)
     const view: HandView = {
-      cards: [{ ...createHand(level.deckIds, CTX).cards[0], status: 'placed' }],
+      cards: [{ ...hand.cards[0], status: 'placed' }, ...hand.cards.slice(1)],
       deckCursor: level.deckIds.length,
-      seq: 9
+      seq: hand.seq
     }
     const r = advanceHand(view, level.deckIds, CTX)
-    expect(r.view.cards).toHaveLength(0)
-    expect(r.events).toEqual([])
-    expect(r.view.deckCursor).toBe(level.deckIds.length)
+    expect(r.view.cards).toHaveLength(5)
+    expect(r.view.cards[4].wordId).toBe(CTX.decks[level.deckIds[0]].wordId)
+    expect(r.view.cards[4].status).toBe('locked')
+    expect(r.view.deckCursor).toBe(level.deckIds.length + 1)
+    expect(r.view.seq).toBe(hand.seq + 1)
+    expect(r.events).toEqual([{ type: 'focus_advanced' }])
   })
 })
