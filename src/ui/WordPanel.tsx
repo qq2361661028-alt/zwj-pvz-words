@@ -8,6 +8,8 @@ type Props = {
   now: number
   plantName: string
   shakeKey: number
+  speechEnabled: boolean
+  onSpeak: () => void
   voice: {
     availability: SpeechAvailability
     listening: boolean
@@ -25,6 +27,8 @@ export function WordPanel({
   now,
   plantName,
   shakeKey,
+  speechEnabled,
+  onSpeak,
   voice,
   onTile,
   onCollapse,
@@ -66,6 +70,26 @@ export function WordPanel({
         </span>
         <span className="wordpanel__zh">{word.zh}</span>
         <span className={`wordpanel__ipa ${card.ladderLevel >= 1 ? 'is-hint' : ''}`}>{word.ipa}</span>
+        <button
+          type="button"
+          className="wordpanel__speak"
+          disabled={!speechEnabled}
+          title={speechEnabled ? '朗读单词' : '在设置里打开朗读'}
+          aria-label="朗读单词"
+          onClick={onSpeak}
+        >
+          <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true" focusable="false">
+            <path d="M4 9.5h4L13 5v14l-5-4.5H4z" fill="currentColor" />
+            <path
+              d="M16 8.5a5.5 5.5 0 0 1 0 7"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+          朗读
+        </button>
         <span className="wordpanel__voice">
           <button
             type="button"

@@ -456,6 +456,35 @@
 .wordpanel__zh { font-size: 13px; font-weight: 900; color: #6b4a1e; }
 .wordpanel__ipa { font-size: 12px; color: #8a6a3a; font-weight: 700; }
 
+.wordpanel__speak {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  align-self: center;
+  border: 2px solid #6b4a1e;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff8dd, #f2e2ab);
+  box-shadow: 0 2px 0 rgba(90, 61, 34, 0.35);
+  padding: 2px 10px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.4;
+  color: #3a2410;
+  cursor: pointer;
+}
+
+.wordpanel__speak:hover:not(:disabled) { filter: brightness(1.05); }
+.wordpanel__speak:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 rgba(90, 61, 34, 0.35);
+}
+.wordpanel__speak:disabled {
+  filter: grayscale(0.9);
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .wordpanel__voice { margin-left: auto; display: flex; align-items: center; }
 
 .wordpanel__mic {

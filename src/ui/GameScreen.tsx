@@ -373,6 +373,8 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
               now={state.t}
               plantName={focusPlant.name}
               shakeKey={shakeKey}
+              speechEnabled={initialSave.settings.speech_enabled}
+              onSpeak={() => speakWord(word.word)}
               voice={{ availability, listening, onVoice }}
               onTile={onTile}
               onCollapse={() => openPanel(false)}
