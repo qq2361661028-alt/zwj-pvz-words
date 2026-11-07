@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "validate:content": "vite-node scripts/validate-content.ts",
-    "validate": "npm run validate:content && vitest run tests/unit/content-validation.test.ts"
+    "validate": "npm run validate:content && vitest run tests/unit/content-validation.test.ts",
+    "check:budget": "node scripts/check-budget.mjs"
   },
   "dependencies": {
     "@fontsource-variable/nunito": "^5.3.0",

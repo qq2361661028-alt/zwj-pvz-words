@@ -16,6 +16,7 @@ import type { Event, GameState } from '../rules/types'
 import { Button } from './Button'
 import { HandCard } from './HandCard'
 import { Hud } from './Hud'
+import { PerfOverlay } from './PerfOverlay'
 import { ResultOverlay } from './ResultOverlay'
 import { sfxForEvent } from './sfx'
 import { WordPanel } from './WordPanel'
@@ -241,6 +242,8 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const placedCount = state.deckCursor - state.cards.length
   const word = focus ? CTX.words[focus.wordId] : undefined
   const focusPlant = focus ? CTX.plants[focus.plantId] : undefined
+  const perfOn =
+    typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('perf') === '1'
 
   return (
     <div className={`game ${danger ? 'is-danger' : ''}`}>
@@ -385,6 +388,8 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
           )}
         </div>
       </div>
+
+      {perfOn && <PerfOverlay plants={state.plants.length} zombies={state.zombies.length} />}
 
       {state.outcome && (
         <ResultOverlay
