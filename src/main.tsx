@@ -1,9 +1,12 @@
+import '@fontsource/luckiest-guy'
+import '@fontsource-variable/nunito'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/global.css'
 import App from './ui/App'
 import { RAW } from './content'
 import { assertContent, validateContent } from './content/validate'
+import { waitForFonts } from './platform/fonts'
 
 function BootError({ message }: { message: string }) {
   return (
@@ -26,11 +29,13 @@ try {
   assertContent(RAW)
   const { warnings } = validateContent(RAW)
   if (warnings.length) console.warn('[content] 报告（不阻断）：\n- ' + warnings.join('\n- '))
-  root.render(
-    <StrictMode>
-      <App />
-    </StrictMode>
-  )
+  void waitForFonts().finally(() => {
+    root.render(
+      <StrictMode>
+        <App />
+      </StrictMode>
+    )
+  })
 } catch (err) {
   root.render(<BootError message={err instanceof Error ? err.message : String(err)} />)
 }
