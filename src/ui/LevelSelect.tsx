@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { PLANT_ART } from '../art/PlantArt'
+import { CharacterArt } from '../art/CharacterArt'
 import { LockIcon, StarIcon } from '../art/Icons'
 import { CTX } from '../content'
 import { GrassTufts, House, Sky } from './scenery/Scenery'
@@ -18,9 +18,6 @@ export function LevelSelect({ onStart }: Props) {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const levels = Object.values(CTX.levels)
   const first = levels[0]
-  const Sprout = PLANT_ART.sprout
-  const Slinger = PLANT_ART.slinger
-  const Bush = PLANT_ART.bush
 
   return (
     <div className="levels">
@@ -40,9 +37,9 @@ export function LevelSelect({ onStart }: Props) {
               <span className="level-card__badge">1</span>
               <span className="level-card__scene">
                 <span style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
-                  <Bush size={54} />
-                  <Slinger size={64} />
-                  <Sprout size={58} />
+                  <CharacterArt art={CTX.plants.bush.art} tier="c" size={54} />
+                  <CharacterArt art={CTX.plants.slinger.art} tier="c" size={64} />
+                  <CharacterArt art={CTX.plants.sprout.art} tier="c" size={58} />
                 </span>
               </span>
               <h3 className="level-card__name">Unit 3</h3>

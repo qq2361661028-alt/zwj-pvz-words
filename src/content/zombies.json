@@ -1,6 +1,6 @@
 [
-  { "id": "z_basic", "name": "慢步者", "hp": 100, "speed": 0.09, "dps": 20 },
-  { "id": "z_cone", "name": "路障者", "hp": 170, "speed": 0.09, "dps": 20 },
-  { "id": "z_bucket", "name": "铁桶者", "hp": 300, "speed": 0.08, "dps": 20 },
-  { "id": "z_flag", "name": "旗帜者", "hp": 100, "speed": 0.11, "dps": 20 }
+  { "id": "z_basic", "name": "慢步者", "art": "assets/zombies/z_basic_s.png", "hp": 100, "speed": 0.09, "dps": 20 },
+  { "id": "z_cone", "name": "路障者", "art": "assets/zombies/z_cone_s.png", "hp": 170, "speed": 0.09, "dps": 20 },
+  { "id": "z_bucket", "name": "铁桶者", "art": "assets/zombies/z_bucket_s.png", "hp": 300, "speed": 0.08, "dps": 20 },
+  { "id": "z_flag", "name": "旗帜者", "art": "assets/zombies/z_flag_s.png", "hp": 100, "speed": 0.11, "dps": 20 }
 ]

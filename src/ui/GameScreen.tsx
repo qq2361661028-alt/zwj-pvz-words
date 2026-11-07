@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { PLANT_ART } from '../art/PlantArt'
-import { ZombieArt, type ZombieVariant } from '../art/ZombieArt'
+import { CharacterArt } from '../art/CharacterArt'
 import { CTX } from '../content'
 import { cellRect, laneToPx, xToPx } from './layout'
 import { createAccumulator, newGame, tick } from '../rules/sim'
@@ -25,13 +24,6 @@ import './game.css'
 
 type Props = { levelId: string; onHome: () => void; onRetry: () => void }
 type Toast = { id: number; text: string; bad: boolean }
-
-const ZOMBIE_VARIANT: Record<string, ZombieVariant> = {
-  z_basic: 'basic',
-  z_cone: 'cone',
-  z_bucket: 'bucket',
-  z_flag: 'flag'
-}
 
 export function GameScreen({ levelId, onHome, onRetry }: Props) {
   const level = CTX.levels[levelId]
@@ -282,7 +274,8 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
 
       <div className="game__plants" aria-hidden="true">
         {state.plants.map((p) => {
-          const Art = PLANT_ART[p.plantId as keyof typeof PLANT_ART]
+          const def = CTX.plants[p.plantId]
+          if (!def) return null
           const r = cellRect(p.lane, p.col)
           const buffed = p.buffUntil !== undefined && p.buffUntil > state.t
           return (
@@ -291,27 +284,31 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
               className={['placed', buffed ? 'is-buffed' : ''].join(' ')}
               style={{ left: r.x + (r.w - 78) / 2, top: r.y + (r.h - 78) / 2 }}
             >
-              {Art ? <Art size={78} /> : null}
+              <CharacterArt art={def.art} tier="s" size={78} />
             </span>
           )
         })}
       </div>
 
       <div className="game__zombies" aria-hidden="true">
-        {state.zombies.map((z) => (
-          <span
-            key={z.uid}
-            className="zombie"
-            style={{ left: xToPx(z.x), top: laneToPx(z.lane) - 72 }}
-          >
-            <ZombieArt size={104} variant={ZOMBIE_VARIANT[z.zombieId] ?? 'basic'} />
-            {z.hp < z.maxhp && (
-              <span className="zombie__hp">
-                <span style={{ width: `${Math.max(0, (z.hp / z.maxhp) * 100)}%` }} />
-              </span>
-            )}
-          </span>
-        ))}
+        {state.zombies.map((z) => {
+          const def = CTX.zombies[z.zombieId]
+          if (!def) return null
+          return (
+            <span
+              key={z.uid}
+              className="zombie"
+              style={{ left: xToPx(z.x), top: laneToPx(z.lane) - 72 }}
+            >
+              <CharacterArt art={def.art} tier="s" size={104} />
+              {z.hp < z.maxhp && (
+                <span className="zombie__hp">
+                  <span style={{ width: `${Math.max(0, (z.hp / z.maxhp) * 100)}%` }} />
+                </span>
+              )}
+            </span>
+          )
+        })}
       </div>
 
       <Hud

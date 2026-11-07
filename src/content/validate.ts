@@ -118,6 +118,7 @@ export function validateContent(raw: RawContent): ValidationReport {
   })
 
   raw.zombies.forEach((z) => {
+    if (!ART_RE.test(z.art)) errors.push(`僵尸 ${z.id}：art 路径格式不合法 ${z.art}`)
     if (z.hp <= 0) errors.push(`僵尸 ${z.id}：hp 必须 > 0`)
     if (!(z.speed > 0)) errors.push(`僵尸 ${z.id}：speed 必须 > 0`)
     if (z.dps <= 0) errors.push(`僵尸 ${z.id}：dps 必须 > 0`)

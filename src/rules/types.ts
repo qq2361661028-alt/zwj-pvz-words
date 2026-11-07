@@ -38,6 +38,7 @@ export type DeckDef = {
 export type ZombieDef = {
   id: string
   name: string
+  art: string
   hp: number
   speed: number
   dps: number

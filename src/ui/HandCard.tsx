@@ -1,4 +1,4 @@
-import { PLANT_ART } from '../art/PlantArt'
+import { CharacterArt } from '../art/CharacterArt'
 import { SunIcon } from '../art/Icons'
 import type { Card, PlantDef } from '../rules/types'
 
@@ -20,7 +20,6 @@ const STATUS: Record<Card['status'], string> = {
 }
 
 export function HandCard({ card, plant, index, isFocus, affordable, onTap }: Props) {
-  const Art = PLANT_ART[plant.id as keyof typeof PLANT_ART]
   const mask = card.slots.map((ch, i) => (i < card.filled ? ch : '·')).join('')
 
   return (
@@ -36,7 +35,9 @@ export function HandCard({ card, plant, index, isFocus, affordable, onTap }: Pro
       aria-label={`${plant.name}，${card.slots.length} 个字母，${STATUS[card.status]}`}
     >
       <span className="hand__index">{index + 1}</span>
-      <span className="hand__art">{Art ? <Art size={58} /> : null}</span>
+      <span className="hand__art">
+        <CharacterArt art={plant.art} tier="c" size={58} />
+      </span>
       <span className="hand__name">{plant.name}</span>
       <span className="hand__zh">{plant.slot === 'producer' ? '产阳光' : plant.slot === 'shooter' ? '远程攻击' : '挡在前面'}</span>
       <span className={`hand__cost ${affordable ? '' : 'is-poor'}`}>

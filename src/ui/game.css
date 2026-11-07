@@ -97,7 +97,8 @@
   to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-.placed svg {
+.placed svg,
+.placed .character-art {
   animation: idle-bob 3.6s ease-in-out infinite;
   transform-origin: bottom center;
 }

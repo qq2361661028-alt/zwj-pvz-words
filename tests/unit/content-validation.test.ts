@@ -168,6 +168,12 @@ describe('D21 启动门禁', () => {
     expect(text).toMatch(/produce_amount/)
   })
 
+  it('僵尸 art 路径必须合法', () => {
+    const raw = clone()
+    raw.zombies[0] = { ...raw.zombies[0], art: 'assets/zombies/bad.gif' }
+    expect(errorsOf(raw)).toContain('僵尸 z_basic：art 路径格式不合法 assets/zombies/bad.gif')
+  })
+
   it('僵尸在波次中缺席只算 warning', () => {
     const raw = clone()
     raw.levels[0].waves = raw.levels[0].waves.filter((w) => w.zombie !== 'z_bucket')
