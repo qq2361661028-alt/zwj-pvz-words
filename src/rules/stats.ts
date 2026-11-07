@@ -77,6 +77,12 @@ const isObject = (v: unknown): v is Record<string, unknown> =>
 const nonNegInt = (v: unknown): number =>
   typeof v === 'number' && Number.isFinite(v) && v > 0 ? Math.floor(v) : 0
 
+const MAX_LAST_SEEN_TS = 4_102_444_800
+const PENALTY_OPTIONS = [0, 1000, 2000] as const
+
+const lastSeenTs = (v: unknown): number =>
+  typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= MAX_LAST_SEEN_TS ? v : 0
+
 /** 只认识 v1/v2；损坏或未来版本回退空存档，绝不把异常向上抛 */
 export function migrateSave(raw: unknown): SaveData {
   if (!isObject(raw)) return emptySave()
@@ -95,7 +101,7 @@ export function migrateSave(raw: unknown): SaveData {
           typeof value.ease === 'number' && Number.isFinite(value.ease) && value.ease >= MIN_EASE
             ? value.ease
             : DEFAULT_EASE,
-        last_seen_ts: nonNegInt(value.last_seen_ts)
+        last_seen_ts: lastSeenTs(value.last_seen_ts)
       }
     }
   }
@@ -113,12 +119,11 @@ export function migrateSave(raw: unknown): SaveData {
         typeof raw.settings.speech_enabled === 'boolean' ? raw.settings.speech_enabled : true,
       sound_enabled:
         typeof raw.settings.sound_enabled === 'boolean' ? raw.settings.sound_enabled : true,
-      penalty_disable_ms:
-        typeof raw.settings.penalty_disable_ms === 'number' &&
-        Number.isFinite(raw.settings.penalty_disable_ms) &&
-        raw.settings.penalty_disable_ms >= 0
-          ? raw.settings.penalty_disable_ms
-          : RULES.penalty_disable_ms
+      penalty_disable_ms: PENALTY_OPTIONS.includes(
+        raw.settings.penalty_disable_ms as 0 | 1000 | 2000
+      )
+        ? (raw.settings.penalty_disable_ms as number)
+        : RULES.penalty_disable_ms
     }
   }
 

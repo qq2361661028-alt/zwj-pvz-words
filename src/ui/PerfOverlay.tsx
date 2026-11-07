@@ -28,7 +28,7 @@ export function PerfOverlay({ plants, zombies }: Props) {
   }, [])
 
   return (
-    <div className="perf" aria-live="off">
+    <div className="perf" aria-hidden="true">
       <span>FPS {stats.fps}</span>
       <span>p95 {stats.p95}ms</span>
       <span>植物 {plants} / 僵尸 {zombies}</span>

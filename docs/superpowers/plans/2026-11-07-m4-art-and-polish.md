@@ -498,7 +498,7 @@ Expected: 6 个 MP3，总计 <120KB。
 
 ## 字体
 
-- Luckiest Guy（SIL Open Font License 1.1），经 `@fontsource/luckiest-guy` 打包
+- Luckiest Guy（Apache License 2.0），经 `@fontsource/luckiest-guy` 打包；许可全文随构建复制到 `assets/licenses/LuckiestGuy-Apache-2.0.txt`
 - Nunito Variable（SIL Open Font License 1.1），经 `@fontsource-variable/nunito` 打包
 
 ## 角色美术
@@ -2303,10 +2303,10 @@ npm run lint && npm test && npm run validate && npm run build && npm run check:b
 | 项 | 结果 |
 | --- | --- |
 | ESLint | 通过（`.superpowers` 与 `art-source` 加入忽略，见偏差 4） |
-| vitest | 28 文件 / 173 用例全过 |
+| vitest | 28 文件 / 187 用例全过 |
 | 内容与资产门禁 | 8 植物 / 13 词 / 13 配对 / 4 僵尸 / 1 关；36 张角色图通过 |
-| 构建 | 76 modules；JS 203.89 kB（gzip 67.07 kB），CSS 28.21 kB（gzip 7.35 kB） |
-| 预算 | 总计 1481.5 KB / 3.0 MB；最大 JS 199.1 KB / 500 KB；角色图 36 张 1044.9 KB；字体 9 个 188.7 KB；音效 6 个 20.2 KB |
+| 构建 | 76 modules；JS 204.47 kB（gzip 67.24 kB），CSS 28.15 kB（gzip 7.33 kB） |
+| 预算 | 总计 1498.2 KB / 3.0 MB；最大 JS 199.7 KB / 500 KB；角色图 36 张 1044.9 KB；字体 9 个 188.7 KB；音效 6 个 20.2 KB；其他 4 个 17.3 KB（含两份字体许可通知） |
 
 ### 浏览器验收（headless Chrome 156 + CDP，19/19）
 
@@ -2341,7 +2341,7 @@ npm run lint && npm test && npm run validate && npm run build && npm run check:b
 2. 复习表可读性：初版 tbody 无底色，深棕文字叠深色木纹几乎不可读；补浅色表底与偶数行条纹后复查通过。
 3. favicon 404：新增 `<link rel="icon" href="/assets/plants/sprout_s.png">`，控制台零错误。
 4. ESLint 忽略：`.superpowers`（SDD 工作区与 CDP 验收脚本）与 `art-source`（源图）加入 ignores，避免脚手架脚本被项目规则误判。
-5. 死代码清理：M0–M2 的内联 SVG 占位 `PlantArt.tsx` / `ZombieArt.tsx` 已无生产引用，连同 `tests/unit/plant-art.test.ts` 删除；测试数由 174 降为 173。
+5. 死代码清理：M0–M2 的内联 SVG 占位 `PlantArt.tsx` / `ZombieArt.tsx` 已无生产引用，连同 `tests/unit/plant-art.test.ts` 删除；测试数由 174 降为 173，最终复审修复轮新增 14 个用例后为 187。
 6. Task 9 的 `?perf=1` 浏览器烟测按裁决顺延到本任务，已纳入上方 19/19。
 7. Task 9 的 `global.css` 原地修改与 `/* global console, process */` 注释保留，均经复审接受。
 
@@ -2351,3 +2351,7 @@ npm run lint && npm test && npm run validate && npm run build && npm run check:b
 - 孩子实测 D1–D4：首次上手 60 秒内能否种下第一株、2 秒冻结是否困惑、是否要求再来一局、是否故意点错。
 - M3 的 E11 五环境语音识别复测（安静 / 有人说话 / 离麦 30 cm / 孩子小声 / 家长代读）。
 - 真实 iPad Safari 的音效解锁与可听性（headless 只能验证 `play()` 调用）。
+
+### 最终复审修复
+
+- 更正 Luckiest Guy 许可为 Apache License 2.0 并新增两份字体许可通知（随构建复制到 `dist/assets/licenses/`）；同时加固资产门禁（RGBA / `_s.png`）与存档迁移边界。

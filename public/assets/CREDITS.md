@@ -11,8 +11,8 @@
 
 ## 字体
 
-- Luckiest Guy（SIL Open Font License 1.1），经 `@fontsource/luckiest-guy` 打包
-- Nunito Variable（SIL Open Font License 1.1），经 `@fontsource-variable/nunito` 打包
+- Luckiest Guy（Apache License 2.0，Copyright (c) 2010 Brian J. Bonislawsky DBA Astigmatic / AOETI），经 `@fontsource/luckiest-guy` 打包；许可全文见 [licenses/LuckiestGuy-Apache-2.0.txt](licenses/LuckiestGuy-Apache-2.0.txt)
+- Nunito Variable（SIL Open Font License 1.1，Copyright 2014 The Nunito Project Authors），经 `@fontsource-variable/nunito` 打包；许可全文见 [licenses/Nunito-OFL-1.1.txt](licenses/Nunito-OFL-1.1.txt)
 
 ## 角色美术
 

@@ -88,7 +88,6 @@
   position: absolute;
   width: 78px;
   height: 78px;
-  filter: drop-shadow(0 5px 4px rgba(30, 50, 10, 0.4));
   animation: plant-pop 0.34s cubic-bezier(0.2, 1.6, 0.4, 1) both;
 }
 
@@ -97,7 +96,6 @@
   to { transform: scale(1) translateY(0); opacity: 1; }
 }
 
-.placed svg,
 .placed .character-art {
   animation: idle-bob 3.6s ease-in-out infinite;
   transform-origin: bottom center;

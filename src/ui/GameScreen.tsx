@@ -59,7 +59,11 @@ export function GameScreen({ levelId, onHome, onRetry }: Props) {
     audio.setEnabled(initialSave.settings.sound_enabled)
     const unlock = () => audio.unlock()
     window.addEventListener('pointerdown', unlock, { once: true })
-    return () => window.removeEventListener('pointerdown', unlock)
+    window.addEventListener('keydown', unlock, { once: true })
+    return () => {
+      window.removeEventListener('pointerdown', unlock)
+      window.removeEventListener('keydown', unlock)
+    }
   }, [audio, initialSave])
 
   useEffect(() => {

@@ -26,7 +26,15 @@ const pad = (n: number) => String(n).padStart(2, '0')
 function formatTime(ts: number): string {
   if (!ts || ts < 1_000_000_000) return '—'
   const d = new Date(ts * 1000)
+  if (!Number.isFinite(d.getTime())) return '—'
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function firstWave(zombieId: string): number | null {
+  const times = Object.values(CTX.levels).flatMap((level) =>
+    level.waves.filter((wave) => wave.zombie === zombieId).map((wave) => wave.t)
+  )
+  return times.length ? Math.min(...times) : null
 }
 
 export function CodexOverlay({ initialTab, onClose }: Props) {
@@ -41,12 +49,7 @@ export function CodexOverlay({ initialTab, onClose }: Props) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose])
 
-  const firstWave = (zombieId: string): number | null => {
-    const times = Object.values(CTX.levels).flatMap((level) =>
-      level.waves.filter((wave) => wave.zombie === zombieId).map((wave) => wave.t)
-    )
-    return times.length ? Math.min(...times) : null
-  }
+  const rows = reviewRows(save, RAW.words)
 
   return (
     <div
@@ -67,6 +70,8 @@ export function CodexOverlay({ initialTab, onClose }: Props) {
                 key={item.id}
                 type="button"
                 role="tab"
+                id={`codex-tab-${item.id}`}
+                aria-controls={`codex-panel-${item.id}`}
                 aria-selected={tab === item.id}
                 className={`codex__tab ${tab === item.id ? 'is-on' : ''}`}
                 onClick={() => setTab(item.id)}
@@ -80,7 +85,12 @@ export function CodexOverlay({ initialTab, onClose }: Props) {
 
         <div className="codex__body">
           {tab === 'plants' && (
-            <div className="codex__grid">
+            <div
+              className="codex__grid"
+              role="tabpanel"
+              id="codex-panel-plants"
+              aria-labelledby="codex-tab-plants"
+            >
               {RAW.plants.map((plant) => {
                 const words = Object.values(CTX.decks)
                   .filter((deck) => deck.plantId === plant.id)
@@ -110,7 +120,12 @@ export function CodexOverlay({ initialTab, onClose }: Props) {
           )}
 
           {tab === 'zombies' && (
-            <div className="codex__grid">
+            <div
+              className="codex__grid"
+              role="tabpanel"
+              id="codex-panel-zombies"
+              aria-labelledby="codex-tab-zombies"
+            >
               {RAW.zombies.map((zombie) => {
                 const wave = firstWave(zombie.id)
                 return (
@@ -131,7 +146,12 @@ export function CodexOverlay({ initialTab, onClose }: Props) {
           )}
 
           {tab === 'words' && (
-            <div className="codex__grid">
+            <div
+              className="codex__grid"
+              role="tabpanel"
+              id="codex-panel-words"
+              aria-labelledby="codex-tab-words"
+            >
               {RAW.words.map((word) => {
                 const stat = save.word_stats[word.id]
                 return (
@@ -164,18 +184,23 @@ export function CodexOverlay({ initialTab, onClose }: Props) {
           )}
 
           {tab === 'review' && (
-            <div className="codex__review">
-              {reviewRows(save, RAW.words).length === 0 ? (
+            <div
+              className="codex__review"
+              role="tabpanel"
+              id="codex-panel-review"
+              aria-labelledby="codex-tab-review"
+            >
+              {rows.length === 0 ? (
                 <p className="codex__empty">还没有学习记录，去拼几个单词吧</p>
               ) : (
                 <table className="codex-table">
                   <thead>
                     <tr>
-                      <th>单词</th><th>正确</th><th>错误</th><th>提示</th><th>连对</th><th>最近</th>
+                      <th scope="col">单词</th><th scope="col">正确</th><th scope="col">错误</th><th scope="col">提示</th><th scope="col">连对</th><th scope="col">最近</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {reviewRows(save, RAW.words).map((row) => (
+                    {rows.map((row) => (
                       <tr key={row.wordId}>
                         <td>{row.word}<span>{row.zh}</span></td>
                         <td>{row.correct}</td>

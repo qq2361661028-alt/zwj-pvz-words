@@ -11,7 +11,7 @@ export type ValidationReport = { errors: string[]; warnings: string[] }
 export const BANNED = ['植物大战僵尸', 'Plants vs', 'PvZ', '僵尸博士', '坚果墙', '豌豆射手']
 const SLOTS: PlantSlot[] = ['producer', 'shooter', 'defense']
 const THEMES: Theme[] = ['plant', 'unit', 'review']
-const ART_RE = /^assets\/(plants|zombies)\/[a-z0-9_]+\.png$/
+const ART_RE = /^assets\/(plants|zombies)\/[a-z0-9_]+_s\.png$/
 
 export function validateContent(raw: RawContent): ValidationReport {
   const errors: string[] = []

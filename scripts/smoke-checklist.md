@@ -151,8 +151,8 @@
 
 | 项 | 结果 | 备注 |
 | --- | --- | --- |
-| lint / test / build / validate | 通过 | 28 个测试文件 / 173 个用例；76 modules，JS 203.89 kB（gzip 67.07 kB），CSS 28.21 kB（gzip 7.35 kB）；资产门禁 36 张角色图 |
-| 预算 | 通过 | `check:budget` 总计 1481.5 KB / 3.0 MB；最大 JS 199.1 KB / 500 KB；角色图 36 张 1044.9 KB，字体 9 个 188.7 KB，音效 6 个 20.2 KB |
+| lint / test / build / validate | 通过 | 28 个测试文件 / 187 个用例；76 modules，JS 204.47 kB（gzip 67.24 kB），CSS 28.15 kB（gzip 7.33 kB）；资产门禁 36 张角色图 |
+| 预算 | 通过 | `check:budget` 总计 1498.2 KB / 3.0 MB；最大 JS 199.7 KB / 500 KB；角色图 36 张 1044.9 KB，字体 9 个 188.7 KB，音效 6 个 20.2 KB，其他 4 个 17.3 KB（含两份字体许可通知） |
 | 角色图三档 | 通过 | 36 档全部加载，尺寸 96/128/256；选关 c / 手牌 c / 场上 s / 图鉴 l，无 404 |
 | 字体 | 通过 | Fontsource 自托管；Luckiest Guy 与 Nunito 700/900 ready；Network 无 Google Fonts 请求 |
 | 音效 | 通过（调用层） | fill_wrong / fill_ok / arm / plant 事件均触发 play()；关闭音效后无播放且刷新保持；headless 无法确认实际可听 |

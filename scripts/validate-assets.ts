@@ -8,11 +8,17 @@ const TIERS = [
   { suffix: 'l', size: 256 }
 ] as const
 
-export function pngSize(buf: Buffer): { width: number; height: number } | null {
-  if (buf.length < 24) return null
+export function pngSize(
+  buf: Buffer
+): { width: number; height: number; colorType: number } | null {
+  if (buf.length < 26) return null
   if (buf.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a') return null
   if (buf.subarray(12, 16).toString('ascii') !== 'IHDR') return null
-  return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) }
+  return {
+    width: buf.readUInt32BE(16),
+    height: buf.readUInt32BE(20),
+    colorType: buf[25]
+  }
 }
 
 export function tierPaths(base: string): { suffix: 's' | 'c' | 'l'; size: number; file: string }[] {
@@ -32,6 +38,10 @@ export function validateAssets(raw: RawContent, root = process.cwd()): string[] 
   let total = 0
 
   for (const entry of entries) {
+    if (!entry.base.endsWith('_s.png')) {
+      issues.push(`${entry.label}：art 路径必须以 _s.png 结尾（${entry.base}）`)
+      continue
+    }
     for (const tier of tierPaths(entry.base)) {
       const file = path.join(root, 'public', tier.file)
       if (!fs.existsSync(file)) {
@@ -45,6 +55,11 @@ export function validateAssets(raw: RawContent, root = process.cwd()): string[] 
           `${entry.label}：${tier.file} 尺寸应为 ${tier.size}×${tier.size}（实际 ${
             size ? `${size.width}×${size.height}` : '非 PNG'
           }）`
+        )
+      }
+      if (size && size.colorType !== 6) {
+        issues.push(
+          `${entry.label}：${tier.file} 必须是 RGBA（color type 6，实际 ${size.colorType}）`
         )
       }
       if (buf.length > 200 * 1024) issues.push(`${entry.label}：${tier.file} 超过 200KB`)

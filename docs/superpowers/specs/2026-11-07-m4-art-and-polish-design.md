@@ -222,7 +222,7 @@ export function reviewRows(save: SaveData, words: readonly WordDef[]): ReviewRow
 
 ### 7.1 预算
 
-- 首屏资源（`dist/` 内 js + css + woff2 + 角色图，不含 sourcemap）≤ 3MB。
+- `dist/` 总计预算（js + css + 字体 + 全部图片 + 音频 + 其他，不含 sourcemap）≤ 3MB；按整个产物统计，不按首屏请求切分。
 - 单个 JS chunk 原始体积 ≤500KB（比 gzip 口径更严）。
 - 目标：2020 款平板 60fps；单局 3–5 分钟；内存 < 150MB。
 

@@ -174,6 +174,15 @@ describe('D21 启动门禁', () => {
     expect(errorsOf(raw)).toContain('僵尸 z_basic：art 路径格式不合法 assets/zombies/bad.gif')
   })
 
+  it('art 路径必须以 _s.png 结尾', () => {
+    const raw = clone()
+    raw.plants[0].art = 'assets/plants/sprout.png'
+    raw.zombies[0] = { ...raw.zombies[0], art: 'assets/zombies/z_basic_c.png' }
+    const text = errorsOf(raw)
+    expect(text).toContain('植物 sprout：art 路径格式不合法 assets/plants/sprout.png')
+    expect(text).toContain('僵尸 z_basic：art 路径格式不合法 assets/zombies/z_basic_c.png')
+  })
+
   it('僵尸在波次中缺席只算 warning', () => {
     const raw = clone()
     raw.levels[0].waves = raw.levels[0].waves.filter((w) => w.zombie !== 'z_bucket')

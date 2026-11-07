@@ -80,6 +80,24 @@ describe('D19 存档 v1', () => {
     expect(bad.settings.sound_enabled).toBe(true)
   })
 
+  it('penalty_disable_ms 只接受 0 / 1000 / 2000，越界回落 2000', () => {
+    const at = (value: unknown) =>
+      migrateSave({ v: 2, settings: { penalty_disable_ms: value } }).settings.penalty_disable_ms
+    expect(at(500)).toBe(2000)
+    expect(at(1000)).toBe(1000)
+    expect(at(0)).toBe(0)
+    expect(at(Number.POSITIVE_INFINITY)).toBe(2000)
+  })
+
+  it('last_seen_ts 超出 2100 年上限回落 0，合法值保留', () => {
+    const at = (value: unknown) =>
+      migrateSave({ v: 2, word_stats: { w_milk: { last_seen_ts: value } } }).word_stats.w_milk
+        .last_seen_ts
+    expect(at(9_999_999_999)).toBe(0)
+    expect(at(4_102_444_800)).toBe(4_102_444_800)
+    expect(at(1_700_000_000)).toBe(1_700_000_000)
+  })
+
   it('localStorage 抛错时不影响游戏', () => {
     const storage = {
       getItem: () => {

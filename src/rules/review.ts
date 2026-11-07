@@ -32,5 +32,7 @@ export function reviewRows(save: SaveData, words: readonly WordDef[]): ReviewRow
     })
   }
 
-  return rows.sort((a, b) => b.lastSeen - a.lastSeen || a.word.localeCompare(b.word))
+  return rows.sort(
+    (a, b) => b.lastSeen - a.lastSeen || (a.word < b.word ? -1 : a.word > b.word ? 1 : 0)
+  )
 }

@@ -1,10 +1,15 @@
 /* global console, process */
-import { readdirSync, statSync } from 'node:fs'
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import { join, extname, relative } from 'node:path'
 
 const ROOT = 'dist'
 const LIMIT = 3 * 1024 * 1024
 const JS_LIMIT = 500 * 1024
+
+if (!existsSync(ROOT)) {
+  console.error('未找到 dist/：请先运行 npm run build 再执行 npm run check:budget')
+  process.exit(1)
+}
 
 function walk(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
@@ -15,11 +20,13 @@ function walk(dir) {
 
 const files = walk(ROOT).filter((file) => !file.endsWith('.map'))
 const groups = { js: [], css: [], font: [], image: [], audio: [], other: [] }
+const rows = []
 
 for (const file of files) {
   const ext = extname(file)
   const size = statSync(file).size
   const row = { file: relative(ROOT, file), size }
+  rows.push(row)
   if (['.js', '.mjs'].includes(ext)) groups.js.push(row)
   else if (ext === '.css') groups.css.push(row)
   else if (['.woff2', '.woff'].includes(ext)) groups.font.push(row)
@@ -35,13 +42,13 @@ for (const [name, rows] of Object.entries(groups)) {
   console.log(`${name.padEnd(6)} ${String(rows.length).padStart(3)} 个  ${kb(sum(rows))}`)
 }
 
-const total = sum(files.map((file) => ({ size: statSync(file).size })))
+const total = sum(rows)
 const largestJs = groups.js.reduce((max, row) => Math.max(max, row.size), 0)
 console.log(`total  ${kb(total)} / 3.0 MB`)
 console.log(`largest js  ${kb(largestJs)} / 500 KB`)
 
 if (total > LIMIT) {
-  console.error('首屏预算超限：dist 总计超过 3MB')
+  console.error('dist 总计预算超限：超过 3MB')
   process.exit(1)
 }
 if (largestJs > JS_LIMIT) {
